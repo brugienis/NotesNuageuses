@@ -5,9 +5,8 @@ class DelAnyTime {
     package au.com.kbrsolutions.notesnuageuses.features.core
 
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
-import junit.framework.Assert
-import junit.framework.Assert.assertEquals
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 

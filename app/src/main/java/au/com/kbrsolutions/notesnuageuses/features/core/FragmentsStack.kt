@@ -1,6 +1,5 @@
 package au.com.kbrsolutions.notesnuageuses.features.core
 
-import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
 import java.util.*
 
@@ -70,8 +69,8 @@ object FragmentsStack {
             fragmentId: HomeActivity.FragmentsEnum,
             fragmentTitle: String,
             foldersAddData: FolderData?): Boolean {
-        Log.v(TAG, "addFragment - start - folderFragmentsCnt/foldersAddData: " + folderFragmentsCnt + "/" +
-                if (foldersAddData == null) "null" else foldersAddData!!.newFolderTitle)
+//        Log.v(TAG, "addFragment - start - folderFragmentsCnt/foldersAddData: " + folderFragmentsCnt + "/" +
+//                if (foldersAddData == null) "null" else foldersAddData!!.newFolderTitle)
         var lFragmentTitle = fragmentTitle
         var menuOptionsChangeRequired = false
         if (fragmentsArrayDeque.peekLast() !== fragmentId) {
@@ -81,14 +80,14 @@ object FragmentsStack {
             foldersData.addFolderData(foldersAddData)
             lFragmentTitle = foldersAddData!!.newFolderTitle
             folderFragmentsCnt++
-            Log.v(TAG, "addFragment - fragmentId is in allFoldersMainActivity.FragmentsEnumTypesSet/folderFragmentsCnt: $fragmentId/$folderFragmentsCnt")
+//            Log.v(TAG, "addFragment - fragmentId is in allFoldersMainActivity.FragmentsEnumTypesSet/folderFragmentsCnt: $fragmentId/$folderFragmentsCnt")
         }
         fragmentsArrayDeque.addLast(fragmentId)
         fragmentsTitlesArrayDeque.addLast(lFragmentTitle)                                    // add at the tail
 
         verify()
-        Log.v(TAG, "addFragment - end   - folderFragmentsCnt/foldersAddData: " + folderFragmentsCnt + "/" +
-                if (foldersAddData == null) "null" else foldersAddData!!.newFolderTitle)
+//        Log.v(TAG, "addFragment - end   - folderFragmentsCnt/foldersAddData: " + folderFragmentsCnt + "/" +
+//                if (foldersAddData == null) "null" else foldersAddData!!.newFolderTitle)
         return menuOptionsChangeRequired
     }
 
@@ -251,7 +250,7 @@ object FragmentsStack {
 
     private fun verify() {
         val localFolderFragmentsCnt = getFolderFragmentCount()
-        Log.v(TAG, "verify - localFolderFragmentsCnt/folderFragmentsCnt: $localFolderFragmentsCnt/$folderFragmentsCnt")
+//        Log.v(TAG, "verify - localFolderFragmentsCnt/folderFragmentsCnt: $localFolderFragmentsCnt/$folderFragmentsCnt")
         if (localFolderFragmentsCnt != folderFragmentsCnt) {
             // todo: not in prod
             throw RuntimeException("verify - exception localFolderFragmentsCnt/folderFragmentsCnt: $localFolderFragmentsCnt/$folderFragmentsCnt")
@@ -281,7 +280,7 @@ object FragmentsStack {
 data class FragmentsStackResponse(
         val finishRequired: Boolean,
         val fragmentToSet: HomeActivity.FragmentsEnum,
-        val titleToSet: String,
+        val titleToSet: String?,
         val updateFolderListAdapterRequired: Boolean,
         val viewFragmentsCleanupRequired: Boolean,
         val menuOptionsChangeRequired: Boolean)
