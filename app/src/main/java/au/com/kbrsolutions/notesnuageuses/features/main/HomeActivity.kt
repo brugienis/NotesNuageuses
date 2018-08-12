@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 //          https://developers.google.com/drive/android/intro
 //          https://developers.google.com/drive/android/examples/
 
-class MainActivity : BaseActivity() {
+class HomeActivity : BaseActivity() {
 
     enum class FragmentsEnum {
         LOG_IN_FRAGMENT,

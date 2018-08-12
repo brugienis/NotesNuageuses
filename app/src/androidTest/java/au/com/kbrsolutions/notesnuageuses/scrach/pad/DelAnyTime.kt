@@ -1,5 +1,10 @@
-package au.com.kbrsolutions.notesnuageuses.features.core
+package au.com.kbrsolutions.notesnuageuses.scrach.pad
 
+class DelAnyTime {
+    /*
+    package au.com.kbrsolutions.notesnuageuses.features.core
+
+import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
 import junit.framework.Assert
 import junit.framework.Assert.assertEquals
 import org.junit.After
@@ -11,7 +16,8 @@ class FragmentsStackTest {
     internal var fragmentStack: FragmentsStack? = null
     internal var foldersData: FoldersData? = null
 
-    private val LOC_CAT_TAG = "FragmentsStack"
+    private val TAG = "FragmentsStackTest"
+
     @Before
     fun setUp() {
         foldersData = FoldersData
@@ -34,16 +40,16 @@ class FragmentsStackTest {
     @Test
     fun testAddFragment() {
         val foldersAddData: FolderData? = null
-        fragmentStack.addFragment(HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", foldersAddData)
+        fragmentStack!!.addFragment(HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", foldersAddData)
 
-        assertEquals("wrong fragmentStack size", 1, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", -1, foldersData.getCurrFolderLevel())
+        assertEquals("wrong fragmentStack size", 1, fragmentStack?.getStackSize())
+        assertEquals("wrong currFragment", HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT, fragmentStack?.getCurrFragment())
+        assertEquals("wrong currFolderLevel", -1, foldersData?.getCurrFolderLevel())
     }
 
     @Test
     fun testRemoveTopFragment_fromEmptyStack() {
-        val fragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_fromEmptyStack", false)
+        val fragmentsStackResponse = fragmentStack?.removeTopFragment("testRemoveTopFragment_fromEmptyStack", false)
         assertEquals("wrong fragmentsStackResponse", null, fragmentsStackResponse)
     }
 
@@ -78,4 +84,8 @@ class FragmentsStackTest {
     @Test
     fun getFragmentsList() {
     }
+
+}
+
+     */
 }
