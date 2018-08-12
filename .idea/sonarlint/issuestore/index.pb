@@ -23,3 +23,5 @@ Tapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/core/FragmentsSta
 Papp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/core/FolderData.kt,e/1/e1179945570d2e709ff066e484353e14829678ea
 †
 Vapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/core/FileMetadataInfo.kt,0/f/0f8cade271ba803d082a881ed6f5a440e4506caa
+ˆ
+Xapp/src/test/java/au/com/kbrsolutions/notesnuageuses/features/core/FragmentsStackTest.kt,7/b/7b55740a17199ec73269d42e7224baeaeb9ad333

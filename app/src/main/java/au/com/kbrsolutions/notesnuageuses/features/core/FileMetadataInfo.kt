@@ -15,7 +15,7 @@ data class FileMetadataInfo(
         var fileItemId: Long,
         var isTrashable: Boolean,
         var isTrashed: Boolean) {
-    
+
     public constructor(parentTitleArg: String, metadata: Metadata): this(
             parentTitleArg,
             metadata.title,
