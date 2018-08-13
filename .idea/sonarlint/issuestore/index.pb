@@ -27,3 +27,5 @@ Rapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/HomeActivity
 Tapp/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/scrach/pad/DelAnyTime.kt,8/8/887eeaed44cfa0ae6dc83468eed883ed41a5f4f0
 è
 _app/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/features/core/FragmentsStackTest.kt,a/5/a5f72b02da98db5221fa251a4e2213e81e79703b
+w
+Gapp/src/test/java/au/com/kbrsolutions/notesnuageuses/ExampleUnitTest.kt,9/e/9e55c7d9553fa7bf6b27dfcbc9fb2b9829825179

@@ -1,5 +1,6 @@
 package au.com.kbrsolutions.notesnuageuses.features.core
 
+import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
 import com.google.android.gms.drive.DriveId
 import org.junit.After
@@ -15,6 +16,8 @@ class FragmentsStackTest {
     private var fragmentStack: FragmentsStack? = null
     private var foldersData: FoldersData? = null
 
+    private val TAG = FragmentsStackTest::class.java.simpleName
+
     @Before
     fun setUp() {
         foldersData = FoldersData
@@ -25,13 +28,14 @@ class FragmentsStackTest {
 
     @After
     fun tearDown() {
-        foldersData = null
-        fragmentStack = null
+        fun tearDown() {
+            foldersData = null
+            fragmentStack = null
+        }
     }
 
     @Test
     fun init() {
-        Assert.assertTrue("fragmentStack can't be null", fragmentStack != null)
     }
 
     @Test
@@ -68,10 +72,12 @@ class FragmentsStackTest {
         assertEquals("wrong fragmentStack size", 1, fragmentStack!!.getStackSize())
 
         val actualFragmentsStackResponse = fragmentStack!!.removeTopFragment("testRemoveTopFragment_topFragmentFolder_00", false)
+        Log.v(TAG, "testRemoveTopFragment_topFragmentFolder_00 - actualFragmentsStackResponse: " +
+                actualFragmentsStackResponse)
 
         assertNotNull("actualFragmentsStackResponse cannot be null", actualFragmentsStackResponse)
         assertEquals("wrong fragmentStack size", 0, fragmentStack!!.getStackSize())
-        assertEquals("wrong currFragment", null, fragmentStack!!.getCurrFragment())
+        assertEquals("wrong currFragment", HomeActivity.FragmentsEnum.NONE  , fragmentStack!!.getCurrFragment())
         assertEquals("wrong currFolderLevel", -1, foldersData!!.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(true, HomeActivity.FragmentsEnum.NONE, null, false, false, true)
         val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse, actualFragmentsStackResponse!!)
