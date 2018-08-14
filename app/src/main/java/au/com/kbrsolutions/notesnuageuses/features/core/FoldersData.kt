@@ -87,7 +87,7 @@ object FoldersData {
     }
 
     fun noFoldersAdded(): Boolean {
-        return if (currFolderLevel < 0) true else false
+        return currFolderLevel < 0
     }
 
     fun allCurrFolderFilesTrashedOrThereAreNoFiles(): Boolean {
@@ -95,11 +95,7 @@ object FoldersData {
             return true
         }
         val filesMetadataInfo = getCurrFolderData().filesMetadatasInfo
-        return if (filesMetadataInfo.size == getCurrentFolderTrashedFilesCnt()) {
-            true
-        } else {
-            false
-        }
+        return filesMetadataInfo.size == getCurrentFolderTrashedFilesCnt()
     }
 
     @Synchronized
