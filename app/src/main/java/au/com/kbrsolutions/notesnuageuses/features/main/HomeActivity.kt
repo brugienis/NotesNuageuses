@@ -2,6 +2,7 @@ package au.com.kbrsolutions.notesnuageuses.features.main
 
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
+import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -31,6 +32,8 @@ class HomeActivity : BaseActivity() {
         SETTINGS_FRAGMENT
     }
 
+    private val TAG = "HomeActivity"
+
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
@@ -50,13 +53,16 @@ class HomeActivity : BaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.v(TAG, "onCreate start - : ")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        Log.v(TAG, "onCreate end   - : ")
     }
 
     override fun onDriveClientReady() {
+        Log.v(TAG, "onDriveClientReady start - : ")
         // do something
     }
 }
