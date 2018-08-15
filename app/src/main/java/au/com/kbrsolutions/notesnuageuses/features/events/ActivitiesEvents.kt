@@ -5,7 +5,32 @@ import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import com.google.android.gms.drive.DriveId
 import java.util.*
 
-class ActivitiesEvents {
+class ActivitiesEvents(
+        var request: HomeEvents,
+        var msgContents: String?,
+        var textContents: String?,
+        var bitmapContents: Bitmap?,
+        var decryptedContentsBytes: ByteArray?,
+        var fileItemId: Long?,
+        var setSelectedFileDriveId: DriveId?,
+        var isFolder: Boolean?,
+        var mimeType: String?,
+        var isEncryptedFile: Boolean?,
+        var isTrashed: Boolean?,
+        var passwords: Array<String>?,
+        var showLockTime: Boolean?,
+        var encryptPassword: String?,
+        var folderLevel: Int?,
+        var idxInTheFolderFilesList: Int?,
+        var parentFileName: String?,
+        var fileName: String?,
+        var newFileName: String?,
+        var currFolderDriveId: DriveId?,
+        var createDt: Date?,
+        var updateDt: Date?,
+        var maxContinuesIncorrectPassword: Int?,
+        var lockMillis: Int?,
+        var foldersAddData: FolderData?) {
 
     enum class HomeEvents {
         CONNECTED_TO_GOOGLE_DRIVE,
@@ -31,7 +56,6 @@ class ActivitiesEvents {
         RENAME_FILE_START,
         RENAME_FILE_FINISHED,
         RENAME_FILE_PROBLEMS,
-        //		SAVE_NOTE_OPTIONS,
         CREATE_PHOTO_NOTE,
         FOLDER_DATA_RETRIEVED,
         FOLDER_DATA_RETRIEVE_PROBLEM,
@@ -47,146 +71,8 @@ class ActivitiesEvents {
         TRASH_FILE_FINISHED, TRASH_FILE_PROBLEMS, DELETE_FILE_PROBLEMS, DELETE_FILE_FINISHED, DELETE_FILE, DELETE_FILE_START
     }
 
-    var request: HomeEvents
-    var msg: String
-    var textContents: String
-    var bitmapContents: Bitmap
-    var decryptedContentsBytes: ByteArray
-    var fileItemId: Long
-    //	public final DriveId driveId;
-    var setSelectedFileDriveId: DriveId
-    var isFolder: Boolean
-    var mimeType: String
-    var isEncryptedFile: Boolean
-    var isTrashed: Boolean
-    var passwords: Array<String>
-    var showLockTime: Boolean
-    var encryptPassword: String
-    var folderLevel: Int
-    var idxInTheFolderFilesList: Int
-    var parentFileName: String
-    var fileName: String
-    var newFileName: String
-    var currFolderDriveId: DriveId
-    var createDt: Date
-    var updateDt: Date
-    var maxContinuesIncorrectPassword: Int
-    var lockMillis: Int
-    var foldersAddData: FolderData
 
-    private fun ActivitiesEvents(
-            event: HomeEvents,
-            msg: String,
-            textContents: String,
-            bitmapContents: Bitmap,
-            decryptedContentsBytes: ByteArray,
-            fileItemId: Long,
-            setSelectedFileDriveId: DriveId,
-            isFolder: Boolean,
-            mimeType: String,
-            isEncryptedFile: Boolean,
-            isTrashed: Boolean,
-            passwords: Array<String>,
-            showLockTime: Boolean,
-            encryptPassword: String,
-            folderLevel: Int,
-            idxInTheFolderFilesList: Int,
-            parentFileName: String,
-            fileName: String,
-            newFileName: String,
-            currFolderDriveId: DriveId,
-            createDate: Date,
-            updateDate: Date,
-            maxContinuesIncorrectPassword: Int,
-            lockMillis: Int,
-            foldersAddData: FolderData): ??? {
-        this.request = event
-        this.msg = msg
-        this.textContents = textContents
-        this.bitmapContents = bitmapContents
-        this.decryptedContentsBytes = decryptedContentsBytes
-        this.fileItemId = fileItemId
-        this.setSelectedFileDriveId = setSelectedFileDriveId
-        this.isFolder = isFolder
-        this.mimeType = mimeType
-        this.folderLevel = folderLevel
-        this.isEncryptedFile = isEncryptedFile
-        this.isTrashed = isTrashed
-        this.passwords = passwords
-        this.showLockTime = showLockTime
-        this.encryptPassword = encryptPassword
-        this.idxInTheFolderFilesList = idxInTheFolderFilesList
-        this.parentFileName = parentFileName
-        this.fileName = fileName
-        this.newFileName = newFileName
-        this.currFolderDriveId = currFolderDriveId
-        this.createDt = createDate
-        this.updateDt = updateDate
-        this.maxContinuesIncorrectPassword = maxContinuesIncorrectPassword
-        this.lockMillis = lockMillis
-        this.foldersAddData = foldersAddData
-
-    }
-
-//    fun getRequest(): HomeEvents {
-//        return request
-//    }
-//
-//    fun getMsgContents(): String {
-//        return msg
-//    }
-//
-//    fun getBitmapContents(): Bitmap {
-//        return bitmapContents
-//    }
-//
-//    fun getFileItemId(): Long {
-//        return fileItemId
-//    }
-//
-//    fun getSelectedFileDriveId(): DriveId {
-//        return setSelectedFileDriveId
-//    }
-//
-//    fun isFolder(): Boolean {
-//        return isFolder
-//    }
-//
-//    fun getMimeType(): String {
-//        return mimeType
-//    }
-//
-//    fun isEncryptedFile(): Boolean {
-//        return isEncryptedFile
-//    }
-//
-//    fun getFolderLevel(): Int {
-//        return folderLevel
-//    }
-//
-//    fun getIdxInTheFolderFilesList(): Int {
-//        return idxInTheFolderFilesList
-//    }
-//
-//    fun getFileName(): String {
-//        return fileName
-//    }
-//
-//    fun getNewFileName(): String {
-//        return newFileName
-//    }
-//
-//    fun getCurrFolderDriveId(): DriveId {
-//        return currFolderDriveId
-//    }
-//
-//    fun getEncryptPassword(): String {
-//        return encryptPassword
-//    }
-//
-//    fun getFoldersAddData(): FolderData {
-//        return foldersAddData
-//    }
+//    private fun ActivitiesEvents(
 
     class Builder(private var request: HomeEvents) {
         private var msgContents: String? = null
@@ -214,128 +100,61 @@ class ActivitiesEvents {
         private var lockMillis: Int = 0
         private var foldersAddData: FolderData? = null
 
-        fun setMsgContents(msgContents: String): Builder {
-            this.msgContents = msgContents
-            return this
-        }
+        fun msgContents(msgContents: String) = apply { this.msgContents = msgContents }
 
-        fun setTextContents(textContents: String): Builder {
-            this.textContents = textContents
-            return this
-        }
+        fun textContents(textContents: String) = apply { this.textContents = textContents }
 
-        fun setBitmapContents(bitmapContents: Bitmap): Builder {
-            this.bitmapContents = bitmapContents
-            return this
-        }
+        fun bitmapContents(bitmapContents: Bitmap) = apply { this.bitmapContents = bitmapContents }
 
-        fun setDecryptedContentsBytes(decryptedContentsBytes: ByteArray): Builder {
-            this.decryptedContentsBytes = decryptedContentsBytes
-            return this
-        }
+        fun decryptedContentsBytes(decryptedContentsBytes: ByteArray) =
+                apply { this.decryptedContentsBytes = decryptedContentsBytes }
 
-        fun setFileItemId(fileItemId: Long): Builder {
-            this.fileItemId = fileItemId
-            return this
-        }
+        fun fileItemId(fileItemId: Long) = apply { this.fileItemId = fileItemId }
 
-        fun setSelectedFileDriveId(driveId: DriveId): Builder {
-            this.selectedFileDriveId = driveId
-            return this
-        }
+        fun selectedFileDriveId(selectedFileDriveId: DriveId) =
+                apply { this.selectedFileDriveId = selectedFileDriveId }
 
-        fun setEncryptPassword(encryptPassword: String): Builder {
-            this.encryptPassword = encryptPassword
-            return this
-        }
+        fun encryptPassword(encryptPassword: String) =
+                apply { this.encryptPassword = encryptPassword }
 
-        fun setMimeType(mimeType: String): Builder {
-            this.mimeType = mimeType
-            return this
-        }
+        fun mimeType(mimeType: String) = apply { this.mimeType = mimeType }
 
-        fun setIsEncryptedFile(isEncryptedFile: Boolean): Builder {
-            this.isEncryptedFile = isEncryptedFile
-            return this
-        }
+        fun isEncryptedFile(isEncryptedFile: Boolean) =
+                apply { this.isEncryptedFile = isEncryptedFile }
 
-        fun setIsTrashed(isTrashed: Boolean): Builder {
-            this.isTrashed = isTrashed
-            return this
-        }
+        fun isTrashed(isTrashed: Boolean) = apply { this.isTrashed = isTrashed }
 
-        fun setPasswords(passwords: Array<String>): Builder {
-            this.passwords = passwords
-            return this
-        }
+        fun passwords(passwords: Array<String>) = apply { this.passwords = passwords }
 
-        fun setShowLockTime(showLockTime: Boolean): Builder {
-            this.showLockTime = showLockTime
-            return this
-        }
+        fun showLockTime(showLockTime: Boolean) = apply { this.showLockTime = showLockTime }
 
-        fun setIsFolder(isFolder: Boolean): Builder {
-            this.isFolder = isFolder
-            return this
-        }
+        fun isFolder(isFolder: Boolean) = apply { this.isFolder = isFolder }
 
-        fun setCurrFolderLevel(folderLevel: Int): Builder {
-            this.folderLevel = folderLevel
-            return this
-        }
+        fun folderLevel(folderLevel: Int) = apply { this.folderLevel = folderLevel }
 
-        fun setIdxInTheFolderFilesList(idxInTheFolderFilesList: Int): Builder {
-            this.idxInTheFolderFilesList = idxInTheFolderFilesList
-            return this
-        }
+        fun idxInTheFolderFilesList(idxInTheFolderFilesList: Int) =
+                apply { this.idxInTheFolderFilesList = idxInTheFolderFilesList }
 
-        fun setParentFileName(parentFileName: String): Builder {
-            this.parentFileName = parentFileName
-            return this
-        }
+        fun parentFileName(parentFileName: String) = apply { this.parentFileName = parentFileName }
 
-        fun setFileName(currFileName: String): Builder {
-            this.fileName = currFileName
-            return this
-        }
+        fun newFileName(newFileName: String) = apply { this.newFileName = newFileName }
 
-        fun setNewFileName(newFileName: String): Builder {
-            this.newFileName = newFileName
-            return this
-        }
+        fun currFolderDriveId(currFolderDriveId: DriveId) =
+                apply { this.currFolderDriveId = currFolderDriveId }
 
-        fun setCurrFolderDriveId(currFolderDriveId: DriveId): Builder {
-            this.currFolderDriveId = currFolderDriveId
-            return this
-        }
+        fun createDate(createDate: Date) = apply { this.createDate = createDate }
 
-        fun setCreateDate(createDate: Date): Builder {
-            this.createDate = createDate
-            return this
-        }
+        fun updateDate(updateDate: Date) = apply { this.updateDate = updateDate }
 
-        fun setUpdateDate(updateDate: Date): Builder {
-            this.updateDate = updateDate
-            return this
-        }
+        fun maxContinuesIncorrectPassword(maxContinuesIncorrectPassword: Int) =
+                apply { this.maxContinuesIncorrectPassword = maxContinuesIncorrectPassword }
 
-        fun setMaxContinuesIncorrectPassword(maxContinuesIncorrectPassword: Int): Builder {
-            this.maxContinuesIncorrectPassword = maxContinuesIncorrectPassword
-            return this
-        }
+        fun lockMillis(lockMillis: Int) = apply { this.lockMillis = lockMillis }
 
-        fun setLockMillis(lockMillis: Int): Builder {
-            this.lockMillis = lockMillis
-            return this
-        }
+        fun foldersAddData(foldersAddData: FolderData) =
+                apply { this.foldersAddData = foldersAddData }
 
-        fun setFoldersAddData(foldersAddData: FolderData): Builder {
-            this.foldersAddData = foldersAddData
-            return this
-        }
-
-        fun build(): ActivitiesEvents {
-            return ActivitiesEvents(
+        fun build() = ActivitiesEvents(
                     request,
                     msgContents,
                     textContents,
@@ -363,4 +182,4 @@ class ActivitiesEvents {
                     foldersAddData)
         }
     }
-}
+

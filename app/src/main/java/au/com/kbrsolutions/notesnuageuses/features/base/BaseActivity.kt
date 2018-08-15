@@ -227,7 +227,7 @@ abstract class BaseActivity: AppCompatActivity() {
                     } catch (e: ExecutionException) {
                         submittedFutures.remove(cancellableFuture)
                         eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents.SHOW_MESSAGE)
-                                .setMsgContents("Problems with access to Google Drive - try again")
+                                .msgContents("Problems with access to Google Drive - try again")
                                 .build())
                     }
 
@@ -281,7 +281,7 @@ abstract class BaseActivity: AppCompatActivity() {
                         cancellableFuture!!.get()
                     } catch (e: ExecutionException) {
                         eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents.SHOW_MESSAGE)
-                                .setMsgContents("Problems with access to Google Drive - try again")
+                                .msgContents("Problems with access to Google Drive - try again")
                                 .build())
                     }
 

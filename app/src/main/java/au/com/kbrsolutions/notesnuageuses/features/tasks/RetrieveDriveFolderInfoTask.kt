@@ -45,12 +45,12 @@ data class RetrieveDriveFolderInfoTask(
             val foldersAddData: FolderData = getFolderFilesList(driveResourceClient, mSelectedFolderDriveId)
             eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents
                     .FOLDER_DATA_RETRIEVED)
-                    .setFoldersAddData(foldersAddData)
+                    .foldersAddData(foldersAddData)
                     .build())
         } catch (e: Exception) {
             eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents
                     .FOLDER_DATA_RETRIEVE_PROBLEM)
-                    .setMsgContents(activity!!
+                    .msgContents(activity!!
                             .resources
                             .getString(
                                     R.string.base_handler_retrieve_folder_problem,
