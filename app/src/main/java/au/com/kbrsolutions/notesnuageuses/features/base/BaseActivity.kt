@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
 import au.com.kbrsolutions.notesnuageuses.R
+import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
+import au.com.kbrsolutions.notesnuageuses.features.events.ActivitiesEvents
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -20,6 +22,10 @@ import com.google.android.gms.drive.query.SearchableField
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.TaskCompletionSource
+import org.greenrobot.eventbus.EventBus
+import java.util.*
+import java.util.concurrent.*
+import java.util.concurrent.atomic.AtomicInteger
 
 
 abstract class BaseActivity: AppCompatActivity() {
@@ -44,12 +50,15 @@ abstract class BaseActivity: AppCompatActivity() {
     /**
      * Handle access to Drive resources/files.
      */
-    private var mDriveResourceClient: DriveResourceClient? = null
+    lateinit var mDriveResourceClient: DriveResourceClient
 
     /**
      * Tracks completion of the drive picker
      */
     private var mOpenItemTaskSource: TaskCompletionSource<DriveId>? = null
+
+    var foldersData = FoldersData
+    private var eventBus: EventBus? = null
 
     override fun onStart() {
         super.onStart()
@@ -184,5 +193,108 @@ abstract class BaseActivity: AppCompatActivity() {
 
     protected fun getDriveResourceClient(): DriveResourceClient? {
         return mDriveResourceClient
+    }
+
+    protected inner class HandleNonCancellableFuturesCallable(mExecutorService: ExecutorService) : Callable<String> {
+
+        private val completionService: CompletionService<String>
+        private var cancellableFuture: Future<String>? = null
+        private var stopProcessing = false
+        private val submittedFutures = ArrayList<Future<String>>()
+        private val executingTaksCnt = AtomicInteger()
+
+        init {
+            completionService = ExecutorCompletionService(mExecutorService)
+            executingTaksCnt.set(0)
+        }
+
+        fun submitCallable(callable: Callable<String>) {
+            //			if (stopProcessing) {
+            //				Log.i(TAG, "###HandleNonCancellableFuturesCallable.submitCallable - stopProcessing is true - callable rejected");
+            //			}
+            submittedFutures.add(completionService.submit(callable))
+            executingTaksCnt.addAndGet(1)
+        }
+
+        override fun call(): String? {
+            try {
+                while (!stopProcessing || executingTaksCnt.get() > 0) {
+                    try {
+                        cancellableFuture = completionService.take()
+                        executingTaksCnt.addAndGet(-1)
+                        cancellableFuture!!.get()
+                        submittedFutures.remove(cancellableFuture!!)
+                    } catch (e: ExecutionException) {
+                        submittedFutures.remove(cancellableFuture)
+                        eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents.SHOW_MESSAGE)
+                                .setMsgContents("Problems with access to Google Drive - try again")
+                                .build())
+                    }
+
+                }
+            } catch (e: InterruptedException) {
+                stopProcessing = true
+                for (submittedFuture in submittedFutures) {
+                    submittedFuture.cancel(true)
+                    executingTaksCnt.addAndGet(-1)
+                }
+            }
+
+            return null
+        }
+    }
+
+    private val cancellableExecutingTaksCnt = AtomicInteger()
+
+    protected inner class HandleCancellableFuturesCallable(mExecutorService: ExecutorService) : Callable<String> {
+
+        private val completionService: CompletionService<String>
+        private var cancellableFuture: Future<String>? = null
+        private var currExecutingFuture: Future<String>? = null
+        private var stopProcessing = false
+
+        init {
+            completionService = ExecutorCompletionService(mExecutorService)
+            cancellableExecutingTaksCnt.set(0)
+        }
+
+        fun submitCallable(callable: Callable<String>) {
+            cancelCurrFuture()
+            currExecutingFuture = completionService.submit(callable)
+            cancellableExecutingTaksCnt.addAndGet(1)
+        }
+
+        protected fun cancelCurrFuture() {
+            if (currExecutingFuture != null) {
+                if (currExecutingFuture!!.cancel(true)) {
+                    cancellableExecutingTaksCnt.addAndGet(-1)
+                }
+            }
+        }
+
+        override fun call(): String? {
+            try {
+                while (!stopProcessing) {
+                    cancellableFuture = completionService.take()
+                    // TOP: should add finally to cancel? see book
+                    try {
+                        cancellableFuture!!.get()
+                    } catch (e: ExecutionException) {
+                        eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents.SHOW_MESSAGE)
+                                .setMsgContents("Problems with access to Google Drive - try again")
+                                .build())
+                    }
+
+                    cancellableExecutingTaksCnt.addAndGet(-1)
+                }
+            } catch (e: InterruptedException) {
+                cancelCurrFuture()
+                stopProcessing = true
+                // TODO Auto-generated catch block
+                //				e.printStackTrace();
+            }
+
+            return null
+        }
     }
 }

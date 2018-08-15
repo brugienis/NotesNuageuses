@@ -1,0 +1,25 @@
+project.ext {
+
+//    buildToolsVersion = '26.0.2'
+    buildToolsVersion = '27.0.3'
+
+    compileSdk = 27
+    targetSdk = 27
+    minSdk = 16
+
+    supportLibraryVersion = '27.1.1'
+//    playServicesVersion = '10.0.1'
+//    playServicesVersion = '12.0.1'
+    playServicesVersion = '15.0.1'
+    supportMultidexVersion = '1.0.3'
+    supportTestVersion = '0.5'
+//     below version makes Espresso tests to fail
+//    supportTestVersion = '1.0.1'
+    jUnit = '4.12'
+    supportJodaTimeVersion = '2.9.4'
+    supportEventBusVersion = '3.0.0'
+
+    // below not referenced
+    firebaseVersion = '11.6.2'
+    architectureVersion = '1.0.0'
+}

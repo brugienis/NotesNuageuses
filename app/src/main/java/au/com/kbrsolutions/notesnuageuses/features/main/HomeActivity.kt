@@ -5,7 +5,13 @@ import android.support.design.widget.BottomNavigationView
 import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.base.BaseActivity
+import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
+import au.com.kbrsolutions.notesnuageuses.features.tasks.RetrieveDriveFolderInfoTask
 import kotlinx.android.synthetic.main.activity_main.*
+import org.greenrobot.eventbus.EventBus
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
 
 //          cd /Users/bohdan/AndroidStudioProjects/NotesNuageuses
 //          git push -u origin
@@ -13,6 +19,21 @@ import kotlinx.android.synthetic.main.activity_main.*
 //          https://developers.google.com/drive/android/examples/
 
 class HomeActivity : BaseActivity() {
+
+    private lateinit var eventBus: EventBus
+    private val mTestMode: Boolean = false
+    private var handleCancellableFuturesCallable: HandleCancellableFuturesCallable? = null
+    private var cancellableFuture: Future<String>? = null
+    private var handleNonCancellableFuturesCallable: HandleNonCancellableFuturesCallable? = null
+    private var nonCancellableFuture: Future<String>? = null
+    private var mExecutorService: ExecutorService? = null
+
+
+    var fragmentsStack = FragmentsStack
+
+    init {
+        fragmentsStack.init(mTestMode);
+    }
 
     enum class FragmentsEnum {
         LOG_IN_FRAGMENT,
@@ -58,11 +79,32 @@ class HomeActivity : BaseActivity() {
         setContentView(R.layout.activity_main)
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+
+        eventBus = EventBus.getDefault()
+        eventBus.register(this)
+        //        asyncEventBus = EventBus.getDefault();
+        //        asyncEventBus.register(this);
+        mExecutorService = Executors.newCachedThreadPool()
         Log.v(TAG, "onCreate end   - : ")
     }
 
     override fun onDriveClientReady() {
         Log.v(TAG, "onDriveClientReady start - : ")
-        // do something
+        val folderFramentsCnt = fragmentsStack.getFolderFragmentCount()
+        if (folderFramentsCnt == 0 || foldersData.getCurrFolderLevel() !== folderFramentsCnt - 1) {
+            fragmentsStack.init(mTestMode)
+//			isNotConnectedToGoogleDrive("onConnected");
+            handleCancellableFuturesCallable!!.submitCallable(RetrieveDriveFolderInfoTask.Builder()
+                    .activity(this)
+                    .eventBus(eventBus)
+                    .driveResourceClient(mDriveResourceClient)
+                    .selectedFolderTitle(getString(R.string.app_root_folder_name))
+                    .parentFolderLevel(-1)
+//                    .parentFolderDriveId(null)
+//                    .selectedFolderDriveId(null)
+//                    .currentFolderDriveId(null)
+                    .foldersData(foldersData)
+                    .build())
+        }
     }
 }

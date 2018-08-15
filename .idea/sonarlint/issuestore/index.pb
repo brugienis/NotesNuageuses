@@ -29,3 +29,13 @@ Tapp/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/scrach/pad/DelAnyTi
 _app/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/features/core/FragmentsStackTest.kt,a/5/a5f72b02da98db5221fa251a4e2213e81e79703b
 w
 Gapp/src/test/java/au/com/kbrsolutions/notesnuageuses/ExampleUnitTest.kt,9/e/9e55c7d9553fa7bf6b27dfcbc9fb2b9829825179
+’
+bapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/RetrieveDriveFolderInfoTask.kt,e/8/e834c89036271478827e0b4c52d158ddbf0af959
+@
+constants.gradle,2/5/25ec1ae6b86fea2205909135a091bdc27d028595
+ˆ
+Xapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/events/ActivitiesEvents.kt,c/c/ccc779f159b148622cd2ca0ec5fb0f657ed1ec92
+S
+#app/src/main/res/values/strings.xml,d/2/d2281fbb3027de2722081a53408dd77628bf080e
+~
+Napp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/Address.kt,6/9/6922c1435661fcedcf177ce52d402255f4e9885f
