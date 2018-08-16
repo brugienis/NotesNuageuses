@@ -61,6 +61,7 @@ abstract class BaseActivity: AppCompatActivity() {
     private var eventBus: EventBus? = null
 
     override fun onStart() {
+        Log.v(TAG, "onStart - ");
         super.onStart()
         signIn()
     }
@@ -83,6 +84,7 @@ abstract class BaseActivity: AppCompatActivity() {
 
                 val getAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data)
                 if (getAccountTask.isSuccessful()) {
+                    Log.e(TAG, "Sign-in OK.")
                     initializeDriveClient(getAccountTask.getResult())
                 } else {
                     Log.e(TAG, "Sign-in failed.")
@@ -103,11 +105,12 @@ abstract class BaseActivity: AppCompatActivity() {
     /**
      * Starts the sign-in process and initializes the Drive client.
      */
-    protected fun signIn() {
+    private fun signIn() {
         val requiredScopes = mutableSetOf<Scope>()
         requiredScopes.add(Drive.SCOPE_FILE)
         requiredScopes.add(Drive.SCOPE_APPFOLDER)
         val signInAccount = GoogleSignIn.getLastSignedInAccount(this)
+        Log.v(TAG, "signIn - signInAccount: $signInAccount")
         if (signInAccount != null && signInAccount!!.getGrantedScopes().containsAll(requiredScopes)) {
             initializeDriveClient(signInAccount)
         } else {
@@ -115,8 +118,11 @@ abstract class BaseActivity: AppCompatActivity() {
                     .requestScopes(Drive.SCOPE_FILE)
                     .requestScopes(Drive.SCOPE_APPFOLDER)
                     .build()
+        Log.v(TAG, "signIn - before GoogleSignIn.getClient")
             val googleSignInClient = GoogleSignIn.getClient(this, signInOptions)
+        Log.v(TAG, "signIn - after googleSignInClient: $googleSignInClient")
             startActivityForResult(googleSignInClient.getSignInIntent(), REQUEST_CODE_SIGN_IN)
+        Log.v(TAG, "signIn - after startActivityForResult")
         }
     }
 

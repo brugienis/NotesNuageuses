@@ -43,6 +43,7 @@ data class RetrieveDriveFolderInfoTask(
             //            FolderData foldersAddData = null;
             //            FolderData foldersAddData = getFolderFilesListOld(selectedFolderDriveId);
             val foldersAddData: FolderData = getFolderFilesList(driveResourceClient, mSelectedFolderDriveId)
+
             eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents
                     .FOLDER_DATA_RETRIEVED)
                     .foldersAddData(foldersAddData)
@@ -65,6 +66,7 @@ data class RetrieveDriveFolderInfoTask(
         // https://developers.google.com/android/guides/tasks
         val selectedDriveFolder: DriveFolder
         lateinit var foldersAddData: FolderData
+        Log.v(TAG, " - mDriveResourceClient: $mDriveResourceClient")
         try {
             selectedDriveFolder = if (selectedFolderDriveId == null) {
                 //                Task<DriveFolder> appFolderTask = driveResourceClient.getAppFolder();

@@ -27,9 +27,9 @@ class HomeActivity : BaseActivity() {
     lateinit var eventBus: EventBus
     private val mTestMode: Boolean = false
     private var handleCancellableFuturesCallable: HandleCancellableFuturesCallable? = null
-    private var cancellableFuture: Future<String>? = null
+    private var mCancellableFuture: Future<String>? = null
     private var handleNonCancellableFuturesCallable: HandleNonCancellableFuturesCallable? = null
-    private var nonCancellableFuture: Future<String>? = null
+    private var mNonCancellableFuture: Future<String>? = null
     private var mExecutorService: ExecutorService? = null
 
 
@@ -91,11 +91,13 @@ class HomeActivity : BaseActivity() {
         //        asyncEventBus.register(this);
         Log.v(TAG, "onCreate after eventBus")
         mExecutorService = Executors.newCachedThreadPool()
+        Log.v(TAG, "onCreate - mExecutorService: $mExecutorService")
         Log.v(TAG, "onCreate end   - : ")
     }
 
     override fun onDriveClientReady() {
         Log.v(TAG, "onDriveClientReady start - : ")
+        startFuturesHandlers("onDriveClientReady")
         val folderFramentsCnt = fragmentsStack.getFolderFragmentCount()
         if (folderFramentsCnt == 0 || foldersData.getCurrFolderLevel() !== folderFramentsCnt - 1) {
             fragmentsStack.init(mTestMode)
@@ -113,7 +115,6 @@ class HomeActivity : BaseActivity() {
                     .build())
         }
     }
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: ActivitiesEvents) {
@@ -238,13 +239,55 @@ class HomeActivity : BaseActivity() {
     }
 
     private fun startFuturesHandlers(source: String) {
-        if (cancellableFuture == null) {
-            handleCancellableFuturesCallable = HandleCancellableFuturesCallable(mExecutorService)
-            cancellableFuture = mExecutorService.submit(handleCancellableFuturesCallable)
+        Log.v(TAG, "startFuturesHandlers - source: $source mExecutorService: $mExecutorService")
+        if (mCancellableFuture == null) {
+            handleCancellableFuturesCallable = HandleCancellableFuturesCallable(mExecutorService!!)
+            mCancellableFuture = mExecutorService!!.submit(handleCancellableFuturesCallable)
         }
-        if (nonCancellableFuture == null) {
-            handleNonCancellableFuturesCallable = HandleNonCancellableFuturesCallable(mExecutorService)
-            nonCancellableFuture = mExecutorService.submit(handleNonCancellableFuturesCallable)
+        if (mNonCancellableFuture == null) {
+            handleNonCancellableFuturesCallable = HandleNonCancellableFuturesCallable(mExecutorService!!)
+            mNonCancellableFuture = mExecutorService!!.submit(handleNonCancellableFuturesCallable)
         }
+    }
+
+    private fun stopFuturesHandlers() {
+        if (mCancellableFuture != null) {
+            mCancellableFuture!!.cancel(true)
+            mCancellableFuture = null
+        }
+        if (mNonCancellableFuture != null) {
+            mNonCancellableFuture!!.cancel(true)
+            mNonCancellableFuture = null
+        }
+
+    }
+//        fixme: method below does not exists - it should be part of Activity
+//    if (isFinishing()) {
+        // A_MUST: any other adapters to clear?
+//        actvityListAdapter.clear()
+//        stopFuturesHandlers()
+//        mExecutorService.shutdown()
+//    }
+
+    //    todo: check below
+    override fun onResume() {
+        super.onResume()
+//        Log.v(TAG, "onResume - mExecutorService: $mExecutorService")
+//        isAppFinishing = false;
+//        isInForeground = true;
+//        startFuturesHandlers("onResume");
+//        connectToGoogleDrive("onResume");
+//        getPrefs().registerOnSharedPreferenceChangeListener(mToastingPrefListener);
+    }
+
+//    todo: check below
+    override fun onDestroy() {
+//        activityLogFragment.setListAdapter(null)
+//        if (folderFragment != null) {
+//            folderFragment.setListAdapter(null)
+//        }
+        stopFuturesHandlers()
+        mExecutorService!!.shutdown()
+        super.onDestroy()
     }
 }
