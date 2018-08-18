@@ -41,6 +41,9 @@ class EmptyFolderFragment : Fragment() {
 
             Log.v(TAG, "onCreateView - emptyFragmentInfoId: $emptyFragmentInfoId xemptyFragmentInfoId: $xemptyFragmentInfoId")
 
+            Log.v(TAG, "EmptyFolderFragment.onCreateView - trashedFilesCnt: ${trashedFilesCnt} ")
+
+//            todo: investigate why 'synthetic' emptyFragmentInfoId is null
             emptyFragmentInfoId?.text = resources.getString(R.string.empty_folder, trashedFilesCnt)
             xemptyFragmentInfoId?.text = resources.getString(R.string.empty_folder, trashedFilesCnt)
 //        view.emptyFragmentInfoId = resources.getString(R.string.empty_folder, trashedFilesCnt)

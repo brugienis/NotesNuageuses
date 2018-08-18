@@ -119,7 +119,7 @@ abstract class BaseActivity: AppCompatActivity() {
         requiredScopes.add(Drive.SCOPE_APPFOLDER)
         val signInAccount = GoogleSignIn.getLastSignedInAccount(this)
         Log.v(TAG, "signIn - signInAccount: $signInAccount")
-        if (signInAccount != null && signInAccount!!.getGrantedScopes().containsAll(requiredScopes)) {
+        if (signInAccount != null && signInAccount!!.grantedScopes.containsAll(requiredScopes)) {
             initializeDriveClient(signInAccount)
         } else {
             val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -129,7 +129,7 @@ abstract class BaseActivity: AppCompatActivity() {
         Log.v(TAG, "signIn - before GoogleSignIn.getClient")
             val googleSignInClient = GoogleSignIn.getClient(this, signInOptions)
         Log.v(TAG, "signIn - after googleSignInClient: $googleSignInClient")
-            startActivityForResult(googleSignInClient.getSignInIntent(), REQUEST_CODE_SIGN_IN)
+            startActivityForResult(googleSignInClient.signInIntent, REQUEST_CODE_SIGN_IN)
         Log.v(TAG, "signIn - after startActivityForResult")
         }
     }
