@@ -63,3 +63,7 @@ g
 7app/src/main/res/layout/fragment_list_screen_layout.xml,5/0/50561dc58d997998efcadf18645317e1957a2f49
 ‘
 aapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/adapters/FolderArrayAdapter.kt,d/4/d4e9a9e74ac8fd42693c97ba1d1d01b862803ce1
+Ž
+^app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/FolderFragment.kt,f/8/f82896e490fd9c67e4f50b9839f51ef0a6cff05c
+’
+bapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/DelAnyTimeFragment.kt,9/2/92ea97325af307f90604ab5f33fc254d7552db12

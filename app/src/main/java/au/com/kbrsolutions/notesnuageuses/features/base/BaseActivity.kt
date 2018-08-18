@@ -69,7 +69,6 @@ abstract class BaseActivity: AppCompatActivity() {
     }
 
     override fun onStart() {
-        Log.v(TAG, "onStart - ");
         super.onStart()
         signIn()
     }
@@ -118,19 +117,15 @@ abstract class BaseActivity: AppCompatActivity() {
         requiredScopes.add(Drive.SCOPE_FILE)
         requiredScopes.add(Drive.SCOPE_APPFOLDER)
         val signInAccount = GoogleSignIn.getLastSignedInAccount(this)
-        Log.v(TAG, "signIn - signInAccount: $signInAccount")
-        if (signInAccount != null && signInAccount!!.grantedScopes.containsAll(requiredScopes)) {
+        if (signInAccount != null && signInAccount.grantedScopes.containsAll(requiredScopes)) {
             initializeDriveClient(signInAccount)
         } else {
             val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestScopes(Drive.SCOPE_FILE)
                     .requestScopes(Drive.SCOPE_APPFOLDER)
                     .build()
-        Log.v(TAG, "signIn - before GoogleSignIn.getClient")
             val googleSignInClient = GoogleSignIn.getClient(this, signInOptions)
-        Log.v(TAG, "signIn - after googleSignInClient: $googleSignInClient")
             startActivityForResult(googleSignInClient.signInIntent, REQUEST_CODE_SIGN_IN)
-        Log.v(TAG, "signIn - after startActivityForResult")
         }
     }
 
@@ -183,10 +178,10 @@ abstract class BaseActivity: AppCompatActivity() {
                 .newOpenFileActivityIntentSender(openOptions)
                 .continueWith({ task: Task<IntentSender> ->
                     startIntentSenderForResult(
-                            task.getResult(), REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0)
+                            task.result, REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0)
                     null
                 } as Continuation<IntentSender, Void>)
-        return mOpenItemTaskSource!!.getTask()
+        return mOpenItemTaskSource!!.task
     }
 
     /**
@@ -215,27 +210,24 @@ abstract class BaseActivity: AppCompatActivity() {
         private var cancellableFuture: Future<String>? = null
         private var stopProcessing = false
         private val submittedFutures = ArrayList<Future<String>>()
-        private val executingTaksCnt = AtomicInteger()
+        private val executingTaskCnt = AtomicInteger()
 
         init {
             completionService = ExecutorCompletionService(mExecutorService)
-            executingTaksCnt.set(0)
+            executingTaskCnt.set(0)
         }
 
         fun submitCallable(callable: Callable<String>) {
-            //			if (stopProcessing) {
-            //				Log.i(TAG, "###HandleNonCancellableFuturesCallable.submitCallable - stopProcessing is true - callable rejected");
-            //			}
             submittedFutures.add(completionService.submit(callable))
-            executingTaksCnt.addAndGet(1)
+            executingTaskCnt.addAndGet(1)
         }
 
         override fun call(): String? {
             try {
-                while (!stopProcessing || executingTaksCnt.get() > 0) {
+                while (!stopProcessing || executingTaskCnt.get() > 0) {
                     try {
                         cancellableFuture = completionService.take()
-                        executingTaksCnt.addAndGet(-1)
+                        executingTaskCnt.addAndGet(-1)
                         cancellableFuture!!.get()
                         submittedFutures.remove(cancellableFuture!!)
                     } catch (e: ExecutionException) {
@@ -250,7 +242,7 @@ abstract class BaseActivity: AppCompatActivity() {
                 stopProcessing = true
                 for (submittedFuture in submittedFutures) {
                     submittedFuture.cancel(true)
-                    executingTaksCnt.addAndGet(-1)
+                    executingTaskCnt.addAndGet(-1)
                 }
             }
 

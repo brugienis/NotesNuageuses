@@ -63,6 +63,8 @@ data class RetrieveDriveFolderInfoTask(
 
     private fun getFolderFilesList(mDriveResourceClient: DriveResourceClient?, selectedFolderDriveId: DriveId?): FolderData {
         // https://developers.google.com/android/guides/tasks
+        Log.v(TAG, "RetrieveDriveFolderInfoTask.getFolderFilesList - selectedFolderDriveId: ${selectedFolderDriveId} ")
+        Log.v("RetrieveDriveFolderInfoTask", "getFolderFilesList - mDriveResourceClient: ${mDriveResourceClient} ")
         val selectedDriveFolder: DriveFolder
         lateinit var foldersAddData: FolderData
         Log.v(TAG, " - mDriveResourceClient: $mDriveResourceClient")

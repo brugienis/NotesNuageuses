@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.fragment_empty_folder.*
 
 class EmptyFolderFragment : Fragment() {
 
-    private var trashedFilesCnt: Int = 0
+    private var mTrashedFilesCnt: Int = 0
     private var mContext: Context? = null
 
     private val TAG = "EmptyFolderFragment"
@@ -30,24 +30,21 @@ class EmptyFolderFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
         Log.v(TAG, "onCreateView - start");
         val rootView = inflater.inflate(R.layout.fragment_empty_folder, container, false)
-        Log.v(TAG, "onCreateView - rootView: $rootView")
 
         var xemptyFragmentInfoId = rootView.findViewById(R.id.emptyFragmentInfoId) as TextView
 //            val xemptyFragmentInfoId = view.emptyFragmentInfoId
 
-            Log.v(TAG, "onCreateView - emptyFragmentInfoId: $emptyFragmentInfoId xemptyFragmentInfoId: $xemptyFragmentInfoId")
-
-            Log.v(TAG, "EmptyFolderFragment.onCreateView - trashedFilesCnt: ${trashedFilesCnt} ")
+        Log.v(TAG, "onCreateView - emptyFragmentInfoId: $emptyFragmentInfoId xemptyFragmentInfoId: $xemptyFragmentInfoId")
 
 //            todo: investigate why 'synthetic' emptyFragmentInfoId is null
-            emptyFragmentInfoId?.text = resources.getString(R.string.empty_folder, trashedFilesCnt)
-            xemptyFragmentInfoId?.text = resources.getString(R.string.empty_folder, trashedFilesCnt)
-//        view.emptyFragmentInfoId = resources.getString(R.string.empty_folder, trashedFilesCnt)
-            return rootView
+        emptyFragmentInfoId?.text = resources.getString(R.string.empty_folder, mTrashedFilesCnt)
+        xemptyFragmentInfoId?.text = resources.getString(R.string.empty_folder, mTrashedFilesCnt)
+//        view.emptyFragmentInfoId = resources.getString(R.string.empty_folder, mTrashedFilesCnt)
+        return rootView
     }
 
 
@@ -73,18 +70,18 @@ class EmptyFolderFragment : Fragment() {
 //            menuItem.isEnabled = true
 //        } else
 //        {
-            menuItem = menu.findItem(R.id.menuCreateFile)
-            menuItem.isVisible = false
-            menuItem.isEnabled = false
-            menuItem = menu.findItem(R.id.menuRefresh)
-            menuItem.isVisible = false
-            menuItem.isEnabled = false
+        menuItem = menu.findItem(R.id.menuCreateFile)
+        menuItem.isVisible = false
+        menuItem.isEnabled = false
+        menuItem = menu.findItem(R.id.menuRefresh)
+        menuItem.isVisible = false
+        menuItem.isEnabled = false
 //        }
         return
     }
 
     fun setTrashedFilesCnt(trashedFilesCnt: Int) {
-        this.trashedFilesCnt = trashedFilesCnt
+        this.mTrashedFilesCnt = trashedFilesCnt
     }
 
     companion object {

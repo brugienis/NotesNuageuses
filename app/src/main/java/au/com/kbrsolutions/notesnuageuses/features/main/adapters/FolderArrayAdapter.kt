@@ -15,8 +15,6 @@ import au.com.kbrsolutions.notesnuageuses.features.base.BaseActivity
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FolderFragment
 import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 class FolderArrayAdapter<T>(
         private val mActivity: HomeActivity,
@@ -31,7 +29,7 @@ class FolderArrayAdapter<T>(
     private val folderOnClickListener: OnClickListener
     //	@SuppressLint("SimpleDateFormat")
     //	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss");
-    private val dateFormat = SimpleDateFormat("yyyy-MMM.d hh:mm:ss", Locale.getDefault())
+//    private val dateFormat = SimpleDateFormat("yyyy-MMM.d hh:mm:ss", Locale.getDefault())
 
     init {
         folderOnClickListener = folderFragment
@@ -75,12 +73,10 @@ class FolderArrayAdapter<T>(
                     fileImage!!.setBackgroundColor(mActivity.getResources().getColor(R.color.view_not_in_focus))
                     //					Log.i(LOC_CAT_TAG, "getView - won't grey name/mIsTrashed: " + folderItem.fileName + "/" + folderItem.mIsTrashed);
                 }
-                if (mimeType == BaseActivity.MIME_TYPE_FOLDER) {
-                    fileImage!!.setImageResource(R.mipmap.ic_type_folder)
-                } else if (mimeType == BaseActivity.MIME_TYPE_PNG_FILE) {
-                    fileImage!!.setImageResource(R.mipmap.ic_type_image)
-                } else {
-                    fileImage!!.setImageResource(R.mipmap.ic_type_file)
+                when (mimeType) {
+                    BaseActivity.MIME_TYPE_FOLDER -> fileImage!!.setImageResource(R.mipmap.ic_type_folder)
+                    BaseActivity.MIME_TYPE_PNG_FILE -> fileImage!!.setImageResource(R.mipmap.ic_type_image)
+                    else -> fileImage!!.setImageResource(R.mipmap.ic_type_file)
                 }
             }
         } else {

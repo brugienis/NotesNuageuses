@@ -40,7 +40,7 @@ class HomeActivity : BaseActivity() {
     private var handleNonCancellableFuturesCallable: HandleNonCancellableFuturesCallable? = null
     private var mNonCancellableFuture: Future<String>? = null
     private var mExecutorService: ExecutorService? = null
-    var showTrashedFiles: Boolean = false
+    private var showTrashedFiles: Boolean = false
     private var newFragmentSet: Boolean = false
     private var currFragment: FragmentsEnum? = null
 
