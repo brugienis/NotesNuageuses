@@ -204,7 +204,8 @@ abstract class BaseActivity: AppCompatActivity() {
         return mDriveResourceClient
     }
 
-    protected inner class HandleNonCancellableFuturesCallable(mExecutorService: ExecutorService) : Callable<String> {
+    protected inner class HandleNonCancellableFuturesCallable(mExecutorService: ExecutorService)
+        : Callable<String> {
 
         private val completionService: CompletionService<String>
         private var cancellableFuture: Future<String>? = null
@@ -250,7 +251,7 @@ abstract class BaseActivity: AppCompatActivity() {
         }
     }
 
-    private val cancellableExecutingTaksCnt = AtomicInteger()
+    private val cancellableExecutingTaskCnt = AtomicInteger()
 
     protected inner class HandleCancellableFuturesCallable(mExecutorService: ExecutorService) : Callable<String> {
 
@@ -261,19 +262,19 @@ abstract class BaseActivity: AppCompatActivity() {
 
         init {
             completionService = ExecutorCompletionService(mExecutorService)
-            cancellableExecutingTaksCnt.set(0)
+            cancellableExecutingTaskCnt.set(0)
         }
 
         fun submitCallable(callable: Callable<String>) {
             cancelCurrFuture()
             currExecutingFuture = completionService.submit(callable)
-            cancellableExecutingTaksCnt.addAndGet(1)
+            cancellableExecutingTaskCnt.addAndGet(1)
         }
 
         protected fun cancelCurrFuture() {
             if (currExecutingFuture != null) {
                 if (currExecutingFuture!!.cancel(true)) {
-                    cancellableExecutingTaksCnt.addAndGet(-1)
+                    cancellableExecutingTaskCnt.addAndGet(-1)
                 }
             }
         }
@@ -291,7 +292,7 @@ abstract class BaseActivity: AppCompatActivity() {
                                 .build())
                     }
 
-                    cancellableExecutingTaksCnt.addAndGet(-1)
+                    cancellableExecutingTaskCnt.addAndGet(-1)
                 }
             } catch (e: InterruptedException) {
                 cancelCurrFuture()

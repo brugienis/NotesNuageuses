@@ -32,18 +32,16 @@ class EmptyFolderFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        Log.v(TAG, "onCreateView - start");
         val rootView = inflater.inflate(R.layout.fragment_empty_folder, container, false)
 
-        var xemptyFragmentInfoId = rootView.findViewById(R.id.emptyFragmentInfoId) as TextView
-//            val xemptyFragmentInfoId = view.emptyFragmentInfoId
-
-        Log.v(TAG, "onCreateView - emptyFragmentInfoId: $emptyFragmentInfoId xemptyFragmentInfoId: $xemptyFragmentInfoId")
-
-//            todo: investigate why 'synthetic' emptyFragmentInfoId is null
+        // fixLater: Aug 19, 2018 - investigate why 'synthetic' emptyFragmentInfoId is null
         emptyFragmentInfoId?.text = resources.getString(R.string.empty_folder, mTrashedFilesCnt)
-        xemptyFragmentInfoId?.text = resources.getString(R.string.empty_folder, mTrashedFilesCnt)
-//        view.emptyFragmentInfoId = resources.getString(R.string.empty_folder, mTrashedFilesCnt)
+
+        var emptyFragmentInfoIdTv = rootView.findViewById(R.id.emptyFragmentInfoId) as TextView
+
+        Log.v(TAG, "onCreateView - emptyFragmentInfoId: $emptyFragmentInfoId emptyFragmentInfoIdTv: $emptyFragmentInfoIdTv")
+
+        emptyFragmentInfoIdTv.text = resources.getString(R.string.empty_folder, mTrashedFilesCnt)
         return rootView
     }
 

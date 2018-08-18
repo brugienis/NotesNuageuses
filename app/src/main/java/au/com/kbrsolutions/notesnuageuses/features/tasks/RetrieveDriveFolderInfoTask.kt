@@ -40,8 +40,6 @@ data class RetrieveDriveFolderInfoTask(
         /* no need to check if there is connection to the Google Drive - this task could not be submitted if there was not one */
 
         try {
-            //            FolderData foldersAddData = null;
-            //            FolderData foldersAddData = getFolderFilesListOld(selectedFolderDriveId);
             val foldersAddData: FolderData = getFolderFilesList(driveResourceClient, mSelectedFolderDriveId)
 
 //            eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents
@@ -63,11 +61,8 @@ data class RetrieveDriveFolderInfoTask(
 
     private fun getFolderFilesList(mDriveResourceClient: DriveResourceClient?, selectedFolderDriveId: DriveId?): FolderData {
         // https://developers.google.com/android/guides/tasks
-        Log.v(TAG, "RetrieveDriveFolderInfoTask.getFolderFilesList - selectedFolderDriveId: ${selectedFolderDriveId} ")
-        Log.v("RetrieveDriveFolderInfoTask", "getFolderFilesList - mDriveResourceClient: ${mDriveResourceClient} ")
         val selectedDriveFolder: DriveFolder
         lateinit var foldersAddData: FolderData
-        Log.v(TAG, " - mDriveResourceClient: $mDriveResourceClient")
         try {
             selectedDriveFolder = if (selectedFolderDriveId == null) {
                 //                Task<DriveFolder> appFolderTask = driveResourceClient.getAppFolder();
@@ -76,7 +71,6 @@ data class RetrieveDriveFolderInfoTask(
             } else {
                 selectedFolderDriveId.asDriveFolder()
             }
-            Log.v(TAG, "getFolderFilesList - selectedDriveFolder: $selectedDriveFolder")
             val query = Query.Builder()
                     //                    .addFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
                     .build()
@@ -90,7 +84,6 @@ data class RetrieveDriveFolderInfoTask(
             val foldersMetadata = ArrayList<Metadata>()
             val foldersMetadatasInfo = ArrayList<FileMetadataInfo>()
             var folderMetadataInfo: FileMetadataInfo
-            //            ArrayList<Metadata> trashFoldersMetadata = new ArrayList<>();
             for (metadata in metadataBuffer) {
                 Log.v(TAG, "getFolderFilesList - metadata.getTitle(): " + metadata.title)
                 if (metadata.isTrashed) {
@@ -131,7 +124,6 @@ data class RetrieveDriveFolderInfoTask(
                         trashedFilesCnt,
                         foldersMetadatasInfo)
             }
-//            Log.v(TAG, "getFolderFilesList - foldersAddData: " + (foldersAddData ?: ""))
         } catch (e: ExecutionException) {
             e.printStackTrace()
         } catch (e: InterruptedException) {
