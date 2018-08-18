@@ -6,7 +6,7 @@ import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
-import au.com.kbrsolutions.notesnuageuses.features.events.ActivitiesEvents
+import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
 import com.google.android.gms.drive.DriveFolder
 import com.google.android.gms.drive.DriveId
 import com.google.android.gms.drive.DriveResourceClient
@@ -44,13 +44,12 @@ data class RetrieveDriveFolderInfoTask(
             //            FolderData foldersAddData = getFolderFilesListOld(selectedFolderDriveId);
             val foldersAddData: FolderData = getFolderFilesList(driveResourceClient, mSelectedFolderDriveId)
 
-            eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents
-                    .FOLDER_DATA_RETRIEVED)
+//            eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents
+            eventBus!!.post(FoldersEvents.Builder(FoldersEvents.Events.FOLDER_DATA_RETRIEVED)
                     .foldersAddData(foldersAddData)
                     .build())
         } catch (e: Exception) {
-            eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents
-                    .FOLDER_DATA_RETRIEVE_PROBLEM)
+            eventBus!!.post(FoldersEvents.Builder(FoldersEvents.Events.FOLDER_DATA_RETRIEVE_PROBLEM)
                     .msgContents(activity!!
                             .resources
                             .getString(

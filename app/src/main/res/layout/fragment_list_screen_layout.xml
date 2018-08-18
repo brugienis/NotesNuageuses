@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+	android:paddingLeft="4dp"
+	android:paddingRight="4dp"
+                android:id="@+id/folderFragmentLayoutId" >
+
+    <ImageView
+        android:id="@+id/folderFileImageId"
+        android:scaleType="center"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:adjustViewBounds="true"
+        android:maxHeight="5dp"
+        android:maxWidth="5dp"
+        android:background="@color/view_not_in_focus"
+		android:paddingRight="1dp" />
+
+    <TextView
+        android:id="@+id/fileNameId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="25dp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/folderFileImageId"
+        android:layout_toLeftOf="@+id/infoImageId"
+        android:text="file name ..."
+    	android:textColor="@android:color/black"
+        android:background="@color/view_not_in_focus"
+        android:paddingTop="5dp"
+        android:textSize="14sp" />
+    <!--
+        android:layout_marginTop="5dp" -->
+
+    <TextView
+        android:id="@+id/fileUpdateTsId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/folderFileImageId"
+        android:layout_below="@+id/fileNameId"
+        android:layout_toLeftOf="@+id/infoImageId"
+        android:text="Update ..."
+    	android:textColor="@android:color/black"
+        android:background="@color/view_not_in_focus"
+        android:paddingBottom="5dp"
+        android:textSize="12sp" />
+    <!--
+        android:layout_alignBottom="@+id/folderFileImageId" -->
+
+    <ImageView
+        android:id="@+id/infoImageId"
+        android:layout_width="@dimen/touchable_size"
+        android:layout_height="@dimen/touchable_size"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:adjustViewBounds="true"
+        android:background="@color/view_not_in_focus"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:src="@mipmap/ic_folder_list_view_info" />
+
+</RelativeLayout>
+ 
+ <!-- 
+ 
+        android:maxHeight="30dp"
+        android:maxWidth="30dp"
+        android:textStyle="bold"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        
+below as of 2014-08-11 
+
+ <?xml version="1.0" encoding="utf-8"?>
+ <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:paddingLeft="8dp"
+	android:paddingRight="8dp">
+	
+	<LinearLayout android:id="@+id/nonEmptyFolderViewId"
+	    android:orientation="horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="38dp">
+	    
+		<ImageView
+		    android:id="@+id/folderFileImageId"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_gravity="center"
+		    android:contentDescription=""
+		    android:gravity="center_vertical"
+		    android:paddingLeft="15.0dip" />
+		
+		<TextView android:id="@+id/fileNameId"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:drawSelectorOnTop="false"
+    		android:textColor="@android:color/black" />
+	
+	</LinearLayout>	
+	
+ </FrameLayout>
+	
+ 
+  -->

@@ -17,7 +17,7 @@ project.ext {
 //    supportTestVersion = '1.0.1'
     jUnit = '4.12'
     supportJodaTimeVersion = '2.9.4'
-    supportEventBusVersion = '3.0.0'
+    supportEventBusVersion = '3.1.1'
 
     // below not referenced
     firebaseVersion = '11.6.2'

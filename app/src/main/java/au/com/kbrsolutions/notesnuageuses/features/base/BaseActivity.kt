@@ -60,6 +60,14 @@ abstract class BaseActivity: AppCompatActivity() {
     var foldersData = FoldersData
     private var eventBus: EventBus? = null
 
+
+    companion object {
+        const val MIME_TYPE_PNG_FILE = "image/png"   // MIME_TYPE_PNG_FILE
+        const val MIME_TYPE_TEXT_FILE = "text/plain"
+        const val MIME_TYPE_JPEG_FILE = "image/jpeg"
+        const val MIME_TYPE_FOLDER = "application/vnd.google-apps.folder"
+    }
+
     override fun onStart() {
         Log.v(TAG, "onStart - ");
         super.onStart()

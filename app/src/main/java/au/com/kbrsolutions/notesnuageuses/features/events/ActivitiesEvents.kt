@@ -1,7 +1,6 @@
 package au.com.kbrsolutions.notesnuageuses.features.events
 
 import android.graphics.Bitmap
-import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import com.google.android.gms.drive.DriveId
 import java.util.*
 
@@ -29,8 +28,9 @@ class ActivitiesEvents(
         var createDt: Date?,
         var updateDt: Date?,
         var maxContinuesIncorrectPassword: Int?,
-        var lockMillis: Int?,
-        var foldersAddData: FolderData?) {
+        var lockMillis: Int?
+//        var foldersAddData: FolderData?
+) {
 
     enum class HomeEvents {
         CONNECTED_TO_GOOGLE_DRIVE,
@@ -98,7 +98,7 @@ class ActivitiesEvents(
         private var updateDate: Date? = null
         private var maxContinuesIncorrectPassword: Int = 0
         private var lockMillis: Int = 0
-        private var foldersAddData: FolderData? = null
+//        private var foldersAddData: FolderData? = null
 
         fun msgContents(msgContents: String) = apply { this.msgContents = msgContents }
 
@@ -151,8 +151,8 @@ class ActivitiesEvents(
 
         fun lockMillis(lockMillis: Int) = apply { this.lockMillis = lockMillis }
 
-        fun foldersAddData(foldersAddData: FolderData) =
-                apply { this.foldersAddData = foldersAddData }
+//        fun foldersAddData(foldersAddData: FolderData) =
+//                apply { this.foldersAddData = foldersAddData }
 
         fun build() = ActivitiesEvents(
                     request,
@@ -178,8 +178,8 @@ class ActivitiesEvents(
                     createDate,
                     updateDate,
                     maxContinuesIncorrectPassword,
-                    lockMillis,
-                    foldersAddData)
+                    lockMillis)
+//                    foldersAddData)
         }
     }
 
