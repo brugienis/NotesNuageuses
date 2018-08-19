@@ -67,3 +67,5 @@ aapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/adapters/Fol
 ^app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/FolderFragment.kt,f/8/f82896e490fd9c67e4f50b9839f51ef0a6cff05c
 ’
 bapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/DelAnyTimeFragment.kt,9/2/92ea97325af307f90604ab5f33fc254d7552db12
+’
+bapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/dummy/DummyContent.kt,9/c/9c6c1931b376dbe81a7966620aa46f5dbe9e3bbb
