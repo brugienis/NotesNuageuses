@@ -42,10 +42,14 @@ data class RetrieveDriveFolderInfoTask(
         try {
             val foldersAddData: FolderData = getFolderFilesList(driveResourceClient, mSelectedFolderDriveId)
 
-//            eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents
+//            Log.v("RetrieveDriveFolderInfoTask", "call - falling asleep ")
+            Thread.sleep(1000)  // delay at development time
+//            Log.v("RetrieveDriveFolderInfoTask", "call - waking up ")
+
             eventBus!!.post(FoldersEvents.Builder(FoldersEvents.Events.FOLDER_DATA_RETRIEVED)
                     .foldersAddData(foldersAddData)
                     .build())
+
         } catch (e: Exception) {
             eventBus!!.post(FoldersEvents.Builder(FoldersEvents.Events.FOLDER_DATA_RETRIEVE_PROBLEM)
                     .msgContents(activity!!

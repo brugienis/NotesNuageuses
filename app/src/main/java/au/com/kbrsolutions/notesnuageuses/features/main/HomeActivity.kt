@@ -82,7 +82,9 @@ class HomeActivity : BaseActivity() {
         UPDATE_FOLDER_LIST_ADAPTER,
         ON_ACTIVITY_RESULTS,
         ON_EVENT_MAIN_THREAD,
-        LEGAL_NOTICES
+        LEGAL_NOTICES,
+
+        ACTIVITY_NOT_FRAGMENT
     }
 
     private val TAG = "HomeActivity"
@@ -106,20 +108,15 @@ class HomeActivity : BaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.v(TAG, "onCreate start - : ")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
-        Log.v(TAG, "onCreate before eventBus")
         eventBus = EventBus.getDefault()
         eventBus.register(this)
-        //        asyncEventBus = EventBus.getDefault();
-        //        asyncEventBus.register(this);
-        Log.v(TAG, "onCreate after eventBus")
+
         mExecutorService = Executors.newCachedThreadPool()
-        Log.v(TAG, "onCreate - mExecutorService: $mExecutorService")
         Log.v(TAG, "onCreate end   - : ")
     }
 
@@ -127,9 +124,24 @@ class HomeActivity : BaseActivity() {
         Log.v(TAG, "onDriveClientReady start - : ")
         startFuturesHandlers("onDriveClientReady")
         val folderFragmentsCnt = fragmentsStack.getFolderFragmentCount()
-        if (folderFragmentsCnt == 0 || foldersData.getCurrFolderLevel() !== folderFragmentsCnt - 1) {
+        if (folderFragmentsCnt == 0 || (foldersData.getCurrFolderLevel() !== folderFragmentsCnt - 1)) {
             fragmentsStack.init(mTestMode)
 //			isNotConnectedToGoogleDrive("onConnected");
+            val rootFolderName = getString(R.string.app_root_folder_name)
+            val args = Bundle()
+            args.putString(
+                    getString(R.string.retrieving_folder_title_key),
+                    rootFolderName
+            )
+
+            setFragment(
+                    FragmentsEnum.RETRIEVE_FOLDER_PROGRESS_FRAGMENT,
+                    rootFolderName,
+                    true,
+                    FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
+                    null,
+                    args)
+
             handleCancellableFuturesCallable!!.submitCallable(RetrieveDriveFolderInfoTask.Builder()
                     .activity(this)
                     .eventBus(eventBus)
@@ -170,9 +182,14 @@ class HomeActivity : BaseActivity() {
                 emptyFolderFragment = EmptyFolderFragment()
             }
             emptyFolderFragment!!.setTrashedFilesCnt(folderData.trashedFilesCnt)
-            setFragment(FragmentsEnum.EMPTY_FOLDER_FRAGMENT, folderData.newFolderTitle, true, FragmentsCallingSourceEnum.UPDATE_FOLDER_LIST_ADAPTER, folderData)
+            setFragment(
+                    FragmentsEnum.EMPTY_FOLDER_FRAGMENT,
+                    folderData.newFolderTitle,
+                    true,
+                    FragmentsCallingSourceEnum.UPDATE_FOLDER_LIST_ADAPTER,
+                    folderData, null)
         } else {
-            // TODO: xeal with non empty folder later
+            // TODO: deal with non empty folder later
 //            if (folderFragment == null) {
 //                folderFragment = FolderFragment()
 //            }
@@ -181,11 +198,17 @@ class HomeActivity : BaseActivity() {
         }
     }
 
-    private fun setFragment(fragmentId: FragmentsEnum, titleText: String, addFragmentToStack: Boolean, callingSource: FragmentsCallingSourceEnum, foldersAddData: FolderData?) {
+    private fun setFragment(
+            fragmentId: FragmentsEnum,
+            titleText: String,
+            addFragmentToStack: Boolean,
+            callingSource: FragmentsCallingSourceEnum,
+            foldersAddData: FolderData?,
+            fragmentArgs: Bundle?) {
         val fragmentManager = fragmentManager
         val fragmentTransaction: FragmentTransaction
-        Log.v(TAG, "setFragment - callingSource/titleText/foldersAddData: " + callingSource + "/" + titleText + "/" +
-                (foldersAddData?.newFolderTitle ?: "null"))
+//        Log.v(TAG, "setFragment - callingSource/titleText/foldersAddData: " + callingSource + "/" + titleText + "/" +
+//                (foldersAddData?.newFolderTitle ?: "null"))
         when (fragmentId) {
 
             HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
@@ -195,15 +218,24 @@ class HomeActivity : BaseActivity() {
                 fragmentTransaction = fragmentManager.beginTransaction()
                 fragmentTransaction.replace(R.id.fragments_frame, emptyFolderFragment, EMPTY_FOLDER_TAG)
                 fragmentTransaction.commit()
-//                fragmentManager.executePendingTransactions()                // will wait until the replace and commit are done
-                val f3 = fragmentManager.findFragmentByTag(EMPTY_FOLDER_TAG)
             }
 
             HomeActivity.FragmentsEnum.RETRIEVE_FOLDER_PROGRESS_FRAGMENT -> {
                 if (retrievingFolderInProgressFragment == null) {
                     retrievingFolderInProgressFragment = RetrievingFolderInProgressFragment()
+                    retrievingFolderInProgressFragment =
+                            RetrievingFolderInProgressFragment.newInstance(
+                            fragmentArgs!!.getString(
+                                    getString(R.string.retrieving_folder_title_key),
+                                    getString(R.string.retrieving_folder_default_title)))
                 }
-                fragmentManager.beginTransaction().replace(R.id.fragments_frame, retrievingFolderInProgressFragment, RETRIEVE_FOLDER_PROGRESS_TAG).commit()
+                fragmentManager
+                        .beginTransaction()
+                        .replace(
+                                R.id.fragments_frame,
+                                retrievingFolderInProgressFragment,
+                                RETRIEVE_FOLDER_PROGRESS_TAG)
+                        .commit()
             }
 
 //            HomeActivity.FragmentsEnum.FILE_DETAILS_FRAGMENT -> fragmentManager.beginTransaction().replace(R.id.fragments_frame, fileDetailFragment).commit()
@@ -264,9 +296,10 @@ class HomeActivity : BaseActivity() {
 //                dismissRefreshProgressBarCallableRunnable = DismissRefreshProgressBarCallableRunnable()
 //                handler.postDelayed(dismissRefreshProgressBarCallableRunnable, DISSMISS_REFRESH_PROGRESS_DELAY_MILLS)
                 val folderData1 = event.foldersAddData
-                Log.v(TAG, "onMessageEvent - newFolderTitle/filesMetadatasInfo.size(): " + if (folderData1 == null) "null" else folderData1!!.newFolderTitle + "/" + folderData1!!.filesMetadatasInfo.size)
+//                Log.v(TAG, "onMessageEvent - newFolderTitle/filesMetadatasInfo.size(): ${if (folderData1 == null) "null" else folderData1!!.newFolderTitle + "/" + folderData1!!.filesMetadatasInfo.size}")
                 if (folderData1 != null && folderData1!!.filesMetadatasInfo.size == 0) {
                     setFolderFragment(folderData1!!) // empty folder
+                    Log.v("HomeActivity", "onMessageEvent - fragmentsStack: ${fragmentsStack} ")
                 } else {
                     retrievingAppFolderDriveInfoTaskDone(folderData1)
                 }
@@ -316,7 +349,6 @@ class HomeActivity : BaseActivity() {
     }
 
     private fun startFuturesHandlers(source: String) {
-        Log.v(TAG, "startFuturesHandlers - source: $source mExecutorService: $mExecutorService")
         if (mCancellableFuture == null) {
             handleCancellableFuturesCallable = HandleCancellableFuturesCallable(mExecutorService!!)
             mCancellableFuture = mExecutorService!!.submit(handleCancellableFuturesCallable)
@@ -347,7 +379,7 @@ class HomeActivity : BaseActivity() {
     private fun setCurrFragment(currFragment: FragmentsEnum) {
         this.currFragment = currFragment
     }
-//        fixme: method below does not exists - it should be part of Activity
+//        fixme: method isFinishing() does not exist - it should be part of Activity
 //    if (isFinishing()) {
         // A_MUST: any other adapters to clear?
 //        actvityListAdapter.clear()

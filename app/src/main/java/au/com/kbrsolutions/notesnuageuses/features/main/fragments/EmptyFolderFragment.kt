@@ -3,12 +3,10 @@ package au.com.kbrsolutions.notesnuageuses.features.main.fragments
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.widget.TextView
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
-import kotlinx.android.synthetic.main.fragment_empty_folder.*
+import kotlinx.android.synthetic.main.fragment_empty_folder.view.*
 
 class EmptyFolderFragment : Fragment() {
 
@@ -34,14 +32,7 @@ class EmptyFolderFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_empty_folder, container, false)
 
-        // fixLater: Aug 19, 2018 - investigate why 'synthetic' emptyFragmentInfoId is null
-        emptyFragmentInfoId?.text = resources.getString(R.string.empty_folder, mTrashedFilesCnt)
-
-        var emptyFragmentInfoIdTv = rootView.findViewById(R.id.emptyFragmentInfoId) as TextView
-
-        Log.v(TAG, "onCreateView - emptyFragmentInfoId: $emptyFragmentInfoId emptyFragmentInfoIdTv: $emptyFragmentInfoIdTv")
-
-        emptyFragmentInfoIdTv.text = resources.getString(R.string.empty_folder, mTrashedFilesCnt)
+        rootView.emptyFragmentInfoId.text = resources.getString(R.string.empty_folder, mTrashedFilesCnt)
         return rootView
     }
 

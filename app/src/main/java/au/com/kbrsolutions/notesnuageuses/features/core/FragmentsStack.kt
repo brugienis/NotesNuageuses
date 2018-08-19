@@ -314,7 +314,7 @@ object FragmentsStack {
     }
 
     override fun toString(): String {
-        return fragmentsArrayDeque.toString() + " - " + fragmentsTitlesArrayDeque.toString()
+        return fragmentsArrayDeque.toString() + " - " + "$fragmentsTitlesArrayDeque"
     }
 
     // - - - - - - - - helper for unit testing - - - - - -
