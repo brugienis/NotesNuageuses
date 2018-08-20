@@ -36,6 +36,7 @@ class DownloadFragment : Fragment() {
             arguments?.let {
                 mRetrievingFolderName = it.getString(ARG_RETRIEVING_FOLDER_TITLE_KEY)
             }
+            mArgsProcessed = true
         }
 
 //        mRetrievingFolderName = arguments.getString(ARG_RETRIEVING_FOLDER_TITLE_KEY)
@@ -82,7 +83,7 @@ class DownloadFragment : Fragment() {
                     arguments = Bundle().apply {
                         putString(ARG_RETRIEVING_FOLDER_TITLE_KEY, retievingFolderName)
                     }
-                    Log.v("DownloadFragment", "newInstance - arguments: ${arguments} ")
+                    Log.v("DownloadFragment", "newInstance - arguments: $arguments ")
                 }
 
     }

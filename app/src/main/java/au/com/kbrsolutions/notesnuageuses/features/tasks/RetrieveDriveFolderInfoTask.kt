@@ -37,8 +37,6 @@ data class RetrieveDriveFolderInfoTask(
             processingNewFolder = true
         }
 
-        /* no need to check if there is connection to the Google Drive - this task could not be submitted if there was not one */
-
         try {
             val foldersAddData: FolderData = getFolderFilesList(driveResourceClient, mSelectedFolderDriveId)
 

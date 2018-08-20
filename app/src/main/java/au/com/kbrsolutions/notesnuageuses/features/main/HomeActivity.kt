@@ -54,12 +54,13 @@ class HomeActivity : BaseActivity() {
         private val TAG = HomeActivity::class.java.simpleName
         const val EMPTY_FOLDER_TAG = "empty_folder_tag"
         const val RETRIEVE_FOLDER_PROGRESS_TAG = "retrieve_folder_progress_tag"
+        const val RETRIEVING_FOLDER_TITLE_KEY = "retrieving_folder_title_key"
     }
 
     var fragmentsStack = FragmentsStack
 
     init {
-        fragmentsStack.initialize(mTestMode);
+        fragmentsStack.initialize(mTestMode)
     }
 
     enum class FragmentsEnum {
@@ -128,17 +129,14 @@ class HomeActivity : BaseActivity() {
 
     override fun onDriveClientReady() {
         Log.v(TAG, "onDriveClientReady start - : ")
-        startFuturesHandlers("onDriveClientReady")
+        startFuturesHandlers()
         val folderFragmentsCnt = fragmentsStack.getFolderFragmentCount()
-        if (folderFragmentsCnt == 0 || (foldersData.getCurrFolderLevel() !== folderFragmentsCnt - 1)) {
+        if (folderFragmentsCnt == 0 || foldersData.getCurrFolderLevel() != folderFragmentsCnt - 1) {
             fragmentsStack.initialize(mTestMode)
 //			isNotConnectedToGoogleDrive("onConnected");
             val rootFolderName = getString(R.string.app_root_folder_name)
             val args = Bundle()
-            args.putString(
-                    getString(R.string.retrieving_folder_title_key),
-                    rootFolderName
-            )
+            args.putString(RETRIEVING_FOLDER_TITLE_KEY, rootFolderName)
 
             setFragment(
                     FragmentsEnum.RETRIEVE_FOLDER_PROGRESS_FRAGMENT,
@@ -184,10 +182,6 @@ class HomeActivity : BaseActivity() {
     private fun setFolderFragment(folderData: FolderData) {
         Log.v(TAG, "setFolderFragment - folderData: $folderData")
         if (folderData.filesMetadatasInfo.size == 0 || folderData.filesMetadatasInfo.size == folderData.trashedFilesCnt && !showTrashedFiles) {
-//            if (emptyFolderFragment == null) {
-//                emptyFolderFragment = EmptyFolderFragment()
-//            }
-//            emptyFolderFragment!!.setTrashedFilesCnt(folderData.trashedFilesCnt)
             setFragment(
                     FragmentsEnum.EMPTY_FOLDER_FRAGMENT,
                     folderData.newFolderTitle,
@@ -219,7 +213,7 @@ class HomeActivity : BaseActivity() {
 
             HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
                 val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: -1
-                Log.v("HomeActivity", "setFragment - emptyFolderFragment: ${emptyFolderFragment} ")
+                Log.v("HomeActivity", "setFragment - emptyFolderFragment: $emptyFolderFragment ")
                 if (emptyFolderFragment == null) {
                     emptyFolderFragment =
 //                            EmptyFolderFragment.newInstance(trashFilesCnt)
@@ -233,18 +227,14 @@ class HomeActivity : BaseActivity() {
             }
 
             HomeActivity.FragmentsEnum.RETRIEVE_FOLDER_PROGRESS_FRAGMENT -> {
+                val retrievingFolderName = fragmentArgs!!.getString(RETRIEVING_FOLDER_TITLE_KEY)
+//                        getString(R.string.retrieving_folder_default_title))
                 if (downloadFragment == null) {
                     downloadFragment =
                             DownloadFragment
-                                    .newInstance(
-                                            fragmentArgs!!.getString(
-                                                    getString(R.string.retrieving_folder_title_key),
-                                                    getString(R.string.retrieving_folder_default_title)))
+                                    .newInstance(retrievingFolderName)
                 } else {
-                    downloadFragment!!.setRetrievingFolderName(
-                            fragmentArgs!!.getString(
-                                    getString(R.string.retrieving_folder_title_key),
-                                    getString(R.string.retrieving_folder_default_title)))
+                    downloadFragment!!.setRetrievingFolderName(retrievingFolderName)
                 }
 
                 fragmentManager
@@ -259,10 +249,8 @@ class HomeActivity : BaseActivity() {
 //            HomeActivity.FragmentsEnum.FILE_DETAILS_FRAGMENT -> fragmentManager.beginTransaction().replace(R.id.fragments_frame, fileDetailFragment).commit()
 
 //            HomeActivity.FragmentsEnum.LEGAL_NOTICES -> fragmentManager.beginTransaction().replace(R.id.fragments_frame, legalNoticesFragment).commit()
-
-            else -> if (!mTestMode) {
-                throw RuntimeException("$TAG - setFragment - no code to handle fragmentId: $fragmentId")
-            }
+            // fixLater: Aug 21, 2018 - show error message in release version
+            else -> throw RuntimeException("$TAG - setFragment - no code to handle fragmentId: $fragmentId")
         }
         //		currFragment = fragmentId;
         if (addFragmentToStack) {
@@ -273,10 +261,10 @@ class HomeActivity : BaseActivity() {
         //        Log.i(TAG, "@#setFragment - end - getFolderFragmentCount/addFragmentToStack/fragmentsArrayDeque: " + fragmentsStack.getFolderFragmentCount() + "/" + addFragmentToStack + "/" + fragmentsStack.toString());
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: ActivitiesEvents) {
-//        val request = event.request
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    fun onMessageEvent(event: ActivitiesEvents) {
+////        val request = event.request
+//    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FoldersEvents) {
@@ -305,7 +293,7 @@ class HomeActivity : BaseActivity() {
 //                Log.v(TAG, "onMessageEvent - newFolderTitle/filesMetadatasInfo.size(): ${if (folderData1 == null) "null" else folderData1!!.newFolderTitle + "/" + folderData1!!.filesMetadatasInfo.size}")
                 if (folderData1 != null && folderData1.filesMetadatasInfo.size == 0) {
                     setFolderFragment(folderData1) // empty folder
-                    Log.v("HomeActivity", "onMessageEvent - fragmentsStack: ${fragmentsStack} ")
+                    Log.v("HomeActivity", "onMessageEvent - fragmentsStack: $fragmentsStack ")
                 } else {
                     retrievingAppFolderDriveInfoTaskDone(folderData1)
                 }
@@ -354,7 +342,7 @@ class HomeActivity : BaseActivity() {
         folderArrayAdapter!!.addAll(folderItemsList)
     }
 
-    private fun startFuturesHandlers(source: String) {
+    private fun startFuturesHandlers() {
         if (mCancellableFuture == null) {
             handleCancellableFuturesCallable = HandleCancellableFuturesCallable(mExecutorService!!)
             mCancellableFuture = mExecutorService!!.submit(handleCancellableFuturesCallable)
