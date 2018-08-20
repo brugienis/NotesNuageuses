@@ -1,7 +1,6 @@
 package au.com.kbrsolutions.notesnuageuses.features.tasks
 
 import android.app.Activity
-import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
@@ -27,15 +26,18 @@ data class RetrieveDriveFolderInfoTask(
         var mParentFolderLevel: Int,
         var mParentFolderDriveId: DriveId?,
         var mCurrentFolderDriveId: DriveId?,
-        var mFoldersData: FoldersData,
-        var processingNewFolder: Boolean = false): Callable<String> {
+        var mFoldersData: FoldersData
+//        var processingNewFolder: Boolean = false
+        ): Callable<String> {
 
     private val TAG = RetrieveDriveFolderInfoTask::class.java.simpleName
 
+    private var processingNewFolder: Boolean = false
+
     override fun call(): String {
-        if (mCurrentFolderDriveId == null || mSelectedFolderDriveId != mCurrentFolderDriveId) {
-            processingNewFolder = true
-        }
+        processingNewFolder =
+                mCurrentFolderDriveId == null ||
+                mSelectedFolderDriveId != mCurrentFolderDriveId
 
         try {
             val foldersAddData: FolderData = getFolderFilesList(driveResourceClient, mSelectedFolderDriveId)
@@ -44,13 +46,13 @@ data class RetrieveDriveFolderInfoTask(
             Thread.sleep(1000)  // delay at development time
 //            Log.v("RetrieveDriveFolderInfoTask", "call - waking up ")
 
-            eventBus!!.post(FoldersEvents.Builder(FoldersEvents.Events.FOLDER_DATA_RETRIEVED)
+            eventBus.post(FoldersEvents.Builder(FoldersEvents.Events.FOLDER_DATA_RETRIEVED)
                     .foldersAddData(foldersAddData)
                     .build())
 
         } catch (e: Exception) {
-            eventBus!!.post(FoldersEvents.Builder(FoldersEvents.Events.FOLDER_DATA_RETRIEVE_PROBLEM)
-                    .msgContents(activity!!
+            eventBus.post(FoldersEvents.Builder(FoldersEvents.Events.FOLDER_DATA_RETRIEVE_PROBLEM)
+                    .msgContents(activity
                             .resources
                             .getString(
                                     R.string.base_handler_retrieve_folder_problem,
@@ -67,14 +69,14 @@ data class RetrieveDriveFolderInfoTask(
         lateinit var foldersAddData: FolderData
         try {
             selectedDriveFolder = if (selectedFolderDriveId == null) {
-                //                Task<DriveFolder> appFolderTask = driveResourceClient.getAppFolder();
+                // Task<DriveFolder> appFolderTask = driveResourceClient.getAppFolder();
                 val appFolderTask = mDriveResourceClient!!.rootFolder
                 Tasks.await(appFolderTask)
             } else {
                 selectedFolderDriveId.asDriveFolder()
             }
             val query = Query.Builder()
-                    //                    .addFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
+                    // .addFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
                     .build()
 
             val queryTask = mDriveResourceClient!!
@@ -87,7 +89,6 @@ data class RetrieveDriveFolderInfoTask(
             val foldersMetadatasInfo = ArrayList<FileMetadataInfo>()
             var folderMetadataInfo: FileMetadataInfo
             for (metadata in metadataBuffer) {
-                Log.v(TAG, "getFolderFilesList - metadata.getTitle(): " + metadata.title)
                 if (metadata.isTrashed) {
                     trashedFilesCnt++
                 }
@@ -97,11 +98,11 @@ data class RetrieveDriveFolderInfoTask(
                     foldersMetadata.add(metadata)
                 }
             }
-            Log.v(TAG, "getFolderFilesList - metadataBuffer processed")
             metadataBuffer.release()
 
-            if (selectedFolderDriveId == null) {
-                foldersAddData = FolderData(
+            when {
+                selectedFolderDriveId == null ->
+                    foldersAddData = FolderData(
                         selectedDriveFolder.driveId,
                         mSelectedFolderTitle,
                         0,
@@ -109,9 +110,9 @@ data class RetrieveDriveFolderInfoTask(
                         true,
                         trashedFilesCnt,
                         foldersMetadatasInfo)
-                //                }
-            } else if (processingNewFolder) {
-                foldersAddData = FolderData(
+
+                processingNewFolder ->
+                    foldersAddData = FolderData(
                         selectedDriveFolder.driveId,
                         mSelectedFolderTitle,
                         mParentFolderLevel + 1,
@@ -119,8 +120,8 @@ data class RetrieveDriveFolderInfoTask(
                         true,
                         trashedFilesCnt,
                         foldersMetadatasInfo)
-            } else {
-                mFoldersData.refreshFolderData(
+
+                else -> mFoldersData.refreshFolderData(
                         mParentFolderLevel,
                         selectedDriveFolder.driveId,
                         trashedFilesCnt,

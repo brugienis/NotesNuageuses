@@ -269,16 +269,16 @@ class HomeActivity : BaseActivity() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FoldersEvents) {
         val request = event.request
-//        val msg = event.msgContents
-        var actionCancelled = false
-//        val fragmentsEnum: HomeActivity.FragmentsEnum
-//        var logMsg: String
+        val msgContents = event.msgContents
         Log.v(TAG, "onMessageEvent - request: $request")
+
         when (request) {
 
             ActivitiesEvents.HomeEvents.CREATE_FILE_DIALOG_CANCELLED -> {
-                actionCancelled = true
-                removeTopFragment("onEventMainThread-CREATE_FILE_DIALOG_CANCELLED", actionCancelled)
+                removeTopFragment(
+                        "onMessageEvent.FoldersEvents-CREATE_FILE_DIALOG_CANCELLED",
+                        true
+                )
             }
 
             ActivitiesEvents.HomeEvents.FOLDER_DATA_RETRIEVED -> {
@@ -300,6 +300,7 @@ class HomeActivity : BaseActivity() {
             }
 
             ActivitiesEvents.HomeEvents.FOLDER_DATA_RETRIEVE_PROBLEM -> {
+                Log.v("HomeActivity", "onMessageEvent - msgContents: $msgContents")
 //                addMsgToActivityLogShowOnScreen(event.msgContents, true, true)
 //                if (dismissRefreshProgressBarCallableRunnable != null) {
 //                    handler.removeCallbacks(dismissRefreshProgressBarCallableRunnable)            // remove just in case if there is already one waiting in a queue
@@ -316,14 +317,14 @@ class HomeActivity : BaseActivity() {
 
     private fun retrievingAppFolderDriveInfoTaskDone(folderData: FolderData?) {
         //        Log.v(TAG, "retrievingAppFolderDriveInfoTaskDone - folderData: " + folderData);
-        if (folderData != null && folderData.newFolderData) {
+        if (folderData != null && folderData.newFolderData) {   // folder info not in FoldersData
             setFolderFragment(folderData)
         } else {
-            updateFolderListAdapter(null)
+            updateFolderListAdapter()
         }
     }
 
-    private fun updateFolderListAdapter(folderName: String?) {
+    private fun updateFolderListAdapter() {
         //        Log.i(TAG, "updateFolderListAdapter - start");
         //		List<String> folderFilesList = foldersData.getCurrFoldersFilesList();
         val currFolderMetadataInfo = foldersData.getCurrFolderMetadataInfo()
@@ -334,9 +335,6 @@ class HomeActivity : BaseActivity() {
                 //                Log.i(TAG, "updateFolderListAdapter - added - fileTitle: " + folderMetadataInfo.fileTitle);
             }
         }
-        //        folderArrayAdapter = new FolderArrayAdapter<FolderItem>(this, getApplicationContext(), folderFragment, folderItemsList);
-        //        folderFragment.setListAdapter(folderArrayAdapter);
-        //        folderArrayAdapter.notifyDataSetChanged();
 
         folderArrayAdapter!!.clear()
         folderArrayAdapter!!.addAll(folderItemsList)

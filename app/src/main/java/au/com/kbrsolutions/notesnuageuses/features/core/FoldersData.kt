@@ -79,11 +79,6 @@ object FoldersData {
         foldersTrashedFilesCnt[currFolderLevel] = trashedFilesCnt
         processFolderMetadata(foldersMetadatasInfo, true)
         verifyDataStructure()
-        //		if (currFolderLevel > -1) {
-        //			Log.i(LOC_CAT_TAG, "refreshFolderData - done - currFolderLevel/folder cnt/cur folder files: " + currFolderLevel + "/" + foldersMetadatasInfoList.size());
-        //			// fixme: do not throw exception in release version
-        //			throw new RuntimeException("FoldersData - refreshFolderData currFolderLevel: " + currFolderLevel);
-        //		}
     }
 
     fun noFoldersAdded(): Boolean {
