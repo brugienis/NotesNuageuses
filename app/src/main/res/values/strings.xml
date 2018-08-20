@@ -37,4 +37,7 @@
     <string name="retrieving_folder_title_key">retrievingFolderTitleKey</string>
     <string name="retrieving_folder_default_title">not defined</string>
 
+    <string name="base_handler_create_folder_no_connection">Couldn\'t create folder: %1$s - no connection to Google Drive. Try again later.</string>
+    <string name="base_handler_create_folder_problems">Couldn\'t create folder: %1$s. Try again later.</string>
+
 </resources>
