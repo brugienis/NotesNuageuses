@@ -3,6 +3,7 @@ package au.com.kbrsolutions.notesnuageuses.features.main.fragments
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
@@ -36,36 +37,18 @@ class EmptyFolderFragment : Fragment() {
         return rootView
     }
 
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.folder_fragment_menu, menu)
         return
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        //		Log.i(LOC_CAT_TAG, "onPrepareOptionsMenu - start - googleApiClientConnected: " + mContext.isGoogleApiClientConnected());
-        var menuItem: MenuItem
-//        if (mContext!!.isGoogleApiClientConnected()) {
-//            if (!mContext!!.isCameraIsAvailable()) {
-//                menuItem = menu.findItem(R.id.menuQuickPhoto)
-//                menuItem.isVisible = false                                    // do both to hide a menu item
-//                menuItem.isEnabled = false
-//            }
-//            menuItem = menu.findItem(R.id.menuCreateFile)
-//            menuItem.isVisible = true
-//            menuItem.isEnabled = true
-//            menuItem = menu.findItem(R.id.menuRefresh)
-//            menuItem.isVisible = true
-//            menuItem.isEnabled = true
-//        } else
-//        {
-        menuItem = menu.findItem(R.id.menuCreateFile)
+        var menuItem: MenuItem = menu.findItem(R.id.menuCreateFile)
         menuItem.isVisible = false
         menuItem.isEnabled = false
         menuItem = menu.findItem(R.id.menuRefresh)
         menuItem.isVisible = false
         menuItem.isEnabled = false
-//        }
         return
     }
 
@@ -75,6 +58,20 @@ class EmptyFolderFragment : Fragment() {
 
     companion object {
 
-        private val LOG_TAG = EmptyFolderFragment::class.java.simpleName
+        private val TAG = EmptyFolderFragment::class.java.simpleName
+
+        const val ARG_RETRIEVING_FOLDER_TITLE_KEY = "retrieving_folder_title_key"
+
+        const val ARG_COLUMN_COUNT = "column-count"
+
+        @JvmStatic
+        fun newInstance(retievingFolderName: String) =
+                DownloadFragment().apply {
+                    arguments = Bundle().apply {
+                        putString(ARG_RETRIEVING_FOLDER_TITLE_KEY, retievingFolderName)
+                    }
+                    Log.v("DownloadFragment", "newInstance - arguments: ${arguments} ")
+                }
+
     }
-}// Empty constructor required for fragment subclasses
+}

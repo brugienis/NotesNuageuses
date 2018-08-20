@@ -4,6 +4,8 @@ import android.app.FragmentTransaction
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.base.BaseActivity
 import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
@@ -14,8 +16,9 @@ import au.com.kbrsolutions.notesnuageuses.features.events.ActivitiesEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.DownloadFragment
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.DownloadFragment.OnDownloadFragmentInteractionListener
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.EmptyFolderFragment
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.RetrievingFolderInProgressFragment
 import au.com.kbrsolutions.notesnuageuses.features.tasks.RetrieveDriveFolderInfoTask
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
@@ -31,7 +34,7 @@ import java.util.concurrent.Future
 //          https://developers.google.com/drive/android/intro
 //          https://developers.google.com/drive/android/examples/
 
-class HomeActivity : BaseActivity() {
+class HomeActivity : BaseActivity(), OnDownloadFragmentInteractionListener {
 
     private lateinit var eventBus: EventBus
     private val mTestMode: Boolean = false
@@ -45,7 +48,7 @@ class HomeActivity : BaseActivity() {
     private var currFragment: FragmentsEnum? = null
 
     private var emptyFolderFragment: EmptyFolderFragment? = null
-    private var retrievingFolderInProgressFragment: RetrievingFolderInProgressFragment? = null
+    private var downloadFragment: DownloadFragment? = null
     private var folderArrayAdapter: FolderArrayAdapter<FolderItem>? = null
 
     companion object {
@@ -86,6 +89,10 @@ class HomeActivity : BaseActivity() {
         LEGAL_NOTICES,
 
         ACTIVITY_NOT_FRAGMENT
+    }
+
+    private enum class TouchedObject {
+        MENUE_QUICK_PHOTO, MENUE_CREATE_FILE, MENUE_REFRESH, FILE_OR_FOLDER
     }
 
     private val TAG = "HomeActivity"
@@ -222,15 +229,15 @@ class HomeActivity : BaseActivity() {
             }
 
             HomeActivity.FragmentsEnum.RETRIEVE_FOLDER_PROGRESS_FRAGMENT -> {
-                if (retrievingFolderInProgressFragment == null) {
-                    retrievingFolderInProgressFragment =
-                            RetrievingFolderInProgressFragment
+                if (downloadFragment == null) {
+                    downloadFragment =
+                            DownloadFragment
                                     .newInstance(
                                             fragmentArgs!!.getString(
                                                     getString(R.string.retrieving_folder_title_key),
                                                     getString(R.string.retrieving_folder_default_title)))
                 } else {
-                    retrievingFolderInProgressFragment!!.setRetrievingFolderInProgressFragment(
+                    downloadFragment!!.setRetrievingFolderName(
                             fragmentArgs!!.getString(
                                     getString(R.string.retrieving_folder_title_key),
                                     getString(R.string.retrieving_folder_default_title)))
@@ -240,7 +247,7 @@ class HomeActivity : BaseActivity() {
                         .beginTransaction()
                         .replace(
                                 R.id.fragments_frame,
-                                retrievingFolderInProgressFragment,
+                                downloadFragment,
                                 RETRIEVE_FOLDER_PROGRESS_TAG)
                         .commit()
             }
@@ -411,5 +418,124 @@ class HomeActivity : BaseActivity() {
         stopFuturesHandlers()
         mExecutorService!!.shutdown()
         super.onDestroy()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.home, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        var menuItem: MenuItem
+        if (!mTestMode) {
+            menuItem = menu.findItem(R.id.action_disconnect_from_google_drive)
+            menuItem.isVisible = false                                    // do both to hide a menu item
+            menuItem.isEnabled = false
+            menuItem = menu.findItem(R.id.action_connect_to_google_drive)
+            menuItem.isVisible = false
+            menuItem.isEnabled = false
+            menuItem = menu.findItem(R.id.action_resend_file)
+            menuItem.isVisible = false
+            menuItem.isEnabled = false
+            //        } else if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+        } else if (fragmentsStack.getCurrFragment() !== FragmentsEnum.FOLDER_FRAGMENT && fragmentsStack.getCurrFragment() !== FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
+            menuItem = menu.findItem(R.id.menuShowTrashed)
+            menuItem.isVisible = false
+            menuItem.isEnabled = false
+            menuItem = menu.findItem(R.id.menuHideTrashed)
+            menuItem.isVisible = false
+            menuItem.isEnabled = false
+        } else if (showTrashedFiles) {
+            menuItem = menu.findItem(R.id.menuHideTrashed)
+            menuItem.isVisible = true
+            menuItem.isEnabled = true
+            //            menuItem.setTitle("show trashed files - " + foldersData.getCurrentFolderTrashedFilesCnt());
+            menuItem.title = resources.getString(R.string.menu_hide_trashed_files, foldersData.getCurrentFolderTrashedFilesCnt())
+            menuItem = menu.findItem(R.id.menuShowTrashed)
+            menuItem.isVisible = false
+            menuItem.isEnabled = false
+        } else {
+            menuItem = menu.findItem(R.id.menuHideTrashed)
+            menuItem.isVisible = false
+            menuItem.isEnabled = false
+            menuItem = menu.findItem(R.id.menuShowTrashed)
+            menuItem.isVisible = true
+            menuItem.isEnabled = true
+            //            menuItem.setTitle("hide trashed files - " + foldersData.getCurrentFolderTrashedFilesCnt());
+            //				menuItem.setTitle("show trashed files - " + trashedFilesCnt);
+            menuItem.title = resources.getString(R.string.menu_show_trashed_files, foldersData.getCurrentFolderTrashedFilesCnt())
+        }
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+
+        when (item.itemId) {
+            R.id.menuQuickPhoto -> handleCameraOptionSelected()
+            R.id.menuRefresh -> handleRefreshOptionSelected()
+            R.id.menuCreateFile -> handleCreateFileOptionSelected()
+//            R.id.activity_log_clearActivityLog -> actvityListAdapter.clear()
+            R.id.action_settings -> handleSettings()
+            R.id.action_about -> handleAbout()
+            R.id.action_legal_notices -> handleLegalNotices()
+//            R.id.action_resend_file -> {
+//                val resendPhotoToGoogleDriveCallable = ResendFileToGoogleDriveCallable()
+//                handleNonCancellableFuturesCallable.submitCallable(resendPhotoToGoogleDriveCallable)
+
+            R.id.menuShowTrashed -> {
+                showTrashedFiles = true
+                handleMenuShowTrashed()
+                invalidateOptionsMenu()
+            }
+            R.id.menuHideTrashed -> {
+                showTrashedFiles = false
+                //                if (filesMetadataInfo.size() != foldersData.getCurrentFolderTrashedFilesCnt()) {
+                handleMenuHideTrashed()
+                invalidateOptionsMenu()
+            }
+
+            else -> return super.onOptionsItemSelected(item)
+        }
+        return true
+    }
+
+    private fun handleMenuHideTrashed() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun handleMenuShowTrashed() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return
+    }
+
+//    private fun ResendFileToGoogleDriveCallable(): Callable<String> {
+//
+//    }
+
+    private fun handleLegalNotices() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun handleAbout() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun handleSettings() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun handleCreateFileOptionSelected() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun handleRefreshOptionSelected() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun handleCameraOptionSelected() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

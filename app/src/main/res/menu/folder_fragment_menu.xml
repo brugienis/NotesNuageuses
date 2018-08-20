@@ -4,13 +4,26 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".HomeActivity">
 
-    <item android:id="@+id/menuQuickPhoto" app:showAsAction="ifRoom" android:title="@string/menu_quick_photo" android:icon="@mipmap/ic_action_camera" />
-    <item android:id="@+id/menuCreateFile" app:showAsAction="ifRoom" android:title="@string/menu_create_file" android:icon="@mipmap/ic_action_new" />
-    <item android:id="@+id/menuRefresh" app:showAsAction="ifRoom" android:title="@string/menu_refresh" android:icon="@mipmap/ic_action_refresh" />
+    <item android:id="@+id/menuQuickPhoto"
+        app:showAsAction="ifRoom"
+        android:title="@string/menu_quick_photo"
+        android:icon="@mipmap/ic_action_camera" />
+
+    <item android:id="@+id/menuCreateFile"
+        app:showAsAction="ifRoom"
+        android:title="@string/menu_create_file"
+        android:icon="@mipmap/ic_action_new" />
+
+    <item android:id="@+id/menuRefresh"
+        app:showAsAction="ifRoom"
+        android:title="@string/menu_refresh"
+        android:icon="@mipmap/ic_action_refresh" />
+
+    <!-- Below for test only -->
+
+    <item android:id="@+id/showEmptyFolder"
+        app:showAsAction="ifRoom"
+        android:title="@string/menu_refresh"
+        android:icon="@mipmap/ic_action_refresh" />
     
 </menu>
-<!--
-
-    <item android:id="@+id/menuShowFolderDetails" app:showAsAction="ifRoom" android:title="@string/menu_show_folder_details" />
-
--->

@@ -1,0 +1,59 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      tools:context="au.com.kbrsolutions.privatenotes.HomeActivity">
+
+    <item android:id="@+id/menuShowTrashed" app:showAsAction="never" android:title="@string/menu_show_trashed_files" />
+    <item android:id="@+id/menuHideTrashed" app:showAsAction="never" android:title="@string/menu_hide_trashed_files" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:title="@string/action_settings"/> 
+
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="90"
+        app:showAsAction="never"
+        android:title="@string/action_about"/> 
+
+    <item
+        android:id="@+id/action_legal_notices"
+        android:orderInCategory="90"
+        app:showAsAction="never"
+        android:title="@string/action_legal_notices"/>
+
+    <item
+        android:id="@+id/action_connect_to_google_drive"
+        android:orderInCategory="99"
+        app:showAsAction="never"
+        android:title="@string/action_connect_to_google_drive"/>
+
+    <item
+        android:id="@+id/action_disconnect_from_google_drive"
+        android:orderInCategory="99"
+        app:showAsAction="never"
+        android:title="@string/action_disconnect_from_google_drive"/>
+
+    <item
+        android:id="@+id/action_resend_file"
+        android:orderInCategory="99"
+        app:showAsAction="never"
+        android:title="@string/action_resend_file"/>
+        android:title="@string/action_paste_password"/>
+
+</menu>
+
+<!--    
+
+    <item
+        android:id="@+id/action_paste_password"
+        android:orderInCategory="99"
+        android:showAsAction="never"
+
+    <item android:id="@+id/menuQuickPhoto" android:showAsAction="ifRoom" android:fileTitle="@string/menu_quick_photo" android:icon="@drawable/ic_action_camera" />
+    <item android:id="@+id/menuRefresh" android:showAsAction="ifRoom" android:fileTitle="@string/menu_refresh" android:icon="@drawable/ic_action_refresh" />
+    <item android:id="@+id/menuCreateFile" android:showAsAction="ifRoom" android:fileTitle="@string/menu_new_text" android:icon="@drawable/ic_action_new" />
+
+
+ -->

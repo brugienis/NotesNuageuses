@@ -7,26 +7,23 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import au.com.kbrsolutions.notesnuageuses.R
-import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.dummy.DummyContent
-import kotlinx.android.synthetic.main.fragment_retrieving_folder_in_progress.*
 import kotlinx.android.synthetic.main.fragment_retrieving_folder_in_progress.view.*
 
 
-class RetrievingFolderInProgressFragment : Fragment() {
+class DownloadFragment : Fragment() {
 
     private var mContext: Context? = null
-    private var mRetrievingFolderInProgressFragment:String = "Folder name undefined"
+    private var mRetrievingFolderName:String = "Folder name undefined"
+    private var listener: OnDownloadFragmentInteractionListener? = null
 
     init {
-        Log.v("RetrievingFolderInProgressFragment", " - init ")
+        Log.v("DownloadFragment", " - init ")
     }
 
     override fun onAttach(activity: Context) {
         super.onAttach(activity)
-        this.mContext = activity as HomeActivity
+        this.mContext = activity
     }
 
     /*
@@ -34,24 +31,27 @@ class RetrievingFolderInProgressFragment : Fragment() {
 	 */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.v("RetrievingFolderInProgressFragment", "onCreate - arguments: ${arguments} ")
-        mRetrievingFolderInProgressFragment =
-                arguments.getString(ARG_RETRIEVING_FOLDER_TITLE_KEY)
-        //    setHasOptionsMenu(true);		// remove comment if custom menu items should be added
+//        Log.v("DownloadFragment", "onCreate - arguments: $arguments ")
+
+        arguments?.let {
+            mRetrievingFolderName = it.getString(ARG_RETRIEVING_FOLDER_TITLE_KEY)
+        }
+
+//        mRetrievingFolderName = arguments.getString(ARG_RETRIEVING_FOLDER_TITLE_KEY)
+            setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_retrieving_folder_in_progress, container,
                 false)
-        rootView.retrievingFolderTitleId.text = resources.getString(
-                R.string.retrieving_folder_folder,
-                mRetrievingFolderInProgressFragment)
+        rootView.retrievingFolderTitleId.text =
+                resources.getString(R.string.retrieving_folder_folder, mRetrievingFolderName)
         return rootView
     }
 
-    fun setRetrievingFolderInProgressFragment(retrievingFolderInProgressFragment: String) {
-        mRetrievingFolderInProgressFragment = retrievingFolderInProgressFragment
+    fun setRetrievingFolderName(retrievingFolderName: String) {
+        mRetrievingFolderName = retrievingFolderName
     }
 
     /**
@@ -65,28 +65,25 @@ class RetrievingFolderInProgressFragment : Fragment() {
      * [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
-    interface OnRetrievingFolderInProgressFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onRetrievingFolderInProgressFragmentInteraction(item: DummyContent.DummyItem?)
+    interface OnDownloadFragmentInteractionListener {
+//        fun setRetrievingFolderName(retrievingFolderInProgressFragment: String)
     }
 
     companion object {
 
-        private val TAG = RetrievingFolderInProgressFragment::class.java.simpleName
+        private val TAG = DownloadFragment::class.java.simpleName
 
         const val ARG_RETRIEVING_FOLDER_TITLE_KEY = "retrieving_folder_title_key"
 
-        // TODO: Customize parameter argument names
         const val ARG_COLUMN_COUNT = "column-count"
 
-        // TODO: Customize parameter initialization
         @JvmStatic
         fun newInstance(retievingFolderName: String) =
-                RetrievingFolderInProgressFragment().apply {
+                DownloadFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_RETRIEVING_FOLDER_TITLE_KEY, retievingFolderName)
                     }
-                    Log.v("RetrievingFolderInProgressFragment", "newInstance - arguments: ${arguments} ")
+                    Log.v("DownloadFragment", "newInstance - arguments: ${arguments} ")
                 }
 
     }
