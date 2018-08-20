@@ -51,8 +51,6 @@ r
 Bapp/src/main/res/layout/fragment_retrieving_folder_in_progress.xml,d/f/df8e3057a7ae1f3b54e1889cf9148eaa5e552870
 â
 Yapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/adapters/FolderItem.kt,b/a/ba90aeb6f63391ed5fb01668a38744756fc47bb3
-¢
-rapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/RetrievingFolderInProgressFragment.kt,0/a/0a152627ccc0a48f3eec529113d4a3fc98861b29
 R
 "app/src/main/res/values/colors.xml,9/6/969faa2a5d9f5e8390e958d2c07f2cfd54676e6b
 Y
@@ -69,3 +67,7 @@ aapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/adapters/Fol
 bapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/DelAnyTimeFragment.kt,9/2/92ea97325af307f90604ab5f33fc254d7552db12
 í
 bapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/dummy/DummyContent.kt,9/c/9c6c1931b376dbe81a7966620aa46f5dbe9e3bbb
+N
+app/src/main/res/menu/home.xml,b/4/b4d3d4426d9d2842f8b0d3657a40773ebe80c2d0
+ê
+`app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/DownloadFragment.kt,1/b/1bf4acbd3a293157e0cc9f7a1639ec56f22a1dac

@@ -15,10 +15,10 @@ class DownloadFragment : Fragment() {
 
     private var mContext: Context? = null
     private var mRetrievingFolderName:String = "Folder name undefined"
-    private var listener: OnDownloadFragmentInteractionListener? = null
+    private var mArgsProcessed = false
 
     init {
-        Log.v("DownloadFragment", " - init ")
+        Log.v("DownloadFragment", " - initialize ")
     }
 
     override fun onAttach(activity: Context) {
@@ -31,10 +31,11 @@ class DownloadFragment : Fragment() {
 	 */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        Log.v("DownloadFragment", "onCreate - arguments: $arguments ")
 
-        arguments?.let {
-            mRetrievingFolderName = it.getString(ARG_RETRIEVING_FOLDER_TITLE_KEY)
+        if (!mArgsProcessed) {
+            arguments?.let {
+                mRetrievingFolderName = it.getString(ARG_RETRIEVING_FOLDER_TITLE_KEY)
+            }
         }
 
 //        mRetrievingFolderName = arguments.getString(ARG_RETRIEVING_FOLDER_TITLE_KEY)
@@ -74,8 +75,6 @@ class DownloadFragment : Fragment() {
         private val TAG = DownloadFragment::class.java.simpleName
 
         const val ARG_RETRIEVING_FOLDER_TITLE_KEY = "retrieving_folder_title_key"
-
-        const val ARG_COLUMN_COUNT = "column-count"
 
         @JvmStatic
         fun newInstance(retievingFolderName: String) =

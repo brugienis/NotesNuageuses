@@ -17,7 +17,6 @@ import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.DownloadFragment
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.DownloadFragment.OnDownloadFragmentInteractionListener
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.EmptyFolderFragment
 import au.com.kbrsolutions.notesnuageuses.features.tasks.RetrieveDriveFolderInfoTask
 import kotlinx.android.synthetic.main.activity_main.*
@@ -34,7 +33,7 @@ import java.util.concurrent.Future
 //          https://developers.google.com/drive/android/intro
 //          https://developers.google.com/drive/android/examples/
 
-class HomeActivity : BaseActivity(), OnDownloadFragmentInteractionListener {
+class HomeActivity : BaseActivity() {
 
     private lateinit var eventBus: EventBus
     private val mTestMode: Boolean = false
@@ -52,14 +51,15 @@ class HomeActivity : BaseActivity(), OnDownloadFragmentInteractionListener {
     private var folderArrayAdapter: FolderArrayAdapter<FolderItem>? = null
 
     companion object {
+        private val TAG = HomeActivity::class.java.simpleName
         const val EMPTY_FOLDER_TAG = "empty_folder_tag"
-        const val RETRIEVE_FOLDER_PROGRESS_TAG = "retrieve_folder_progress_tag";
+        const val RETRIEVE_FOLDER_PROGRESS_TAG = "retrieve_folder_progress_tag"
     }
 
     var fragmentsStack = FragmentsStack
 
     init {
-        fragmentsStack.init(mTestMode);
+        fragmentsStack.initialize(mTestMode);
     }
 
     enum class FragmentsEnum {
@@ -94,8 +94,6 @@ class HomeActivity : BaseActivity(), OnDownloadFragmentInteractionListener {
     private enum class TouchedObject {
         MENUE_QUICK_PHOTO, MENUE_CREATE_FILE, MENUE_REFRESH, FILE_OR_FOLDER
     }
-
-    private val TAG = "HomeActivity"
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -133,7 +131,7 @@ class HomeActivity : BaseActivity(), OnDownloadFragmentInteractionListener {
         startFuturesHandlers("onDriveClientReady")
         val folderFragmentsCnt = fragmentsStack.getFolderFragmentCount()
         if (folderFragmentsCnt == 0 || (foldersData.getCurrFolderLevel() !== folderFragmentsCnt - 1)) {
-            fragmentsStack.init(mTestMode)
+            fragmentsStack.initialize(mTestMode)
 //			isNotConnectedToGoogleDrive("onConnected");
             val rootFolderName = getString(R.string.app_root_folder_name)
             val args = Bundle()
@@ -186,10 +184,10 @@ class HomeActivity : BaseActivity(), OnDownloadFragmentInteractionListener {
     private fun setFolderFragment(folderData: FolderData) {
         Log.v(TAG, "setFolderFragment - folderData: $folderData")
         if (folderData.filesMetadatasInfo.size == 0 || folderData.filesMetadatasInfo.size == folderData.trashedFilesCnt && !showTrashedFiles) {
-            if (emptyFolderFragment == null) {
-                emptyFolderFragment = EmptyFolderFragment()
-            }
-            emptyFolderFragment!!.setTrashedFilesCnt(folderData.trashedFilesCnt)
+//            if (emptyFolderFragment == null) {
+//                emptyFolderFragment = EmptyFolderFragment()
+//            }
+//            emptyFolderFragment!!.setTrashedFilesCnt(folderData.trashedFilesCnt)
             setFragment(
                     FragmentsEnum.EMPTY_FOLDER_FRAGMENT,
                     folderData.newFolderTitle,
@@ -220,8 +218,14 @@ class HomeActivity : BaseActivity(), OnDownloadFragmentInteractionListener {
         when (fragmentId) {
 
             HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
+                val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: -1
+                Log.v("HomeActivity", "setFragment - emptyFolderFragment: ${emptyFolderFragment} ")
                 if (emptyFolderFragment == null) {
-                    emptyFolderFragment = EmptyFolderFragment()
+                    emptyFolderFragment =
+//                            EmptyFolderFragment.newInstance(trashFilesCnt)
+                            EmptyFolderFragment.newInstance(33)
+                } else {
+                    emptyFolderFragment!!.setTrashedFilesCnt(trashFilesCnt)
                 }
                 fragmentTransaction = fragmentManager.beginTransaction()
                 fragmentTransaction.replace(R.id.fragments_frame, emptyFolderFragment, EMPTY_FOLDER_TAG)
@@ -429,16 +433,12 @@ class HomeActivity : BaseActivity(), OnDownloadFragmentInteractionListener {
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         var menuItem: MenuItem
         if (!mTestMode) {
-            menuItem = menu.findItem(R.id.action_disconnect_from_google_drive)
-            menuItem.isVisible = false                                    // do both to hide a menu item
-            menuItem.isEnabled = false
-            menuItem = menu.findItem(R.id.action_connect_to_google_drive)
-            menuItem.isVisible = false
-            menuItem.isEnabled = false
             menuItem = menu.findItem(R.id.action_resend_file)
             menuItem.isVisible = false
             menuItem.isEnabled = false
-            //        } else if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            menuItem = menu.findItem(R.id.action_show_root_folder)
+            menuItem.isVisible = false
+            menuItem.isEnabled = false
         } else if (fragmentsStack.getCurrFragment() !== FragmentsEnum.FOLDER_FRAGMENT && fragmentsStack.getCurrFragment() !== FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
             menuItem = menu.findItem(R.id.menuShowTrashed)
             menuItem.isVisible = false
@@ -466,6 +466,9 @@ class HomeActivity : BaseActivity(), OnDownloadFragmentInteractionListener {
             //				menuItem.setTitle("show trashed files - " + trashedFilesCnt);
             menuItem.title = resources.getString(R.string.menu_show_trashed_files, foldersData.getCurrentFolderTrashedFilesCnt())
         }
+        menuItem = menu.findItem(R.id.action_show_root_folder)
+        menuItem.isVisible = true
+        menuItem.isEnabled = true
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -481,6 +484,7 @@ class HomeActivity : BaseActivity(), OnDownloadFragmentInteractionListener {
             R.id.action_settings -> handleSettings()
             R.id.action_about -> handleAbout()
             R.id.action_legal_notices -> handleLegalNotices()
+            R.id.action_show_root_folder -> handleShowRootFolder()
 //            R.id.action_resend_file -> {
 //                val resendPhotoToGoogleDriveCallable = ResendFileToGoogleDriveCallable()
 //                handleNonCancellableFuturesCallable.submitCallable(resendPhotoToGoogleDriveCallable)
@@ -500,6 +504,11 @@ class HomeActivity : BaseActivity(), OnDownloadFragmentInteractionListener {
             else -> return super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    private fun handleShowRootFolder() {
+        fragmentsStack.initialize(mTestMode)
+        onDriveClientReady()
     }
 
     private fun handleMenuHideTrashed() {

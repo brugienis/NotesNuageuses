@@ -27,7 +27,7 @@ object FragmentsStack {
     private val TAG = "xyz" + FragmentsStack::class.java.simpleName
 
     @Synchronized
-    fun init(mTestMode: Boolean) {
+    fun initialize(mTestMode: Boolean) {
         foldersData.init()
         this.mTestMode = mTestMode
         fragmentsArrayDeque = ArrayDeque()

@@ -23,7 +23,7 @@ class FragmentsStackTest {
     fun setUp() {
         testFragmentStack = FragmentsStack
         testFoldersData = FoldersData
-        testFragmentStack!!.init(true)
+        testFragmentStack!!.initialize(true)
         testFoldersData!!.init()
     }
 
@@ -808,7 +808,7 @@ class FragmentsStackTest {
 
 
 //    @Test
-//    fun init() {
+//    fun initialize() {
 //    }
 //
 //    @Test

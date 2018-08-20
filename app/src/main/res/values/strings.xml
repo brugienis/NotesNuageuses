@@ -17,6 +17,7 @@
     <string name="action_connect_to_google_drive">Connect</string>
     <string name="action_disconnect_from_google_drive">Disconnect</string>
     <string name="action_resend_file">Resend file</string>
+    <string name="action_show_root_folder">Show root</string>
 
     <string name="menu_quick_photo">Take quick photo</string>
     <string name="menu_refresh">Refresh</string>
