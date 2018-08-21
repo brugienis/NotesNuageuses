@@ -289,6 +289,8 @@ class HomeActivity : BaseActivity(),
 //                dismissRefreshProgressBarCallableRunnable = DismissRefreshProgressBarCallableRunnable()
 //                handler.postDelayed(dismissRefreshProgressBarCallableRunnable, DISSMISS_REFRESH_PROGRESS_DELAY_MILLS)
                 val folderData1 = event.foldersAddData
+                val folderName = folderData1!!.newFolderTitle
+                setActionBarTitle(folderName)
 //                Log.v(TAG, "onMessageEvent - newFolderTitle/filesMetadatasInfo.size(): ${if (folderData1 == null) "null" else folderData1!!.newFolderTitle + "/" + folderData1!!.filesMetadatasInfo.size}")
                 if (folderData1 != null && folderData1.filesMetadatasInfo.size == 0) {
                     setFolderFragment(folderData1) // empty folder
@@ -312,6 +314,8 @@ class HomeActivity : BaseActivity(),
 
             FoldersEvents.Events.FOLDER_CREATED -> {
 //				addMsgToActivityLogShowOnScreen("Folder created");
+                val folderName = event.newFileName ?: "undefined"
+                setActionBarTitle(folderName)
                 val tackFragmentsAfterAdd = fragmentsStack.getFragmentsList()
                 Log.v(TAG, " - actualStackFragmentsAfterAdd: ${printCollection("after fragments added", tackFragmentsAfterAdd)}")
                 val currFolder = fragmentsStack . getCurrFragment ()
@@ -322,7 +326,7 @@ class HomeActivity : BaseActivity(),
                             currFolder, FragmentsEnum.FOLDER_FRAGMENT);
                     setFragment(
                             FragmentsEnum.FOLDER_FRAGMENT,
-                            event.newFileName!!,
+                            folderName,
                             false,
                             FragmentsCallingSourceEnum.ON_EVENT_MAIN_THREAD,
                             null,
@@ -334,6 +338,13 @@ class HomeActivity : BaseActivity(),
 
             else -> throw RuntimeException("TAG - onEventMainThread - no code to handle folderRequest: $request")
         }
+    }
+
+    private var mTitle: CharSequence? = null
+    fun setActionBarTitle(title: CharSequence, source: String = "undefined") {
+        Log.v("HomeActivity", "setActionBarTitle - source: ${source} ")
+        mTitle = title
+        supportActionBar!!.setTitle(title)
     }
 
     private fun printCollection(msg: String, coll: Array<HomeActivity.FragmentsEnum>) {
