@@ -71,3 +71,7 @@ N
 `app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/DownloadFragment.kt,1/b/1bf4acbd3a293157e0cc9f7a1639ec56f22a1dac
 Œ
 \app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/CreateDriveFolderTask.kt,2/3/23cc4f4a541e2bdae0bc728c2253a6ea6be8995f
+^
+.app/src/main/res/layout/create_file_dialog.xml,4/4/44947537e4f0e0d661038f9654a5fe2eff6ab9ba
+Ž
+^app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/dialogs/CreateFileDialog.kt,4/8/488dcc66cfc187f9455eafb84ffbad8b238af039

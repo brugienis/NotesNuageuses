@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/locationDialogRootViewId"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal|center_vertical"
+        android:text="@string/create_dialog_header"
+        android:textColor="@android:color/black" />
+
+    <View android:layout_height="1dip" android:layout_width="match_parent" android:background="#FF909090"/>
+
+    <EditText
+        android:id="@+id/createDialogFileNameId"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:enabled="true"
+        android:inputType="text|textMultiLine"
+        android:textAlignment="gravity"
+        android:textColor="@android:color/black" />
+
+    <View android:layout_height="3dip" android:layout_width="match_parent" android:background="#FF909090"/>
+
+    <TextView
+        android:id="@+id/createDialogFolderId"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:paddingLeft="40dp"
+        android:text="@string/create_dialog_folder"
+        android:textColor="@android:color/black" />
+
+    <View android:layout_height="1dip" android:layout_width="match_parent" android:background="#FF909090"/>
+
+    <TextView
+        android:id="@+id/createDialogPhotoId"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:paddingLeft="40dp"
+        android:text="@string/create_dialog_photo"
+        android:textColor="@android:color/black" />
+
+    <View android:layout_height="1dip" android:layout_width="match_parent" android:background="#FF909090"/>
+
+    <TextView
+        android:id="@+id/createDialogTextId"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:paddingLeft="40dp"
+        android:text="@string/create_dialog_text"
+        android:textColor="@android:color/black" />
+
+    <View android:layout_height="1dip" android:layout_width="match_parent" android:background="#FF909090"/>
+
+    <TextView
+        android:id="@+id/createDialogCancelId"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal|center_vertical"
+        android:text="@string/create_dialog_cancel"
+        android:textColor="@android:color/black" />
+
+</LinearLayout>

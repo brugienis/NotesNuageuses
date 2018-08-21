@@ -26,6 +26,14 @@
     <string name="menu_hide_trashed_files">Hide trashed files (%1$d)</string>
     <string name="menu_show_folder_details">Folder details</string>
 
+    <!-- create_dialog -->
+    <string name="title_activity_create_dialog">CreateDialogActivity</string>
+    <string name="create_dialog_header">Create</string>
+    <string name="create_dialog_folder">Folder</string>
+    <string name="create_dialog_photo">Photo</string>
+    <string name="create_dialog_text">Text note</string>
+    <string name="create_dialog_cancel">Cancel</string>
+
     <!-- DownloadFragment -->
     <string name="retrieving_folder_title">Retrieving folder</string>
     <string name="retrieving_folder_folder">Retrieving (%1$s) folder data in progress</string>

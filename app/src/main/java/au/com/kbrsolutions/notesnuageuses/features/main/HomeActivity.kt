@@ -16,8 +16,10 @@ import au.com.kbrsolutions.notesnuageuses.features.events.ActivitiesEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
+import au.com.kbrsolutions.notesnuageuses.features.main.dialogs.CreateFileDialog
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.DownloadFragment
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.EmptyFolderFragment
+import au.com.kbrsolutions.notesnuageuses.features.tasks.CreateDriveFolderTask
 import au.com.kbrsolutions.notesnuageuses.features.tasks.RetrieveDriveFolderInfoTask
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
@@ -33,7 +35,9 @@ import java.util.concurrent.Future
 //          https://developers.google.com/drive/android/intro
 //          https://developers.google.com/drive/android/examples/
 
-class HomeActivity : BaseActivity() {
+class HomeActivity : BaseActivity(),
+        EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
+        CreateFileDialog.OnCreateFileDialogInteractionListener {
 
     private lateinit var eventBus: EventBus
     private val mTestMode: Boolean = false
@@ -90,10 +94,6 @@ class HomeActivity : BaseActivity() {
         LEGAL_NOTICES,
 
         ACTIVITY_NOT_FRAGMENT
-    }
-
-    private enum class TouchedObject {
-        MENUE_QUICK_PHOTO, MENUE_CREATE_FILE, MENUE_REFRESH, FILE_OR_FOLDER
     }
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -216,8 +216,7 @@ class HomeActivity : BaseActivity() {
                 Log.v("HomeActivity", "setFragment - emptyFolderFragment: $emptyFolderFragment ")
                 if (emptyFolderFragment == null) {
                     emptyFolderFragment =
-//                            EmptyFolderFragment.newInstance(trashFilesCnt)
-                            EmptyFolderFragment.newInstance(33)
+                            EmptyFolderFragment.newInstance(trashFilesCnt)
                 } else {
                     emptyFolderFragment!!.setTrashedFilesCnt(trashFilesCnt)
                 }
@@ -281,7 +280,7 @@ class HomeActivity : BaseActivity() {
                 )
             }
 
-            ActivitiesEvents.HomeEvents.FOLDER_DATA_RETRIEVED -> {
+            FoldersEvents.Events.FOLDER_DATA_RETRIEVED -> {
 //                if (dismissRefreshProgressBarCallableRunnable != null) {
 //                    handler.removeCallbacks(dismissRefreshProgressBarCallableRunnable)            // remove just in case if there is already one waiting in a queue
 //                }
@@ -299,7 +298,7 @@ class HomeActivity : BaseActivity() {
                 }
             }
 
-            ActivitiesEvents.HomeEvents.FOLDER_DATA_RETRIEVE_PROBLEM -> {
+            FoldersEvents.Events.FOLDER_DATA_RETRIEVE_PROBLEM -> {
                 Log.v("HomeActivity", "onMessageEvent - msgContents: $msgContents")
 //                addMsgToActivityLogShowOnScreen(event.msgContents, true, true)
 //                if (dismissRefreshProgressBarCallableRunnable != null) {
@@ -311,8 +310,36 @@ class HomeActivity : BaseActivity() {
 
 //            ActivitiesEvents.HomeEvents.SHOW_MESSAGE -> addMsgToActivityLogShowOnScreen(msgContents, true, true)
 
+            FoldersEvents.Events.FOLDER_CREATED -> {
+//				addMsgToActivityLogShowOnScreen("Folder created");
+                val tackFragmentsAfterAdd = fragmentsStack.getFragmentsList()
+                Log.v(TAG, " - actualStackFragmentsAfterAdd: ${printCollection("after fragments added", tackFragmentsAfterAdd)}")
+                val currFolder = fragmentsStack . getCurrFragment ()
+                if (currFolder == FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {    // folder is no longer empty
+                    val success = fragmentsStack.replaceCurrFragment (
+                            "onEventMainThread FOLDER_CREATED" +
+                                    event.request,
+                            currFolder, FragmentsEnum.FOLDER_FRAGMENT);
+                    setFragment(
+                            FragmentsEnum.FOLDER_FRAGMENT,
+                            event.newFileName!!,
+                            false,
+                            FragmentsCallingSourceEnum.ON_EVENT_MAIN_THREAD,
+                            null,
+                            null)
+                } else {
+                    updateFolderListAdapter()
+                }
+            }
+
             else -> throw RuntimeException("TAG - onEventMainThread - no code to handle folderRequest: $request")
         }
+    }
+
+    private fun printCollection(msg: String, coll: Array<HomeActivity.FragmentsEnum>) {
+        Log.i(TAG, "\nprintCollection $msg")
+        coll.forEach { Log.i(TAG, it.toString()) }
+        Log.i(TAG, "\nend")
     }
 
     private fun retrievingAppFolderDriveInfoTaskDone(folderData: FolderData?) {
@@ -465,7 +492,7 @@ class HomeActivity : BaseActivity() {
         when (item.itemId) {
             R.id.menuQuickPhoto -> handleCameraOptionSelected()
             R.id.menuRefresh -> handleRefreshOptionSelected()
-            R.id.menuCreateFile -> handleCreateFileOptionSelected()
+//            R.id.menuCreateFile -> handleCreateFileOptionSelected()
 //            R.id.activity_log_clearActivityLog -> actvityListAdapter.clear()
             R.id.action_settings -> handleSettings()
             R.id.action_about -> handleAbout()
@@ -490,6 +517,42 @@ class HomeActivity : BaseActivity() {
             else -> return super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    override fun showFileDialog() {
+        val dialog = CreateFileDialog.newInstance()
+        dialog.show(fragmentManager, "dialog")
+    }
+    override fun createFolder(fileName: CharSequence) {
+//        emptyFolderFragment!!.createFolder(fileName)
+        handleNonCancellableFuturesCallable!!.submitCallable(
+                CreateDriveFolderTask.Builder()
+                        .activity(this)
+                        .eventBus(eventBus)
+                        .driveResourceClient(mDriveResourceClient)
+                        .newFolderName(fileName.toString())
+                        .parentFolderLevel(foldersData.getCurrFolderLevel())
+                        .parentFolderDriveId(foldersData.getCurrFolderDriveId())
+                        .foldersData(foldersData)
+                        .build())
+        /*
+
+    public void processFolderName(String fileName) {
+        eventBus.post(new ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents.CREATE_FOLDER)
+                .setFileName(fileName)
+                .setCurrFolderLevel(foldersData.getCurrFolderLevel())
+                .setCurrFolderDriveId(foldersData.getCurrFolderDriveId())
+                .build());
+    }
+         */
+    }
+
+    override fun createPhotoNote() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun createTextNote() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun handleShowRootFolder() {

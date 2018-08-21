@@ -107,7 +107,7 @@ data class CreateDriveFolderTask(
         fun parentFolderLevel(parentFolderLevel: Int) =
             apply { this.parentFolderLevel = parentFolderLevel }
 
-        fun parentFolderDriveId(parentFolderDriveId: DriveId) =
+        fun parentFolderDriveId(parentFolderDriveId: DriveId?) =
                 apply { this.parentFolderDriveId = parentFolderDriveId }
 
         fun newFolderName(newFolderName: String) = apply { this.newFolderName = newFolderName }
