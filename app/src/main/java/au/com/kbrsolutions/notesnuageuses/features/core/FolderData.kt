@@ -10,4 +10,7 @@ data class FolderData(
         val fileParentFolderDriveId: DriveId,
         val newFolderData: Boolean,
         val trashedFilesCnt: Int,
-        val filesMetadatasInfo: ArrayList<FileMetadataInfo>)
+        val filesMetadatasInfo: ArrayList<FileMetadataInfo>) {
+    var isEmptyOrAllFilesTrashed =
+            filesMetadatasInfo.size == 0 || filesMetadatasInfo.size == trashedFilesCnt
+}

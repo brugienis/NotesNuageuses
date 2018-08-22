@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.base.BaseActivity
+import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.addFragment
@@ -19,6 +20,7 @@ import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import au.com.kbrsolutions.notesnuageuses.features.main.dialogs.CreateFileDialog
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.DownloadFragment
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.EmptyFolderFragment
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FolderFragment
 import au.com.kbrsolutions.notesnuageuses.features.tasks.CreateDriveFolderTask
 import au.com.kbrsolutions.notesnuageuses.features.tasks.RetrieveDriveFolderInfoTask
 import kotlinx.android.synthetic.main.activity_main.*
@@ -37,6 +39,7 @@ import java.util.concurrent.Future
 
 class HomeActivity : BaseActivity(),
         EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
+        FolderFragment.OnFolderFragmentInteractionListener,
         CreateFileDialog.OnCreateFileDialogInteractionListener {
 
     private lateinit var eventBus: EventBus
@@ -51,12 +54,15 @@ class HomeActivity : BaseActivity(),
     private var currFragment: FragmentsEnum? = null
 
     private var emptyFolderFragment: EmptyFolderFragment? = null
+    private var folderFragment: FolderFragment? = null
     private var downloadFragment: DownloadFragment? = null
     private var folderArrayAdapter: FolderArrayAdapter<FolderItem>? = null
 
     companion object {
         private val TAG = HomeActivity::class.java.simpleName
+
         const val EMPTY_FOLDER_TAG = "empty_folder_tag"
+        const val FOLDER_TAG = "folder_tag"
         const val RETRIEVE_FOLDER_PROGRESS_TAG = "retrieve_folder_progress_tag"
         const val RETRIEVING_FOLDER_TITLE_KEY = "retrieving_folder_title_key"
     }
@@ -181,20 +187,26 @@ class HomeActivity : BaseActivity(),
      */
     private fun setFolderFragment(folderData: FolderData) {
         Log.v(TAG, "setFolderFragment - folderData: $folderData")
-        if (folderData.filesMetadatasInfo.size == 0 || folderData.filesMetadatasInfo.size == folderData.trashedFilesCnt && !showTrashedFiles) {
+        if (folderData.isEmptyOrAllFilesTrashed && !showTrashedFiles) {
             setFragment(
                     FragmentsEnum.EMPTY_FOLDER_FRAGMENT,
                     folderData.newFolderTitle,
                     true,
                     FragmentsCallingSourceEnum.UPDATE_FOLDER_LIST_ADAPTER,
-                    folderData, null)
+                    folderData,
+                    null)
         } else {
-            // TODO: deal with non empty folder later
 //            if (folderFragment == null) {
 //                folderFragment = FolderFragment()
 //            }
 //            folderFragment.setTrashedFilesCnt(folderData.trashedFilesCnt)
-//            setFragment(FragmentsEnum.FOLDER_FRAGMENT, folderData.newFolderTitle, true, FragmentsCallingSourceEnum.UPDATE_FOLDER_LIST_ADAPTER, folderData)
+            setFragment(
+                    FragmentsEnum.FOLDER_FRAGMENT,
+                    folderData.newFolderTitle,
+                    true,
+                    FragmentsCallingSourceEnum.UPDATE_FOLDER_LIST_ADAPTER,
+                    folderData,
+                    null)
         }
     }
 
@@ -211,12 +223,11 @@ class HomeActivity : BaseActivity(),
 //                (foldersAddData?.newFolderTitle ?: "null"))
         when (fragmentId) {
 
-            HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
+            FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
                 val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: -1
                 Log.v("HomeActivity", "setFragment - emptyFolderFragment: $emptyFolderFragment ")
                 if (emptyFolderFragment == null) {
-                    emptyFolderFragment =
-                            EmptyFolderFragment.newInstance(trashFilesCnt)
+                    emptyFolderFragment = EmptyFolderFragment.newInstance(trashFilesCnt)
                 } else {
                     emptyFolderFragment!!.setTrashedFilesCnt(trashFilesCnt)
                 }
@@ -225,7 +236,7 @@ class HomeActivity : BaseActivity(),
                 fragmentTransaction.commit()
             }
 
-            HomeActivity.FragmentsEnum.RETRIEVE_FOLDER_PROGRESS_FRAGMENT -> {
+            FragmentsEnum.RETRIEVE_FOLDER_PROGRESS_FRAGMENT -> {
                 val retrievingFolderName = fragmentArgs!!.getString(RETRIEVING_FOLDER_TITLE_KEY)
 //                        getString(R.string.retrieving_folder_default_title))
                 if (downloadFragment == null) {
@@ -243,6 +254,55 @@ class HomeActivity : BaseActivity(),
                                 downloadFragment,
                                 RETRIEVE_FOLDER_PROGRESS_TAG)
                         .commit()
+            }
+
+            FragmentsEnum.FOLDER_FRAGMENT -> {
+                val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: -1
+                val folderItemsList = ArrayList<FolderItem>()
+
+
+                val list: ArrayList<FileMetadataInfo>?
+                if (foldersAddData == null) {
+                    list = foldersData.getCurrFolderMetadataInfo()
+                } else {
+                    list = foldersAddData.filesMetadatasInfo
+                }
+                for ((itemIdxInList, folderMetadataInfo) in list!!.withIndex()) {        // foldersData.getCurrFolderMetadataInfo()) {
+                    if (!folderMetadataInfo.isTrashed || folderMetadataInfo.isTrashed && showTrashedFiles) {
+                        folderItemsList.add(FolderItem(
+                                folderMetadataInfo.fileTitle,
+                                folderMetadataInfo.updateDt,
+                                folderMetadataInfo.mimeType,
+                                folderMetadataInfo.isTrashed,
+                                itemIdxInList))
+//                        currFolderTitleIdx.put(folderMetadataInfo.fileTitle, idx)
+                    }
+                }
+
+                if (folderFragment == null) {
+                    folderFragment = FolderFragment.newInstance(trashFilesCnt)
+                } else {
+                    folderFragment!!.setTrashedFilesCnt(trashFilesCnt)
+                }
+
+                Log.v("HomeActivity", "setFragment - folderArrayAdapter: $folderArrayAdapter folderItemsList: $folderItemsList")
+                if (folderArrayAdapter == null) {
+                    folderArrayAdapter = FolderArrayAdapter(this, folderFragment!!, folderItemsList)
+                    folderFragment!!.listAdapter = folderArrayAdapter
+                    Log.v("HomeActivity", "setFragment - folderArrayAdapter: ${folderArrayAdapter}  after new")
+                } else {
+                    Log.v("HomeActivity", "setFragment - folderArrayAdapter: ${folderArrayAdapter}  before clear")
+                    folderArrayAdapter!!.clear()
+                        folderArrayAdapter!!.addAll(folderItemsList)
+                    // fixLater: Aug 22, 2018 - folderArrayAdapter.notify() missing?
+                }
+
+                fragmentTransaction = fragmentManager.beginTransaction()
+                fragmentTransaction.replace(R.id.fragments_frame, folderFragment, FOLDER_TAG)
+                fragmentTransaction.commit()
+//                var f1 = fragmentManager.findFragmentByTag(FOLDER_TAG)
+//                fragmentManager.executePendingTransactions()                // will wait until the replace and commit are done
+//                f1 = fragmentManager.findFragmentByTag(FOLDER_TAG)
             }
 
 //            HomeActivity.FragmentsEnum.FILE_DETAILS_FRAGMENT -> fragmentManager.beginTransaction().replace(R.id.fragments_frame, fileDetailFragment).commit()
@@ -288,11 +348,12 @@ class HomeActivity : BaseActivity(),
 //                removeExpiredFileLockInfoElementsRunnableRunScheduled = true
 //                dismissRefreshProgressBarCallableRunnable = DismissRefreshProgressBarCallableRunnable()
 //                handler.postDelayed(dismissRefreshProgressBarCallableRunnable, DISSMISS_REFRESH_PROGRESS_DELAY_MILLS)
+
                 val folderData1 = event.foldersAddData
                 val folderName = folderData1!!.newFolderTitle
                 setActionBarTitle(folderName)
-//                Log.v(TAG, "onMessageEvent - newFolderTitle/filesMetadatasInfo.size(): ${if (folderData1 == null) "null" else folderData1!!.newFolderTitle + "/" + folderData1!!.filesMetadatasInfo.size}")
-                if (folderData1 != null && folderData1.filesMetadatasInfo.size == 0) {
+
+                if (folderData1 != null && folderData1.isEmptyOrAllFilesTrashed) {
                     setFolderFragment(folderData1) // empty folder
                     Log.v("HomeActivity", "onMessageEvent - fragmentsStack: $fragmentsStack ")
                 } else {
@@ -336,7 +397,8 @@ class HomeActivity : BaseActivity(),
                 }
             }
 
-            else -> throw RuntimeException("TAG - onEventMainThread - no code to handle folderRequest: $request")
+            else -> throw RuntimeException(
+                    "TAG - onEventMainThread - no code to handle folderRequest: $request")
         }
     }
 
