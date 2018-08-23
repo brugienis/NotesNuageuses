@@ -3,6 +3,7 @@ package au.com.kbrsolutions.notesnuageuses.features.main
 import android.app.FragmentTransaction
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
+import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -43,6 +44,7 @@ class HomeActivity : BaseActivity(),
         CreateFileDialog.OnCreateFileDialogInteractionListener {
 
     private lateinit var eventBus: EventBus
+    private var mToolbar: Toolbar? = null
     private val mTestMode: Boolean = false
     private var handleCancellableFuturesCallable: HandleCancellableFuturesCallable? = null
     private var mCancellableFuture: Future<String>? = null
@@ -103,7 +105,11 @@ class HomeActivity : BaseActivity(),
     }
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+
+        Log.v("HomeActivity", "onCreate - item.itemId: ${item.itemId} ")
+
         when (item.itemId) {
+
             R.id.navigation_home -> {
                 tabTitleId.setText(R.string.title_home)
                 return@OnNavigationItemSelectedListener true
@@ -130,7 +136,19 @@ class HomeActivity : BaseActivity(),
         eventBus.register(this)
 
         mExecutorService = Executors.newCachedThreadPool()
+
+        // https://freakycoder.com/android-notes-24-how-to-add-back-button-at-toolbar-941e6577418e
+//        mToolbar = findViewById(R.id.toolbar)
+//        setSupportActionBar(mToolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setHomeButtonEnabled(true)
         Log.v(TAG, "onCreate end   - : ")
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        Log.v("HomeActivity", "onSupportNavigateUp - onCreate start ")
+        onBackPressed()
+        return true
     }
 
     override fun onDriveClientReady() {
@@ -196,10 +214,6 @@ class HomeActivity : BaseActivity(),
                     folderData,
                     null)
         } else {
-//            if (folderFragment == null) {
-//                folderFragment = FolderFragment()
-//            }
-//            folderFragment.setTrashedFilesCnt(folderData.trashedFilesCnt)
             setFragment(
                     FragmentsEnum.FOLDER_FRAGMENT,
                     folderData.newFolderTitle,
@@ -399,6 +413,18 @@ class HomeActivity : BaseActivity(),
 
             else -> throw RuntimeException(
                     "TAG - onEventMainThread - no code to handle folderRequest: $request")
+        }
+    }
+
+    override fun onBackPressed() {
+        Log.v("HomeActivity", "onBackPressed - start ")
+        handleCancellableFuturesCallable!!.cancelCurrFuture()
+        val currTitle = supportActionBar!!.title
+//        setOnBackProcessed(true)      // for Unit Tests?
+        val fragmentsStackResponse = removeTopFragment("onBackPressed", true)
+        Log.v("HomeActivity", "onBackPressed - fragmentsStackResponse: $fragmentsStackResponse ")
+        if (fragmentsStackResponse.finishRequired) {
+            super.onBackPressed()
         }
     }
 

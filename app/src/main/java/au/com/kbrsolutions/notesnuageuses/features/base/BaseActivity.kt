@@ -271,7 +271,7 @@ abstract class BaseActivity: AppCompatActivity() {
             cancellableExecutingTaskCnt.addAndGet(1)
         }
 
-        protected fun cancelCurrFuture() {
+        fun cancelCurrFuture() {
             if (currExecutingFuture != null) {
                 if (currExecutingFuture!!.cancel(true)) {
                     cancellableExecutingTaskCnt.addAndGet(-1)
