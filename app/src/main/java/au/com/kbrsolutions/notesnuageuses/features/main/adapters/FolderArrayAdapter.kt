@@ -17,14 +17,15 @@ import java.text.DateFormat
 class FolderArrayAdapter<T>(
         private val mContext: Context,
         private val folderOnClickListener: OnClickListener,
-        private val objects: List<FolderItem>) : ArrayAdapter<FolderItem>(mContext, -1, objects) {
+        private val objects: List<FolderItem>) : ArrayAdapter<FolderItem>(
+        mContext, -1, objects) {
 
     private var fileNameTv: TextView? = null
     private var fileUpdateTsTv: TextView? = null
     private var fileImage: ImageView? = null
     private var infoImage: ImageView? = null
 
-//    private val TAG = FolderArrayAdapter::class.simpleName
+    //    private val TAG = FolderArrayAdapter::class.simpleName
     private val TAG = "FolderArrayAdapter"
 //    private val folderOnClickListener: OnClickListener
     //	@SuppressLint("SimpleDateFormat")
@@ -33,7 +34,7 @@ class FolderArrayAdapter<T>(
 
     init {
 //        folderOnClickListener = folderFragment
-        		Log.i(TAG, "constructor - end - objects.size(): ${objects.size}");
+        		Log.i(TAG, "constructor - end - objects.size(): ${objects.size}")
     }
 
     fun getFolderItem(idx: Int): FolderItem {

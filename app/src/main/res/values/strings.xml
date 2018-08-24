@@ -37,6 +37,7 @@
     <!-- DownloadFragment -->
     <string name="retrieving_folder_title">Retrieving folder</string>
     <string name="retrieving_folder_folder">Retrieving (%1$s) folder data in progress</string>
+    <string name="file_not_uploaded_yet">File not uploaded yet - try again later</string>
 
     <!-- FolderArrayAdapter -->
     <string name="folder_array_adapter_updated">Updated</string>

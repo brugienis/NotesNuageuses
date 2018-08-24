@@ -69,6 +69,7 @@ abstract class BaseActivity: AppCompatActivity() {
     }
 
     override fun onStart() {
+        Log.v("BaseActivity", "onStart - BaseActivity: calling signIn ")
         super.onStart()
         signIn()
     }
@@ -116,6 +117,7 @@ abstract class BaseActivity: AppCompatActivity() {
         val requiredScopes = mutableSetOf<Scope>()
         requiredScopes.add(Drive.SCOPE_FILE)
         requiredScopes.add(Drive.SCOPE_APPFOLDER)
+        Log.v("BaseActivity", "signIn - requiredScopes: ${requiredScopes} ")
         val signInAccount = GoogleSignIn.getLastSignedInAccount(this)
         if (signInAccount != null && signInAccount.grantedScopes.containsAll(requiredScopes)) {
             initializeDriveClient(signInAccount)
@@ -204,7 +206,7 @@ abstract class BaseActivity: AppCompatActivity() {
         return mDriveResourceClient
     }
 
-    protected inner class HandleNonCancellableFuturesCallable(mExecutorService: ExecutorService)
+    inner class HandleNonCancellableFuturesCallable(mExecutorService: ExecutorService)
         : Callable<String> {
 
         private val completionService: CompletionService<String>

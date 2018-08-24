@@ -9,6 +9,7 @@ import android.view.View.OnClickListener
 import android.widget.AdapterView.OnItemLongClickListener
 import android.widget.ListView
 import au.com.kbrsolutions.notesnuageuses.R
+import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 
 class FolderFragment : ListFragment(), OnClickListener {
 
@@ -20,7 +21,6 @@ class FolderFragment : ListFragment(), OnClickListener {
     //	private int selectedItem = -1;
     //	private boolean isFolderEmpty = false;
     //	private Menu mMenu;
-    private var trashedFilesCnt = 11
     private var listener: OnFolderFragmentInteractionListener? = null
     private var mArgsProcessed = false
 
@@ -30,7 +30,6 @@ class FolderFragment : ListFragment(), OnClickListener {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-//        this.mContext = activity as HomeActivity
         if (context is OnFolderFragmentInteractionListener) {
             listener = context
         } else {
@@ -60,7 +59,7 @@ class FolderFragment : ListFragment(), OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val listView = listView
-        listView.setOnTouchListener { v, m ->
+        listView.setOnTouchListener { _, m ->
             handleTouch(m)
             false
         }
@@ -89,10 +88,80 @@ class FolderFragment : ListFragment(), OnClickListener {
         }
     }
 
+    /**
+     * When 'showTrashed' files is false, the List<FolderItem> passed to the FolderArrayAdapter can be shorter then the list of all files in the folder
+     * if there are some trashed files. This method translates the index of the file item touched to its index of all files in the folder.
+     *
+     * @param position - index of the file item touched on the folder screen
+     * @return - index of the item in the folder's items list
+    </FolderItem> */
+    private fun getIdxOfClickedFolderItem(position: Int): Int {
+        val folderArrayAdapter = listAdapter as FolderArrayAdapter<*>
+        return folderArrayAdapter.getFolderItem(position).itemIdxInList
+    }
+
     override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
-//        super.onListItemClick(l, v, position, id)
-//        if (mContext!!.isNotConnectedToGoogleDrive(LOG_TAG + "onListItemClick")) {
+        super.onListItemClick(l, v, position, id)
+        // fixLater: Aug 24, 2018 - uncomment below - isAppFinishing is set up in removeTopFragment(...)
+//        if (isAppFinishing) {
 //            return
+//        } else
+            synchronized(this) {
+                if (!delaysExpired(TouchedObject.FILE_OR_FOLDER)) {
+                    return
+                }
+            }
+
+//        val foldersData = listener!!.getFoldersData()
+//        val folderMetadatasInfo = foldersData.getCurrFolderMetadataInfo()
+        listener!!.handleShowRetrieveFolderFolderAtIndexDetails(position)
+
+//        val folderMetadataInfo: FileMetadataInfo = folderMetadatasInfo.get(getIdxOfClickedFolderItem(position))
+//        val selectedDriveId = folderMetadataInfo.fileDriveId
+//        val selectedFileTitle = folderMetadataInfo.fileTitle
+//        if (selectedDriveId == null) {
+//            Log.v("FolderFragment", "onListItemClick - getString(R.string.file_not_uploaded_yet): ${getString(R.string.file_not_uploaded_yet)} ")
+////            addMsgToActivityLogShowOnScreen(getString(R.string.file_not_uploaded_yet), false, true)
+//            return
+//        }
+//        if (folderMetadataInfo.isFolder) run {
+//            val currFolderLevel = foldersData.getCurrFolderLevel()
+//            listener!!.setFragment(
+//                    FragmentsEnum.RETRIEVE_FOLDER_PROGRESS_FRAGMENT,
+//                    getString(R.string.retrieving_folder_title),
+//                    true,
+//                    FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
+//                    null,
+//                    null)
+//
+//            val c: Callable<String> = RetrieveDriveFolderInfoTask.Builder()
+//            .activity = listener
+//                .eventBus = eventBus
+//                .setDriveResourceClient(mDriveResourceClient)
+//                .setSelectedFolderTitle(selectedFileTitle)
+//                .setParentFolderLevel(foldersData.getCurrFolderLevel())
+//                .setSelectedFiledDriveId(selectedDriveId)
+//                .setTParentFolderDriveId(selectedDriveId)
+//                .setCurrentFolderDriveId(foldersData.getCurrFolderDriveId())
+//                .build()
+//
+//            listener!!.getHandleCancellableFuturesCallable().submitCallable(RetrieveDriveFolderInfoTask.Builder()
+//                    .activity = listener
+//                    .eventBus = eventBus
+//                    .setDriveResourceClient(mDriveResourceClient)
+//                    .setSelectedFolderTitle(selectedFileTitle)
+//                    .setParentFolderLevel(foldersData.getCurrFolderLevel())
+//                    .setSelectedFiledDriveId(selectedDriveId)
+//                    .setTParentFolderDriveId(selectedDriveId)
+//                    .setCurrentFolderDriveId(foldersData.getCurrFolderDriveId())
+//                    .build())
+
+            //            handleCancellableFuturesCallable.submitCallable(new RetrieveDriveFolderInfoCallable(
+            //                    selectedFileTitle,
+            //                    selectedDriveId,
+            //                    foldersData.getCurrFolderLevel(),
+            //                    foldersData.getFolderDriveId(currFolderLevel),
+            //                    foldersData.getCurrFolderDriveId()));
 //        }
 //        mContext!!.fileOrFolderClicked(position)
     }
@@ -258,6 +327,16 @@ class FolderFragment : ListFragment(), OnClickListener {
      */
     interface OnFolderFragmentInteractionListener {
         fun showFileDialog()
+        fun handleShowRetrieveFolderFolderAtIndexDetails(position: Int)
+//        fun getFoldersData(): FoldersData
+//        fun getHandleCancellableFuturesCallable() : BaseActivity.HandleNonCancellableFuturesCallable
+//        fun setFragment(
+//                fragmentId: HomeActivity.FragmentsEnum,
+//                titleText: String,
+//                addFragmentToStack: Boolean,
+//                callingSource: HomeActivity.FragmentsCallingSourceEnum,
+//                foldersAddData: FolderData?,
+//                fragmentArgs: Bundle?)
 //        fun appIsFinishing()
 
         /* The method below is used in Espresso testing */

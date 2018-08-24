@@ -93,7 +93,7 @@ class HomeActivity : BaseActivity(),
         SETTINGS_FRAGMENT
     }
 
-    internal enum class FragmentsCallingSourceEnum {
+    enum class FragmentsCallingSourceEnum {
         NAVIGATION_DRAWER,
         REMOVE_TOP_FRAGMENT,
         UPDATE_FOLDER_LIST_ADAPTER,
@@ -157,7 +157,6 @@ class HomeActivity : BaseActivity(),
         val folderFragmentsCnt = fragmentsStack.getFolderFragmentCount()
         if (folderFragmentsCnt == 0 || foldersData.getCurrFolderLevel() != folderFragmentsCnt - 1) {
             fragmentsStack.initialize(mTestMode)
-//			isNotConnectedToGoogleDrive("onConnected");
             val rootFolderName = getString(R.string.app_root_folder_name)
             val args = Bundle()
             args.putString(RETRIEVING_FOLDER_TITLE_KEY, rootFolderName)
@@ -657,6 +656,50 @@ class HomeActivity : BaseActivity(),
     private fun handleShowRootFolder() {
         fragmentsStack.initialize(mTestMode)
         onDriveClientReady()
+    }
+
+    override fun handleShowRetrieveFolderFolderAtIndexDetails(position: Int) {
+//        val foldersData = listener.getFoldersData()
+        val folderMetadatasInfo = foldersData.getCurrFolderMetadataInfo()
+        val folderMetadataInfo: FileMetadataInfo = folderMetadatasInfo!!.get(index = position)
+        val selectedDriveId = folderMetadataInfo.fileDriveId
+        val selectedFileTitle = folderMetadataInfo.fileTitle
+        if (folderMetadataInfo.isFolder) {
+            val rootFolderName = folderMetadataInfo.fileTitle
+            val args = Bundle()
+            args.putString(RETRIEVING_FOLDER_TITLE_KEY, rootFolderName)
+            setFragment(
+                    FragmentsEnum.RETRIEVE_FOLDER_PROGRESS_FRAGMENT,
+                    getString(R.string.retrieving_folder_title),
+                    true,
+                    FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
+                    null,
+                    args)
+
+            handleCancellableFuturesCallable!!.submitCallable(RetrieveDriveFolderInfoTask.Builder()
+                    .activity(this)
+                    .eventBus(eventBus)
+                    .driveResourceClient(mDriveResourceClient)
+                    .selectedFolderTitle(selectedFileTitle)
+                    .parentFolderLevel(foldersData.getCurrFolderLevel())
+                    .selectedFolderDriveId(selectedDriveId)
+                    .parentFolderDriveId(selectedDriveId)
+                    .currentFolderDriveId(foldersData.getCurrFolderDriveId()!!)
+                    .foldersData(foldersData)
+                    .build())
+        }
+    }
+
+    /**
+     * When 'showTrashed' files is false, the List<FolderItem> passed to the FolderArrayAdapter can be shorter then the list of all files in the folder
+     * if there are some trashed files. This method translates the index of the file item touched to its index of all files in the folder.
+     *
+     * @param position - index of the file item touched on the folder screen
+     * @return - index of the item in the folder's items list
+    </FolderItem> */
+    private fun getIdxOfClickedFolderItem(position: Int): Int {
+//        val folderArrayAdapter = listAdapter as FolderArrayAdapter<*>
+        return folderArrayAdapter!!.getFolderItem(position).itemIdxInList
     }
 
     private fun handleMenuHideTrashed() {

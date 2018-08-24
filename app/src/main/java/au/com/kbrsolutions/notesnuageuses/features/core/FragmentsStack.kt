@@ -301,6 +301,7 @@ object FragmentsStack {
 
     private fun verify() {
         val localFolderFragmentsCnt = getFolderFragmentCount()
+        Log.v("FragmentsStack", "verify - this: ${this} ")
 //        Log.v(TAG, "verify - localFolderFragmentsCnt/folderFragmentsCnt: $localFolderFragmentsCnt/$folderFragmentsCnt")
         if (localFolderFragmentsCnt != folderFragmentsCnt) {
             // todo: not in prod
