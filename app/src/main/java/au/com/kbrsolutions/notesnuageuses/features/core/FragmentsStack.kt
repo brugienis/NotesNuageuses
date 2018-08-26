@@ -86,15 +86,17 @@ object FragmentsStack {
         if (allFoldersFragmentsEnumTypesSet.contains(fragmentId)) {
             foldersData.addFolderData(foldersAddData ?: throw RuntimeException(
                     "$TAG - addFragment - foldersAddData for fragmentId : $fragmentId can NOT be null"))
-            lFragmentTitle = foldersAddData!!.newFolderTitle
+            lFragmentTitle = foldersAddData.newFolderTitle
             folderFragmentsCnt++
             Log.v(TAG, "addFragment - fragmentId is in allFoldersMainActivity.FragmentsEnumTypesSet/folderFragmentsCnt: $fragmentId/$folderFragmentsCnt")
+        } else {
+            Log.v(TAG, "addFragment - fragmentId is NOT in allFoldersMainActivity.FragmentsEnumTypesSet/folderFragmentsCnt: $fragmentId/$folderFragmentsCnt")
         }
         fragmentsArrayDeque.addLast(fragmentId)
-        fragmentsTitlesArrayDeque.addLast(lFragmentTitle)                                    // add at the tail
+        fragmentsTitlesArrayDeque.addLast(lFragmentTitle)           // add at the tail
+        Log.v(TAG, "addFragment - end   - folderFragmentsCnt/fragmentId: $folderFragmentsCnt/$fragmentId foldersData level: ${foldersData.getCurrFolderLevel()}")
 
         verify()
-        Log.v(TAG, "addFragment - end   - folderFragmentsCnt/fragmentId: $folderFragmentsCnt/$fragmentId foldersData level: ${foldersData.getCurrFolderLevel()}")
         return menuOptionsChangeRequired
     }
 
@@ -302,13 +304,13 @@ object FragmentsStack {
     private fun verify() {
         val localFolderFragmentsCnt = getFolderFragmentCount()
         Log.v("FragmentsStack", "verify - this: ${this} ")
-//        Log.v(TAG, "verify - localFolderFragmentsCnt/folderFragmentsCnt: $localFolderFragmentsCnt/$folderFragmentsCnt")
+        Log.v("FragmentsStack", "verify - currFolderLevel: ${foldersData.getCurrFolderLevel()} localFolderFragmentsCnt: $localFolderFragmentsCnt folderFragmentsCnt: $folderFragmentsCnt")
         if (localFolderFragmentsCnt != folderFragmentsCnt) {
             // todo: not in prod
             throw RuntimeException("verify - exception localFolderFragmentsCnt/folderFragmentsCnt: $localFolderFragmentsCnt/$folderFragmentsCnt")
         }
 
-        if (foldersData.getCurrFolderLevel() !== folderFragmentsCnt - 1) {
+        if (foldersData.getCurrFolderLevel() != folderFragmentsCnt - 1) {
             // todo: throw exception only in test
             throw RuntimeException("verify - exception currFolderLevel/folderFragmentsCnt: " + foldersData.getCurrFolderLevel() + "/" + folderFragmentsCnt)
         }

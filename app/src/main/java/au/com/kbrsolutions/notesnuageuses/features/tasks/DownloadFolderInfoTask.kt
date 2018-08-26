@@ -1,6 +1,7 @@
 package au.com.kbrsolutions.notesnuageuses.features.tasks
 
 import android.app.Activity
+import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
@@ -17,7 +18,7 @@ import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
 
-data class RetrieveDriveFolderInfoTask(
+data class DownloadFolderInfoTask(
         var activity: Activity,
         var eventBus: EventBus,
         var driveResourceClient: DriveResourceClient,
@@ -30,7 +31,7 @@ data class RetrieveDriveFolderInfoTask(
 //        var processingNewFolder: Boolean = false
         ): Callable<String> {
 
-    private val TAG = RetrieveDriveFolderInfoTask::class.java.simpleName
+    private val TAG = DownloadFolderInfoTask::class.java.simpleName
 
     private var processingNewFolder: Boolean = false
 
@@ -38,13 +39,14 @@ data class RetrieveDriveFolderInfoTask(
         processingNewFolder =
                 mCurrentFolderDriveId == null ||
                 mSelectedFolderDriveId != mCurrentFolderDriveId
+        Log.v("DownloadFolderInfoTask", "call - processingNewFolder: $processingNewFolder ")
 
         try {
             val foldersAddData: FolderData = getFolderFilesList(driveResourceClient, mSelectedFolderDriveId)
 
-//            Log.v("RetrieveDriveFolderInfoTask", "call - falling asleep ")
+//            Log.v("DownloadFolderInfoTask", "call - falling asleep ")
             Thread.sleep(1000)  // delay at development time
-//            Log.v("RetrieveDriveFolderInfoTask", "call - waking up ")
+//            Log.v("DownloadFolderInfoTask", "call - waking up ")
 
             eventBus.post(FoldersEvents.Builder(FoldersEvents.Events.FOLDER_DATA_RETRIEVED)
                     .foldersAddData(foldersAddData)
@@ -56,16 +58,20 @@ data class RetrieveDriveFolderInfoTask(
                             .resources
                             .getString(
                                     R.string.base_handler_retrieve_folder_problem,
-                                    mSelectedFolderTitle))
+                                    mSelectedFolderTitle, e))
                     .build())
         }
 
         return "RetrievingRootDriveFolderInfoCallable"
     }
 
-    private fun getFolderFilesList(mDriveResourceClient: DriveResourceClient?, selectedFolderDriveId: DriveId?): FolderData {
+    private fun getFolderFilesList(
+            mDriveResourceClient: DriveResourceClient?,
+            selectedFolderDriveId: DriveId?): FolderData {
+
         // https://developers.google.com/android/guides/tasks
         val selectedDriveFolder: DriveFolder
+//        Variable 'foldersAddData' must be initialized
         lateinit var foldersAddData: FolderData
         try {
             selectedDriveFolder = if (selectedFolderDriveId == null) {
@@ -105,7 +111,7 @@ data class RetrieveDriveFolderInfoTask(
                     foldersAddData = FolderData(
                         selectedDriveFolder.driveId,
                         mSelectedFolderTitle,
-                        0,
+                        -1,
                         selectedDriveFolder.driveId,
                         true,
                         trashedFilesCnt,
@@ -115,8 +121,8 @@ data class RetrieveDriveFolderInfoTask(
                     foldersAddData = FolderData(
                         selectedDriveFolder.driveId,
                         mSelectedFolderTitle,
-                        mParentFolderLevel + 1,
-                        selectedDriveFolder.driveId,
+                        mParentFolderLevel,
+                        mParentFolderDriveId!!,
                         true,
                         trashedFilesCnt,
                         foldersMetadatasInfo)
@@ -133,6 +139,7 @@ data class RetrieveDriveFolderInfoTask(
             e.printStackTrace()
         }
 
+        Log.v("DownloadFolderInfoTask", "getFolderFilesList - mParentFolderDriveId: $mParentFolderDriveId foldersAddData: $foldersAddData ")
         return foldersAddData
     }
 
@@ -172,7 +179,7 @@ data class RetrieveDriveFolderInfoTask(
 
         fun foldersData(foldersData: FoldersData) = apply { this.foldersData = foldersData }
 
-        fun build() = RetrieveDriveFolderInfoTask (
+        fun build() = DownloadFolderInfoTask (
                 activity,
                 eventBus,
                 driveResourceClient,

@@ -6,7 +6,7 @@
     <string name="select_folder">Select folder</string>
     <string name="select_file">Select file</string>
 
-    <string name="base_handler_retrieve_folder_problem"> %1$s - couldn\'t retrieve folder details. Try again later.</string>
+    <string name="base_handler_retrieve_folder_problem"> %1$s - couldn\'t retrieve folder details. Try again later. %2$s</string>
     <string name="app_root_folder_name">App folder</string>
     <string name="empty_folder">Empty folder - trashed files: %1$d</string>
 

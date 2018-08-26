@@ -20,13 +20,13 @@ data class FileMetadataInfo(
             parentTitleArg,
             metadata.title,
             metadata.driveId,
-                    metadata.isFolder,
-                    metadata.mimeType,
-                    metadata.createdDate,
-                    metadata.modifiedDate,
-                    metadata.createdDate.time,
-                    metadata.isTrashable,
-                    metadata.isTrashed) {
+            metadata.isFolder,
+            metadata.mimeType,
+            metadata.createdDate,
+            metadata.modifiedDate,
+            metadata.createdDate.time,
+            metadata.isTrashable,
+            metadata.isTrashed) {
 
         fun getFileDriveId(): DriveId = fileDriveId
     }

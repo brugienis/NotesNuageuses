@@ -134,7 +134,7 @@ class FolderFragment : ListFragment(), OnClickListener {
 //                    null,
 //                    null)
 //
-//            val c: Callable<String> = RetrieveDriveFolderInfoTask.Builder()
+//            val c: Callable<String> = DownloadFolderInfoTask.Builder()
 //            .activity = listener
 //                .eventBus = eventBus
 //                .setDriveResourceClient(mDriveResourceClient)
@@ -145,7 +145,7 @@ class FolderFragment : ListFragment(), OnClickListener {
 //                .setCurrentFolderDriveId(foldersData.getCurrFolderDriveId())
 //                .build()
 //
-//            listener!!.getHandleCancellableFuturesCallable().submitCallable(RetrieveDriveFolderInfoTask.Builder()
+//            listener!!.getHandleCancellableFuturesCallable().submitCallable(DownloadFolderInfoTask.Builder()
 //                    .activity = listener
 //                    .eventBus = eventBus
 //                    .setDriveResourceClient(mDriveResourceClient)

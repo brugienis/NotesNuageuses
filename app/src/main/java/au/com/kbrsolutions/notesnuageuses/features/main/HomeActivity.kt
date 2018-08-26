@@ -23,7 +23,7 @@ import au.com.kbrsolutions.notesnuageuses.features.main.fragments.DownloadFragme
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.EmptyFolderFragment
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FolderFragment
 import au.com.kbrsolutions.notesnuageuses.features.tasks.CreateDriveFolderTask
-import au.com.kbrsolutions.notesnuageuses.features.tasks.RetrieveDriveFolderInfoTask
+import au.com.kbrsolutions.notesnuageuses.features.tasks.DownloadFolderInfoTask
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -69,7 +69,7 @@ class HomeActivity : BaseActivity(),
         const val RETRIEVING_FOLDER_TITLE_KEY = "retrieving_folder_title_key"
     }
 
-    var fragmentsStack = FragmentsStack
+    private var fragmentsStack = FragmentsStack
 
     init {
         fragmentsStack.initialize(mTestMode)
@@ -169,11 +169,11 @@ class HomeActivity : BaseActivity(),
                     null,
                     args)
 
-            handleCancellableFuturesCallable!!.submitCallable(RetrieveDriveFolderInfoTask.Builder()
+            handleCancellableFuturesCallable!!.submitCallable(DownloadFolderInfoTask.Builder()
                     .activity(this)
                     .eventBus(eventBus)
                     .driveResourceClient(mDriveResourceClient)
-                    .selectedFolderTitle(getString(R.string.app_root_folder_name))
+                    .selectedFolderTitle(rootFolderName)
                     .parentFolderLevel(-1)
                     .foldersData(foldersData)
                     .build())
@@ -653,6 +653,10 @@ class HomeActivity : BaseActivity(),
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    /*
+            for debug only
+     */
+    // fixLater: Aug 26, 2018 - remove when not needed
     private fun handleShowRootFolder() {
         fragmentsStack.initialize(mTestMode)
         onDriveClientReady()
@@ -660,14 +664,25 @@ class HomeActivity : BaseActivity(),
 
     override fun handleShowRetrieveFolderFolderAtIndexDetails(position: Int) {
 //        val foldersData = listener.getFoldersData()
+        val idx = getIdxOfClickedFolderItem(position);
         val folderMetadatasInfo = foldersData.getCurrFolderMetadataInfo()
-        val folderMetadataInfo: FileMetadataInfo = folderMetadatasInfo!!.get(index = position)
+        val folderMetadataInfo: FileMetadataInfo = folderMetadatasInfo!![idx]
+        Log.v("HomeActivity", """
+            | handleShowRetrieveFolderFolderAtIndexDetails -
+            | position: $position
+            | idx: $idx
+            | folderMetadataInfo - fileDriveId: ${folderMetadataInfo.fileDriveId}
+            | parentDriveId: ${foldersData.getParentDriveId(idx)}
+            |""".trimMargin())
+        val selectedParentDriveId = foldersData.getParentDriveId(idx)
         val selectedDriveId = folderMetadataInfo.fileDriveId
+//        val selectedDriveId = foldersData.getParentDriveId(idx)
         val selectedFileTitle = folderMetadataInfo.fileTitle
         if (folderMetadataInfo.isFolder) {
             val rootFolderName = folderMetadataInfo.fileTitle
             val args = Bundle()
             args.putString(RETRIEVING_FOLDER_TITLE_KEY, rootFolderName)
+
             setFragment(
                     FragmentsEnum.RETRIEVE_FOLDER_PROGRESS_FRAGMENT,
                     getString(R.string.retrieving_folder_title),
@@ -676,14 +691,14 @@ class HomeActivity : BaseActivity(),
                     null,
                     args)
 
-            handleCancellableFuturesCallable!!.submitCallable(RetrieveDriveFolderInfoTask.Builder()
+            handleCancellableFuturesCallable!!.submitCallable(DownloadFolderInfoTask.Builder()
                     .activity(this)
                     .eventBus(eventBus)
                     .driveResourceClient(mDriveResourceClient)
                     .selectedFolderTitle(selectedFileTitle)
                     .parentFolderLevel(foldersData.getCurrFolderLevel())
                     .selectedFolderDriveId(selectedDriveId)
-                    .parentFolderDriveId(selectedDriveId)
+                    .parentFolderDriveId(selectedParentDriveId)
                     .currentFolderDriveId(foldersData.getCurrFolderDriveId()!!)
                     .foldersData(foldersData)
                     .build())
@@ -691,8 +706,10 @@ class HomeActivity : BaseActivity(),
     }
 
     /**
-     * When 'showTrashed' files is false, the List<FolderItem> passed to the FolderArrayAdapter can be shorter then the list of all files in the folder
-     * if there are some trashed files. This method translates the index of the file item touched to its index of all files in the folder.
+     * When 'showTrashed' files is false, the List<FolderItem> passed to the FolderArrayAdapter can
+     * be shorter then the list of all files in the folder if there are some trashed files.
+     * This method translates the index of the file item touched to its index of all files in
+     * the folder.
      *
      * @param position - index of the file item touched on the folder screen
      * @return - index of the item in the folder's items list

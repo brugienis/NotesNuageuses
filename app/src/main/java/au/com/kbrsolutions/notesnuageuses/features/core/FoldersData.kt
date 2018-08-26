@@ -49,7 +49,16 @@ object FoldersData {
     @Synchronized
     fun addFolderData(folderData: FolderData) {
         showFoldersDataInfo()
-        Log.v(TAG, "addFolderData -  start - currFolderLevel/folderData.folderLevel/newFolderTitle: " + currFolderLevel + "/" + folderData.folderLevel + "/" + folderData.newFolderTitle)
+        Log.v(TAG, """
+            addFolderData -  start - currFolderLevel: $currFolderLevel
+            folderData.folderLevel: ${folderData.folderLevel}
+             newFolderTitle:${folderData.newFolderTitle}
+             newFolderDriveId: ${folderData.newFolderDriveId}
+             fileParentFolderDriveId: ${folderData.fileParentFolderDriveId}
+             """)
+        if (folderData.folderLevel > -1) {
+            Log.v("FoldersData", "addFolderData - folderData fileParentFolderDriveId: ${folderData.fileParentFolderDriveId} array foldersDriveIdsList: ${foldersDriveIdsList[folderData.folderLevel]}")
+        }
         verifyDataStructure()
         if (currFolderLevel > -1 && currFolderLevel < folderData.folderLevel) {
             return
@@ -59,11 +68,32 @@ object FoldersData {
         }
         foldersTrashedFilesCnt.add(folderData.trashedFilesCnt)
         foldersData.add(folderData)
+
         foldersDriveIdsList.add(folderData.newFolderDriveId)
+//        foldersDriveIdsList.add(folderData.filesMetadatasInfo[0].fileDriveId)
+
         foldersTitlesList.add(folderData.newFolderTitle)
         processFolderMetadata(folderData.filesMetadatasInfo, false)
         verifyDataStructure()
-        Log.v(TAG, "addFolderData -  end   - currFolderLevel: " + currFolderLevel + "/" + folderData.newFolderTitle)
+        Log.v("FoldersData", "addFolderData - folderData.filesMetadatasInfo: ${folderData.filesMetadatasInfo} ")
+        Log.v(TAG, "addFolderData -  end   - currFolderLevel: $currFolderLevel array foldersDriveIdsList: ${foldersDriveIdsList[currFolderLevel]} newFolderTitle: ${folderData.newFolderTitle}")
+    }
+    /*
+
+folderData.filesMetadatasInfo: [FileMetadataInfo(
+        parentTitle=App folder,
+        fileTitle=Sopot new,
+        fileDriveId=DriveId:CAESITFFQ3RtRjBXT0pYZHo1YkQzLVJHbHRBNEF6SjJBaTJTaRh-IKTY8qOtWSgB,
+        isFolder=true,
+        mimeType=application/vnd.google-apps.folder,
+        createDt=Fri Aug 24 14:54:21 GMT+10:00 2018,
+        updateDt=Fri Aug 24 14:54:21 GMT+10:00 2018,
+        fileItemId=1535086461484, isTrashable=true, isTrashed=false)]
+end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2PKjrVkoAQ== newFolderTitle: App folder
+     */
+
+    fun getParentDriveId(level: Int): DriveId {
+        return foldersDriveIdsList[level]
     }
 
     // TODO: add code to check before conditions as on addFolderData()

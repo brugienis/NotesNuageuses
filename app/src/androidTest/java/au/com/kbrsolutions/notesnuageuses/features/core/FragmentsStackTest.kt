@@ -40,7 +40,7 @@ class FragmentsStackTest {
         Assert.assertTrue("testFragmentStack can't be null", testFragmentStack != null)
     }
 
-    fun getEsentials(): Pair<FragmentsStack, FoldersData> {
+    private fun getEssentials(): Pair<FragmentsStack, FoldersData> {
         val fragmentStack: FragmentsStack = testFragmentStack ?:
         throw RuntimeException("testFragmentStack cant be null")
 
@@ -51,7 +51,7 @@ class FragmentsStackTest {
 
     @Test
     fun testAddFragment_notFolder() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
 
         val foldersAddData: FolderData? = null
         fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", foldersAddData)
@@ -63,7 +63,7 @@ class FragmentsStackTest {
 
     @Test
     fun testAddFragment_folder() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
 
         var folderLevel = -1
         val fileParentFolderDriveId = addTopFolderDetails()
@@ -78,7 +78,7 @@ class FragmentsStackTest {
 
     @Test
     fun testRemoveTopFragment_just_one_top_IsFolder() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
 
         assertEquals("wrong currFolderLevel", -1, foldersData.getCurrFolderLevel())
         testAddFragment_folder()
@@ -95,7 +95,7 @@ class FragmentsStackTest {
 
     @Test
     fun testRemoveTopFragment_fromEmptyStack() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
 
         val fragmentsStackResponse = fragmentStack.removeTopFragment(
                 "testRemoveTopFragment_fromEmptyStack", false)
@@ -107,7 +107,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_00() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
 
         var folderLevel = -1
 
@@ -150,7 +150,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_01() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
 
         Log.v(TAG, " - testRemoveTopFragment_topFragmentFolder_01 start");
         var folderLevel = -1
@@ -198,7 +198,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_02() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
@@ -239,6 +239,75 @@ class FragmentsStackTest {
         Assert.assertEquals("wrong fragmentsStackResponse", null, errMsg)
     }
 
+    /*
+	 * 		RETRIEVE_FOLDER_PROGRESS_FRAGMENT,
+	 * 		FOLDER_FRAGMENT,
+	 * 		RETRIEVE_FOLDER_PROGRESS_FRAGMENT,
+	 * 		FOLDER_FRAGMENT
+	 */
+    @Test
+    fun testRemoveTopFragment_topFragmentFolder_03() {
+        val (fragmentStack, foldersData) = getEssentials()
+        var folderLevel = -1
+        val folderName = "Folder-"
+
+        val fileParentFolderDriveId = addTopFolderDetails()
+        fragmentStack.addFragment(FragmentsEnum.RETRIEVE_FOLDER_PROGRESS_FRAGMENT,
+                "Progress",
+                null)
+
+        val titleToSetAfterTopRemoved = folderName + folderLevel
+        var foldersAddData = getFoldersAddData(
+                fileParentFolderDriveId,
+                folderLevel,
+                titleToSetAfterTopRemoved)
+        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT,
+                titleToSetAfterTopRemoved,
+                foldersAddData)
+
+        fragmentStack.addFragment(FragmentsEnum.RETRIEVE_FOLDER_PROGRESS_FRAGMENT,
+                "Progress",
+                null)
+
+        folderLevel++
+        foldersAddData = getFoldersAddData(
+                fileParentFolderDriveId,
+                folderLevel,
+                folderName + folderLevel)
+        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT,
+                folderName + folderLevel,
+                foldersAddData)
+
+        assertEquals("wrong fragmentStack size", 4, fragmentStack.getStackSize())
+        assertEquals("wrong currFolderLevel", 1, foldersData.getCurrFolderLevel())
+
+        Log.v("FragmentsStackTest", "testRemoveTopFragment_topFragmentFolder_03 - fragmentStack: $fragmentStack ")
+        var actualStackFragmentsAfterAdd = fragmentStack.getFragmentsList()
+        Log.v(TAG, " - actualStackFragmentsAfterAdd: ${printCollection("after fragments added  ", actualStackFragmentsAfterAdd)}")
+
+        val actualFragmentsStackResponse = fragmentStack.removeTopFragment(
+                "testRemoveTopFragment_topFragmentFolder_02",
+                false)
+
+        actualStackFragmentsAfterAdd = fragmentStack.getFragmentsList()
+        Log.v(TAG, " - actualStackFragmentsAfterAdd: ${printCollection("after fragments removed", actualStackFragmentsAfterAdd)}")
+
+        assertEquals("wrong fragmentStack size", 2, fragmentStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT,
+                fragmentStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 0, foldersData.getCurrFolderLevel())
+        val expectedFragmentsStackResponse = FragmentsStackResponse(
+                false,
+                FragmentsEnum.NONE,
+                "A",
+                true,
+                false,
+                true)
+        val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse,
+                actualFragmentsStackResponse)
+        Assert.assertEquals("wrong fragmentsStackResponse", titleToSetAfterTopRemoved, actualFragmentsStackResponse.titleToSet)
+    }
+
     /* Creating text note in non empty folder - after CREATE_FILE_FRAGMENT set, TEXT_VIEW_FRAGMENT is set.
 	 * Either user clicked on the Back button or in 'file name and password' dialog clicked on the Cancel button.
 	 *
@@ -246,7 +315,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_04_create_text_file_in_non_empty_folder_Cancel_clicked() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
@@ -281,7 +350,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_04_create_text_file_in_non_empty_folder_Save_clicked() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
@@ -316,7 +385,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_04_create_text_file_in_empty_folder_Cancel_clicked() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
@@ -351,7 +420,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_04_picture_view_in_non_empty_folder_Cancel_clicked() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
@@ -386,7 +455,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_04_create_text_file_in_empty_folder_Save_clicked() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
@@ -440,7 +509,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_05_new_text_file_opened_and_switched_to_activity_log() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
@@ -478,7 +547,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_06_photo_file_opened_and_switched_to_activity_log() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
@@ -514,7 +583,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_07_legal_notices_top_folder_below() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
@@ -546,7 +615,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_07_legal_notices_top_empty_folder_below() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
@@ -581,7 +650,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_07_legal_notices_top_text_note_below() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
@@ -617,7 +686,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_07_legal_notices_top_image_note_below() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
@@ -654,7 +723,7 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_08_file_details_on_top() {
-        val (fragmentStack, foldersData) = getEsentials()
+        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
@@ -683,8 +752,11 @@ class FragmentsStackTest {
 
     // helper functions
 
-    private fun getFoldersAddData(fileParentFolderDriveId: DriveId, folderLevel: Int): FolderData {
-        val newFolderTitle: String
+    private fun getFoldersAddData(
+            fileParentFolderDriveId: DriveId,
+            folderLevel: Int,
+            newFolderTitle: String = "A"): FolderData {
+//        val newFolderTitle: String
         val newFolderDriveId: DriveId
         val isFolder: Boolean?
         val newFolderData: Boolean
@@ -693,7 +765,7 @@ class FragmentsStackTest {
         val updateDate: Date
         val trashedFilesCnt = 0
 
-        newFolderTitle = "A"
+//        newFolderTitle = "A"
         //		DriveId fileParentFolderDriveId = addTopFolderDetails();
         //		folderLevel = "File : xxxx encrypting";
         newFolderDriveId = DriveId.decodeFromString("DriveId:CAESBHJvb3QYpFUg-sbQ7YpR")
