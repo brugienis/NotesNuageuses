@@ -92,7 +92,7 @@ folderData.filesMetadatasInfo: [FileMetadataInfo(
 end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2PKjrVkoAQ== newFolderTitle: App folder
      */
 
-    fun getParentDriveId(level: Int): DriveId {
+    fun getCurrParentDriveId(level: Int): DriveId {
         return foldersDriveIdsList[level]
     }
 

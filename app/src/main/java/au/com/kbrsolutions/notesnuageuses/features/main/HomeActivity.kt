@@ -13,7 +13,6 @@ import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.addFragment
-import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.removeTopFragment
 import au.com.kbrsolutions.notesnuageuses.features.events.ActivitiesEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
@@ -54,6 +53,7 @@ class HomeActivity : BaseActivity(),
     private var showTrashedFiles: Boolean = false
     private var newFragmentSet: Boolean = false
     private var currFragment: FragmentsEnum? = null
+    private var isAppFinishing = false
 
     private var emptyFolderFragment: EmptyFolderFragment? = null
     private var folderFragment: FolderFragment? = null
@@ -170,7 +170,7 @@ class HomeActivity : BaseActivity(),
                     args)
 
             handleCancellableFuturesCallable!!.submitCallable(DownloadFolderInfoTask.Builder()
-                    .activity(this)
+                    .context(this)
                     .eventBus(eventBus)
                     .driveResourceClient(mDriveResourceClient)
                     .selectedFolderTitle(rootFolderName)
@@ -273,13 +273,9 @@ class HomeActivity : BaseActivity(),
                 val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: -1
                 val folderItemsList = ArrayList<FolderItem>()
 
+                val list: ArrayList<FileMetadataInfo>? = foldersAddData?.filesMetadatasInfo
+                        ?: foldersData.getCurrFolderMetadataInfo()
 
-                val list: ArrayList<FileMetadataInfo>?
-                if (foldersAddData == null) {
-                    list = foldersData.getCurrFolderMetadataInfo()
-                } else {
-                    list = foldersAddData.filesMetadatasInfo
-                }
                 for ((itemIdxInList, folderMetadataInfo) in list!!.withIndex()) {        // foldersData.getCurrFolderMetadataInfo()) {
                     if (!folderMetadataInfo.isTrashed || folderMetadataInfo.isTrashed && showTrashedFiles) {
                         folderItemsList.add(FolderItem(
@@ -288,7 +284,6 @@ class HomeActivity : BaseActivity(),
                                 folderMetadataInfo.mimeType,
                                 folderMetadataInfo.isTrashed,
                                 itemIdxInList))
-//                        currFolderTitleIdx.put(folderMetadataInfo.fileTitle, idx)
                     }
                 }
 
@@ -411,7 +406,7 @@ class HomeActivity : BaseActivity(),
             }
 
             else -> throw RuntimeException(
-                    "TAG - onEventMainThread - no code to handle folderRequest: $request")
+                    "$TAG - onEventMainThread - no code to handle folderRequest: $request")
         }
     }
 
@@ -420,24 +415,73 @@ class HomeActivity : BaseActivity(),
         handleCancellableFuturesCallable!!.cancelCurrFuture()
         val currTitle = supportActionBar!!.title
 //        setOnBackProcessed(true)      // for Unit Tests?
-        val fragmentsStackResponse = removeTopFragment("onBackPressed", true)
-        Log.v("HomeActivity", "onBackPressed - fragmentsStackResponse: $fragmentsStackResponse ")
-        if (fragmentsStackResponse.finishRequired) {
+        val finishRequired = removeTopFragment("onBackPressed", true)
+//        Log.v("HomeActivity", "onBackPressed - fragmentsStackResponse: $fragmentsStackResponse ")
+        if (finishRequired) {
             super.onBackPressed()
         }
+//        else {
+//            setActionBarTitle(fragmentsStackResponse.titleToSet!!)
+//
+//        }
+    }
+
+    @Synchronized
+    fun removeTopFragment(source: String, actionCancelled: Boolean): Boolean {
+        val fragmentsStackResponse = fragmentsStack.removeTopFragment(source, actionCancelled)
+        if (fragmentsStackResponse == null) {
+            isAppFinishing = true
+            finish()
+            return true
+        }
+//        if (fragmentsStackResponse.viewFragmentsCleanupRequired) {
+//            if (textFragment != null) {
+//                textFragment.cleanup("removeTopFragment")
+//                //	A_MUST:		is it still a PROBLEM? : if keyboard was visible in text fragment, it is still visible after Cancel or Back button press
+//                window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+//            }
+//            if (imageContentsFragment != null) {
+//                imageContentsFragment.cleanup()
+//            }
+//        }
+        if (fragmentsStackResponse.updateFolderListAdapterRequired) {
+            updateFolderListAdapter()
+        }
+        val fragmentToSet = fragmentsStackResponse.fragmentToSet
+        if (fragmentToSet != FragmentsEnum.NONE) {
+            setFragment(
+                    fragmentToSet,
+                    fragmentsStackResponse.titleToSet!!,
+                    false,
+                    FragmentsCallingSourceEnum.REMOVE_TOP_FRAGMENT,
+                    null,
+                    null
+            )
+        }
+        if (fragmentsStackResponse.menuOptionsChangeRequired) {
+            //			invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+        }
+        if (!fragmentsStackResponse.finishRequired) {
+            mTitle = fragmentsStackResponse.titleToSet
+            setActionBarTitle(mTitle!!, "removeTopFragment")
+        }
+        //		Log.i(TAG, "removeTopFragment fileTitle set to: " + fragmentsStackResponse.titleToSet);
+        if (fragmentsStackResponse.finishRequired) {
+            isAppFinishing = true
+//            if (eventBus != null) {
+//                eventBus.unregister(this)
+//                eventBus = null
+//            }
+        }
+        //		Log.i(TAG, "removeTopFragment end");
+        return fragmentsStackResponse.finishRequired
     }
 
     private var mTitle: CharSequence? = null
-    fun setActionBarTitle(title: CharSequence, source: String = "undefined") {
+    private fun setActionBarTitle(title: CharSequence, source: String = "undefined") {
         Log.v("HomeActivity", "setActionBarTitle - source: ${source} ")
         mTitle = title
-        supportActionBar!!.setTitle(title)
-    }
-
-    private fun printCollection(msg: String, coll: Array<HomeActivity.FragmentsEnum>) {
-        Log.i(TAG, "\nprintCollection $msg")
-        coll.forEach { Log.i(TAG, it.toString()) }
-        Log.i(TAG, "\nend")
+        supportActionBar!!.title = title
     }
 
     private fun retrievingAppFolderDriveInfoTaskDone(folderData: FolderData?) {
@@ -663,20 +707,22 @@ class HomeActivity : BaseActivity(),
     }
 
     override fun handleShowRetrieveFolderFolderAtIndexDetails(position: Int) {
-//        val foldersData = listener.getFoldersData()
-        val idx = getIdxOfClickedFolderItem(position);
-        val folderMetadatasInfo = foldersData.getCurrFolderMetadataInfo()
-        val folderMetadataInfo: FileMetadataInfo = folderMetadatasInfo!![idx]
+        val idx = getIdxOfClickedFolderItem(position)
+
+        val currFolderLevel = foldersData.getCurrFolderLevel()
+        val folderMetadataArrayInfo = foldersData.getCurrFolderMetadataInfo()
+        val currFolderParentDriveId = foldersData.getCurrFolderDriveId()
+
+        val folderMetadataInfo: FileMetadataInfo = folderMetadataArrayInfo!![idx]
         Log.v("HomeActivity", """
             | handleShowRetrieveFolderFolderAtIndexDetails -
             | position: $position
             | idx: $idx
             | folderMetadataInfo - fileDriveId: ${folderMetadataInfo.fileDriveId}
-            | parentDriveId: ${foldersData.getParentDriveId(idx)}
+            | parentDriveId: ${foldersData.getCurrParentDriveId(currFolderLevel)}
             |""".trimMargin())
-        val selectedParentDriveId = foldersData.getParentDriveId(idx)
         val selectedDriveId = folderMetadataInfo.fileDriveId
-//        val selectedDriveId = foldersData.getParentDriveId(idx)
+//        val selectedDriveId = foldersData.getCurrParentDriveId(idx)
         val selectedFileTitle = folderMetadataInfo.fileTitle
         if (folderMetadataInfo.isFolder) {
             val rootFolderName = folderMetadataInfo.fileTitle
@@ -692,14 +738,14 @@ class HomeActivity : BaseActivity(),
                     args)
 
             handleCancellableFuturesCallable!!.submitCallable(DownloadFolderInfoTask.Builder()
-                    .activity(this)
+                    .context(applicationContext)
                     .eventBus(eventBus)
                     .driveResourceClient(mDriveResourceClient)
                     .selectedFolderTitle(selectedFileTitle)
-                    .parentFolderLevel(foldersData.getCurrFolderLevel())
+                    .parentFolderLevel(currFolderLevel)
                     .selectedFolderDriveId(selectedDriveId)
-                    .parentFolderDriveId(selectedParentDriveId)
-                    .currentFolderDriveId(foldersData.getCurrFolderDriveId()!!)
+                    .parentFolderDriveId(currFolderParentDriveId!!)
+//                    .currentFolderDriveId(currFolderParentDriveId!!)
                     .foldersData(foldersData)
                     .build())
         }
@@ -754,5 +800,12 @@ class HomeActivity : BaseActivity(),
 
     private fun handleCameraOptionSelected() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    // fixLater: Aug 27, 2018 - used for debugging. Remove later
+    private fun printCollection(msg: String, coll: Array<HomeActivity.FragmentsEnum>) {
+        Log.i(TAG, "\nprintCollection $msg")
+        coll.forEach { Log.i(TAG, it.toString()) }
+        Log.i(TAG, "\nend")
     }
 }
