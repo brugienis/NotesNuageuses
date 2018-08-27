@@ -606,7 +606,9 @@ class HomeActivity : BaseActivity(),
             menuItem.isVisible = true
             menuItem.isEnabled = true
             //            menuItem.setTitle("show trashed files - " + foldersData.getCurrentFolderTrashedFilesCnt());
-            menuItem.title = resources.getString(R.string.menu_hide_trashed_files, foldersData.getCurrentFolderTrashedFilesCnt())
+            menuItem.title = resources.getString(
+                    R.string.menu_hide_trashed_files,
+                    foldersData.getCurrentFolderTrashedFilesCnt())
             menuItem = menu.findItem(R.id.menuShowTrashed)
             menuItem.isVisible = false
             menuItem.isEnabled = false
@@ -619,7 +621,9 @@ class HomeActivity : BaseActivity(),
             menuItem.isEnabled = true
             //            menuItem.setTitle("hide trashed files - " + foldersData.getCurrentFolderTrashedFilesCnt());
             //				menuItem.setTitle("show trashed files - " + trashedFilesCnt);
-            menuItem.title = resources.getString(R.string.menu_show_trashed_files, foldersData.getCurrentFolderTrashedFilesCnt())
+            menuItem.title = resources.getString(
+                    R.string.menu_show_trashed_files,
+                    foldersData.getCurrentFolderTrashedFilesCnt())
         }
         menuItem = menu.findItem(R.id.action_show_root_folder)
         menuItem.isVisible = true

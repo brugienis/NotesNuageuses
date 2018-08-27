@@ -34,6 +34,7 @@ data class DownloadFolderInfoTask(
     override fun call(): String {
         processingNewFolder =
                 selectedFolderDriveId == null || selectedFolderDriveId != parentFolderDriveId
+
         Log.v("DownloadFolderInfoTask", "call - processingNewFolder: $processingNewFolder ")
 
         try {
@@ -54,7 +55,8 @@ data class DownloadFolderInfoTask(
                             .resources
                             .getString(
                                     R.string.base_handler_retrieve_folder_problem,
-                                    selectedFolderTitle, e))
+                                    selectedFolderTitle,
+                                    e))
                     .build())
         }
 
@@ -67,7 +69,7 @@ data class DownloadFolderInfoTask(
 
         // https://developers.google.com/android/guides/tasks
         val selectedDriveFolder: DriveFolder
-//        Variable 'foldersAddData' must be initialized
+
         lateinit var foldersAddData: FolderData
         try {
             selectedDriveFolder = if (selectedFolderDriveId == null) {
