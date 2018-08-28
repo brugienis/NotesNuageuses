@@ -25,7 +25,8 @@ class EmptyFolderFragment : Fragment() {
         if (context is OnEmptyFolderFragmentInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener")
+            throw RuntimeException(context.toString() +
+                    " must implement OnListFragmentInteractionListener")
         }
     }
 
@@ -41,7 +42,6 @@ class EmptyFolderFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         retainInstance = true
-        Log.v("EmptyFolderFragment", "onCreate - savedInstanceState: $savedInstanceState")
 
         if (!mArgsProcessed) {
             arguments?.let {
@@ -49,18 +49,15 @@ class EmptyFolderFragment : Fragment() {
             }
             mArgsProcessed = true
         }
-        Log.v("EmptyFolderFragment", "onCreate - mTrashedFilesCnt: $mTrashedFilesCnt ")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.v("EmptyFolderFragment", "onDestroy - mTrashedFilesCnt: $mTrashedFilesCnt ")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_empty_folder, container, false)
-        Log.v("EmptyFolderFragment", "onCreateView - mTrashedFilesCnt: ${mTrashedFilesCnt} ")
 
         rootView.emptyFragmentInfoId.text = resources.getString(R.string.empty_folder, mTrashedFilesCnt)
         return rootView
@@ -88,6 +85,7 @@ class EmptyFolderFragment : Fragment() {
 
     private var mPrevRefreshTouchTimeNonos: Long = 0
 
+    // fixLater: Aug 28, 2018 - move to utility class after merge with Folderfragment
     private fun delaysExpired(touchedObject: TouchedObject): Boolean {
         var delaysExpired = false
         val currTimeNonos = System.nanoTime()
@@ -208,7 +206,6 @@ class EmptyFolderFragment : Fragment() {
 
     fun setTrashedFilesCnt(trashedFilesCnt: Int) {
         this.mTrashedFilesCnt = trashedFilesCnt
-        Log.v("EmptyFolderFragment", "setTrashedFilesCnt - mTrashedFilesCnt: ${mTrashedFilesCnt} ")
     }
 
     /**
@@ -228,11 +225,9 @@ class EmptyFolderFragment : Fragment() {
 
     companion object {
 
-        private val TAG = EmptyFolderFragment::class.java.simpleName
+//        private val TAG = EmptyFolderFragment::class.java.simpleName
 
         const val ARG_TRASH_FILES_CNT_KEY = "arg_trash_files_cnt_key"
-
-        const val ARG_COLUMN_COUNT = "column-count"
 
         @JvmStatic
         fun newInstance(trashFilesCnt: Int) =
@@ -240,7 +235,7 @@ class EmptyFolderFragment : Fragment() {
                     arguments = Bundle().apply {
                         putInt(ARG_TRASH_FILES_CNT_KEY, trashFilesCnt)
                     }
-                    Log.v("EmptyFolderFragment", "newInstance - arguments: $arguments ")
+//                    Log.v("EmptyFolderFragment", "newInstance - arguments: $arguments ")
                 }
 
     }

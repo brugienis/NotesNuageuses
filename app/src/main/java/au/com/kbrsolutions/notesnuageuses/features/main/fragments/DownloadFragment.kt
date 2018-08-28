@@ -3,7 +3,6 @@ package au.com.kbrsolutions.notesnuageuses.features.main.fragments
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,10 +15,6 @@ class DownloadFragment : Fragment() {
     private var mContext: Context? = null
     private var mRetrievingFolderName:String = "Folder name undefined"
     private var mArgsProcessed = false
-
-    init {
-        Log.v("DownloadFragment", " - initialize ")
-    }
 
     override fun onAttach(activity: Context) {
         super.onAttach(activity)
@@ -39,8 +34,7 @@ class DownloadFragment : Fragment() {
             mArgsProcessed = true
         }
 
-//        mRetrievingFolderName = arguments.getString(ARG_RETRIEVING_FOLDER_TITLE_KEY)
-            setHasOptionsMenu(true)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -83,7 +77,7 @@ class DownloadFragment : Fragment() {
                     arguments = Bundle().apply {
                         putString(ARG_RETRIEVING_FOLDER_TITLE_KEY, retievingFolderName)
                     }
-                    Log.v("DownloadFragment", "newInstance - arguments: $arguments ")
+//                    Log.v("DownloadFragment", "newInstance - arguments: $arguments ")
                 }
 
     }

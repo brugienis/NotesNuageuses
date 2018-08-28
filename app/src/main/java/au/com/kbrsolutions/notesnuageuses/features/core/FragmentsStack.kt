@@ -75,26 +75,26 @@ object FragmentsStack {
             fragmentId: HomeActivity.FragmentsEnum,
             fragmentTitle: String,
             foldersAddData: FolderData?): Boolean {
-        Log.v(TAG, "addFragment - start - folderFragmentsCnt/foldersAddData.title/fragmentId: " + folderFragmentsCnt + "/" +
-                fragmentId + "/" + if (foldersAddData == null) "null" else foldersAddData!!.newFolderTitle)
+//        Log.v(TAG, "addFragment - start - folderFragmentsCnt/foldersAddData.title/fragmentId: " + folderFragmentsCnt + "/" +
+//                fragmentId + "/" + if (foldersAddData == null) "null" else foldersAddData!!.newFolderTitle)
         var lFragmentTitle = fragmentTitle
         var menuOptionsChangeRequired = false
         if (fragmentsArrayDeque.peekLast() !== fragmentId) {
             menuOptionsChangeRequired = true
         }
-//        if (foldersAddData != null && allFoldersFragmentsEnumTypesSet.contains(fragmentId)) {
         if (allFoldersFragmentsEnumTypesSet.contains(fragmentId)) {
             foldersData.addFolderData(foldersAddData ?: throw RuntimeException(
                     "$TAG - addFragment - foldersAddData for fragmentId : $fragmentId can NOT be null"))
             lFragmentTitle = foldersAddData.newFolderTitle
             folderFragmentsCnt++
-            Log.v(TAG, "addFragment - fragmentId is in allFoldersMainActivity.FragmentsEnumTypesSet/folderFragmentsCnt: $fragmentId/$folderFragmentsCnt")
-        } else {
-            Log.v(TAG, "addFragment - fragmentId is NOT in allFoldersMainActivity.FragmentsEnumTypesSet/folderFragmentsCnt: $fragmentId/$folderFragmentsCnt")
+//            Log.v(TAG, "addFragment - fragmentId is in allFoldersMainActivity.FragmentsEnumTypesSet/folderFragmentsCnt: $fragmentId/$folderFragmentsCnt")
         }
+//        else {
+//            Log.v(TAG, "addFragment - fragmentId is NOT in allFoldersMainActivity.FragmentsEnumTypesSet/folderFragmentsCnt: $fragmentId/$folderFragmentsCnt")
+//        }
         fragmentsArrayDeque.addLast(fragmentId)
         fragmentsTitlesArrayDeque.addLast(lFragmentTitle)           // add at the tail
-        Log.v(TAG, "addFragment - end   - folderFragmentsCnt/fragmentId: $folderFragmentsCnt/$fragmentId foldersData level: ${foldersData.getCurrFolderLevel()}")
+//        Log.v(TAG, "addFragment - end   - folderFragmentsCnt/fragmentId: $folderFragmentsCnt/$fragmentId foldersData level: ${foldersData.getCurrFolderLevel()}")
 
         verify()
         return menuOptionsChangeRequired
@@ -124,10 +124,9 @@ object FragmentsStack {
                     throw RuntimeException("$TAG - removeTopFragment - should never happen")
                 }
             }
-//        if (fragmentsArrayDeque.size == 1) {
+
             1 -> {
                 val topFragment = removeLastFragment()
-//                val topFragment = fragmentsArrayDeque.removeLast()              // get the element at tail
                 if (allFoldersFragmentsEnumTypesSet.contains(topFragment)) {
                     foldersData.removeMostRecentFolderData()
                 }
@@ -139,9 +138,7 @@ object FragmentsStack {
 
             else -> {
                 prevTopFragment = removeLastFragment()
-//                prevTopFragment = fragmentsArrayDeque.removeLast()              // remove the element at tail
-//                fragmentsTitlesArrayDeque.removeLast()                          // remove the element at tail
-                Log.v(TAG, " - prevTopFragment: $prevTopFragment")
+//                Log.v(TAG, " - prevTopFragment: $prevTopFragment")
 
                 val currTopFragment = fragmentsArrayDeque.peekLast()            // peek at the element at tail
 
@@ -150,7 +147,7 @@ object FragmentsStack {
                     HomeActivity.FragmentsEnum.FOLDER_FRAGMENT -> {
                         folderFragmentsCnt--
                         foldersData.removeMostRecentFolderData()
-                        Log.v(TAG, " - folderFragmentsCnt: $folderFragmentsCnt folders data level: ${foldersData.getCurrFolderLevel()}")
+//                        Log.v(TAG, " - folderFragmentsCnt: $folderFragmentsCnt folders data level: ${foldersData.getCurrFolderLevel()}")
                         removeFragmentsFromStackUntilSpecificFragmentFound()
                         if (fragmentsArrayDeque.size > 0) {                     // FOLDER_FRAGMENT found
                             updateFolderListAdapterRequired = true
@@ -178,17 +175,22 @@ object FragmentsStack {
                         }
                     }
 
-                    HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT -> if (currTopFragment === HomeActivity.FragmentsEnum.FOLDER_FRAGMENT) {
-                        updateFolderListAdapterRequired = true
-                        fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT
-                    } else if (currTopFragment === HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
-                        updateFolderListAdapterRequired = true
-                        fragmentToSet = HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT
-                    } else if (fragmentsArrayDeque.size > 0) {
-                        fragmentToSet = getCurrFragment()
-                    } else {
-                        callFinishRequired = true
-                    }
+                    HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT ->
+                        when {
+                            currTopFragment === HomeActivity.FragmentsEnum.FOLDER_FRAGMENT -> {
+                                updateFolderListAdapterRequired = true
+                                fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT
+                            }
+
+                            currTopFragment === HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
+                                updateFolderListAdapterRequired = true
+                                fragmentToSet = HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT
+                            }
+
+                            fragmentsArrayDeque.size > 0 -> fragmentToSet = getCurrFragment()
+
+                            else -> callFinishRequired = true
+                        }
 
                     // TOP: will it also cover image fragment?
                     /*
@@ -204,13 +206,11 @@ object FragmentsStack {
                             if (actionCancelled) {
                                 updateFolderListAdapterRequired = true
                                 fragmentToSet = HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT
-                            } else {                                                                                                                            // Save was clicked
+                            } else {                                            // Save was clicked
                                 updateFolderListAdapterRequired = true
-                                removeLastFragment()
-//                                fragmentsArrayDeque.removeLast()                                                                        // remove EMPTY_FOLDER_FRAGMENT
-                                fragmentsArrayDeque.addLast(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)                    // add FOLDER_FRAGMENT
+                                removeLastFragment()                            // remove EMPTY_FOLDER_FRAGMENT
+                                fragmentsArrayDeque.addLast(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT) // add FOLDER_FRAGMENT
                                 fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT
-                                //						fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT;
                             }
                         } else {
                             updateFolderListAdapterRequired = true
@@ -234,7 +234,7 @@ object FragmentsStack {
                         }
                     }
 
-                    HomeActivity.FragmentsEnum.RETRIEVE_FOLDER_PROGRESS_FRAGMENT,
+                    HomeActivity.FragmentsEnum.DOWNLOAD_FRAGMENT,
                     HomeActivity.FragmentsEnum.FILE_DETAILS_FRAGMENT,
                     HomeActivity.FragmentsEnum.LEGAL_NOTICES -> fragmentToSet = currTopFragment
 
@@ -262,7 +262,11 @@ object FragmentsStack {
         }
 
         val menuOptionsChangeRequired = prevTopFragment !== fragmentToSet
-        Log.v(TAG, "XXX -  : ${fragmentsArrayDeque.size} fragmentsTitlesArrayDeque: ${fragmentsTitlesArrayDeque.size}")
+
+        Log.v("FragmentsStack", """removeTopFragment -
+            |fragmentsArrayDeque.size:       ${fragmentsArrayDeque.size}
+            |fragmentsTitlesArrayDeque.size: ${fragmentsTitlesArrayDeque.size}
+            |""".trimMargin())
         if (!callFinishRequired) {
             verify()
         }
@@ -285,26 +289,23 @@ object FragmentsStack {
             if (!FragmentsStack.allFoldersFragmentsEnumTypesSet.contains(topFragment)) {
                 val removed = removeLastFragment()
                 Log.v(TAG, "remove until specific REMOVED from fragmentsArrayDeque - topFragment: $removed")
-//                topFragment = fragmentsArrayDeque.removeLast()
                 if (FragmentsStack.allFoldersFragmentsEnumTypesSet.contains(topFragment)) {
                     folderFragmentsCnt--
                     foldersData.removeMostRecentFolderData()
                     Log.v(TAG, "remove until specific REMOVED from foldersData - topFragment: $topFragment")
                 }
                 topFragment = fragmentsArrayDeque.peekLast()
-//                fragmentsTitlesArrayDeque.removeLast()                                                // remove the element at tail
             } else {
                 Log.v(TAG, " - breaking");
                 break
             }
-//        } while ((topFragment = fragmentsArrayDeque.peekLast()) != null && fragmentsArrayDeque.size > 0)
         } while (topFragment != null && fragmentsArrayDeque.size > 0)
     }
 
     private fun verify() {
         val localFolderFragmentsCnt = getFolderFragmentCount()
         Log.v("FragmentsStack", "verify - this: ${this} ")
-        Log.v("FragmentsStack", "verify - currFolderLevel: ${foldersData.getCurrFolderLevel()} localFolderFragmentsCnt: $localFolderFragmentsCnt folderFragmentsCnt: $folderFragmentsCnt")
+//        Log.v("FragmentsStack", "verify - currFolderLevel: ${foldersData.getCurrFolderLevel()} localFolderFragmentsCnt: $localFolderFragmentsCnt folderFragmentsCnt: $folderFragmentsCnt")
         if (localFolderFragmentsCnt != folderFragmentsCnt) {
             // todo: not in prod
             throw RuntimeException("verify - exception localFolderFragmentsCnt/folderFragmentsCnt: $localFolderFragmentsCnt/$folderFragmentsCnt")

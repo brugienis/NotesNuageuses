@@ -114,7 +114,7 @@ class FolderFragment : ListFragment(), OnClickListener {
 
 //        val foldersData = listener!!.getFoldersData()
 //        val folderMetadatasInfo = foldersData.getCurrFolderMetadataInfo()
-        listener!!.handleShowRetrieveFolderFolderAtIndexDetails(position)
+        listener!!.startDownloadFolderInfoAtIndex(position)
 
 //        val folderMetadataInfo: FileMetadataInfo = folderMetadatasInfo.get(getIdxOfClickedFolderItem(position))
 //        val selectedDriveId = folderMetadataInfo.fileDriveId
@@ -327,22 +327,7 @@ class FolderFragment : ListFragment(), OnClickListener {
      */
     interface OnFolderFragmentInteractionListener {
         fun showFileDialog()
-        fun handleShowRetrieveFolderFolderAtIndexDetails(position: Int)
-//        fun getFoldersData(): FoldersData
-//        fun getHandleCancellableFuturesCallable() : BaseActivity.HandleNonCancellableFuturesCallable
-//        fun setFragment(
-//                fragmentId: HomeActivity.FragmentsEnum,
-//                titleText: String,
-//                addFragmentToStack: Boolean,
-//                callingSource: HomeActivity.FragmentsCallingSourceEnum,
-//                foldersAddData: FolderData?,
-//                fragmentArgs: Bundle?)
-//        fun appIsFinishing()
-
-        /* The method below is used in Espresso testing */
-//        fun setEspressoFavoriteStopsFragmentActiveFlag(onPause: String, active: Boolean)
-//
-//        fun setEspressoFavoriteStopsFragmentStopRemovedFlag(source: String, removed: Boolean)
+        fun startDownloadFolderInfoAtIndex(position: Int)
     }
 
     companion object {

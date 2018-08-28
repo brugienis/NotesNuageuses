@@ -27,8 +27,6 @@ Rapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/HomeActivity
 _app/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/features/core/FragmentsStackTest.kt,a/5/a5f72b02da98db5221fa251a4e2213e81e79703b
 w
 Gapp/src/test/java/au/com/kbrsolutions/notesnuageuses/ExampleUnitTest.kt,9/e/9e55c7d9553fa7bf6b27dfcbc9fb2b9829825179
-í
-bapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/RetrieveDriveFolderInfoTask.kt,e/8/e834c89036271478827e0b4c52d158ddbf0af959
 @
 constants.gradle,2/5/25ec1ae6b86fea2205909135a091bdc27d028595
 à
@@ -75,3 +73,5 @@ N
 .app/src/main/res/layout/create_file_dialog.xml,4/4/44947537e4f0e0d661038f9654a5fe2eff6ab9ba
 é
 ^app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/dialogs/CreateFileDialog.kt,4/8/488dcc66cfc187f9455eafb84ffbad8b238af039
+ç
+]app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/DownloadFolderInfoTask.kt,7/5/7588a98d122dbaec671041506c704e03b19caef0

@@ -7,14 +7,14 @@ import java.util.*
 object FoldersData {
     private var currFolderLevel = -1
     private var foldersTrashedFilesCnt: MutableList<Int> = ArrayList()
-    private var foldersData: MutableList<FolderData> = ArrayList<FolderData>()
+    private var foldersData: MutableList<FolderData> = ArrayList()
     private var foldersDriveIdsList: MutableList<DriveId> = ArrayList()
     private var foldersTitlesList: MutableList<String> = ArrayList()
-    private var foldersMetadatasInfoList: MutableList<ArrayList<FileMetadataInfo>> = ArrayList<ArrayList<FileMetadataInfo>>()
+    private var foldersMetadataArrayInfoList: MutableList<ArrayList<FileMetadataInfo>> = ArrayList()
     private var foldersFilesTitlesList: MutableList<ArrayList<String>> = ArrayList()
     //	private List<HashMap<Long, Integer>> foldersFilesIdsMapList = new ArrayList<HashMap<Long, Integer>>();
     private var foldersFilesIdsMapList: MutableList<HashMap<Long, ArrayList<FileMetadataInfo>>> = ArrayList<HashMap<Long, ArrayList<FileMetadataInfo>>>()
-    internal var foldersFilesIdMap = ArrayList<HashMap<Long, FileMetadataInfo>>()
+    private var foldersFilesIdMap = ArrayList<HashMap<Long, FileMetadataInfo>>()
 //	protected List<ArrayList<Metadata>> trashFoldersMetadatasList = new ArrayList<ArrayList<Metadata>>();
 
     private val TAG = "xyz" + FoldersData::class.java.simpleName
@@ -25,7 +25,7 @@ object FoldersData {
         foldersData = ArrayList<FolderData>()
         foldersDriveIdsList = ArrayList()
         foldersTitlesList = ArrayList()
-        foldersMetadatasInfoList = ArrayList<ArrayList<FileMetadataInfo>>()
+        foldersMetadataArrayInfoList = ArrayList<ArrayList<FileMetadataInfo>>()
         foldersFilesTitlesList = ArrayList()
         foldersFilesIdsMapList = ArrayList<HashMap<Long, ArrayList<FileMetadataInfo>>>()
         foldersFilesIdMap = ArrayList<HashMap<Long, FileMetadataInfo>>()
@@ -39,7 +39,7 @@ object FoldersData {
                 "; foldersData size: " + foldersData.size +
                 "; foldersDriveIdsList size: " + foldersDriveIdsList.size +
                 "; foldersTitlesList size: " + foldersTitlesList.size +
-                "; foldersMetadatasInfoList size: " + foldersMetadatasInfoList.size +
+                "; foldersMetadataArrayInfoList size: " + foldersMetadataArrayInfoList.size +
                 "; foldersFilesTitlesList size: " + foldersFilesTitlesList.size +
                 "; foldersFilesIdsMapList size: " + foldersFilesIdsMapList.size +
                 "; foldersFilesIdMap size: " + foldersFilesIdMap.size
@@ -56,8 +56,11 @@ object FoldersData {
              newFolderDriveId: ${folderData.newFolderDriveId}
              fileParentFolderDriveId: ${folderData.fileParentFolderDriveId}
              """)
-        if (folderData.folderLevel > -1) {
-            Log.v("FoldersData", "addFolderData - folderData fileParentFolderDriveId: ${folderData.fileParentFolderDriveId} array foldersDriveIdsList: ${foldersDriveIdsList[folderData.folderLevel]}")
+        if (currFolderLevel > -1 && folderData.folderLevel > -1) {
+            Log.v("FoldersData", """addFolderData -
+                | folderData fileParentFolderDriveId: ${folderData.fileParentFolderDriveId}
+                | array foldersDriveIdsList: ${foldersDriveIdsList[folderData.folderLevel]}
+                | """.trimMargin())
         }
         verifyDataStructure()
         if (currFolderLevel > -1 && currFolderLevel < folderData.folderLevel) {
@@ -133,7 +136,7 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
         foldersData.removeAt(currFolderLevel)
         foldersDriveIdsList.removeAt(currFolderLevel)
         foldersTitlesList.removeAt(currFolderLevel)
-        foldersMetadatasInfoList.removeAt(currFolderLevel)
+        foldersMetadataArrayInfoList.removeAt(currFolderLevel)
         foldersFilesTitlesList.removeAt(currFolderLevel)
         //		foldersFilesTitlesList.remove(currFolderLevel);
         currFolderLevel--
@@ -156,7 +159,7 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
         }
         val folderFilesTitles = foldersFilesTitlesList[folderLevel]
         folderFilesTitles.add(position, folderMetadataInfo.fileTitle)
-        val folderMetadatasInfoList = foldersMetadatasInfoList[folderLevel]
+        val folderMetadatasInfoList = foldersMetadataArrayInfoList[folderLevel]
         folderMetadatasInfoList.add(position, folderMetadataInfo)
         val oneFolderFilesIdMap = foldersFilesIdMap[folderLevel]
         oneFolderFilesIdMap[fileItemId] = folderMetadataInfo
@@ -174,7 +177,7 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
             verifyDataStructure()
             return
         }
-        val folderMetadatasInfoList = foldersMetadatasInfoList[folderLevel]
+        val folderMetadatasInfoList = foldersMetadataArrayInfoList[folderLevel]
         var fileItemIdIdx = -1
         var oneFolderMetadataInfo: FileMetadataInfo
         var i = 0
@@ -246,7 +249,7 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
             verifyDataStructure()
             return
         }
-        val folderMetadatasInfoList = foldersMetadatasInfoList[folderLevel]
+        val folderMetadatasInfoList = foldersMetadataArrayInfoList[folderLevel]
         var fileItemIdIdx = 0
         //		}
         //		int fileIdx = 0;
@@ -321,7 +324,7 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
     @Synchronized
     fun getCurrFolderMetadataInfo(): ArrayList<FileMetadataInfo>? {
         // added check for 'currFolderLevel == -1' because it crashed monkey test
-        return if (currFolderLevel == -1) null else foldersMetadatasInfoList[currFolderLevel]
+        return if (currFolderLevel == -1) null else foldersMetadataArrayInfoList[currFolderLevel]
     }
 
     @Synchronized
@@ -345,11 +348,11 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
             foldersFilesIdsPositionMap[fileCreateTs] = pos++
         }
         if (refreshFilesInfo) {
-            foldersMetadatasInfoList[currFolderLevel] = foldersMetadatasInfo
+            foldersMetadataArrayInfoList[currFolderLevel] = foldersMetadatasInfo
             foldersFilesTitlesList[currFolderLevel] = folderFilesList
         } else {
             foldersFilesTitlesList.add(folderFilesList)
-            foldersMetadatasInfoList.add(foldersMetadatasInfo)
+            foldersMetadataArrayInfoList.add(foldersMetadatasInfo)
             foldersFilesIdsMapList.add(folderFilesIdsMap)
             foldersFilesIdMap.add(oneFolderFilesIdMap)
             currFolderLevel++
@@ -367,8 +370,8 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
         if (foldersTitlesList.size != currFolderLevel + 1) {
             throw RuntimeException("FoldersData - verifyDataStructure - foldersTitlesList/currFolderLevel: " + foldersTitlesList.size + "/" + currFolderLevel)
         }
-        if (foldersMetadatasInfoList.size != currFolderLevel + 1) {
-            throw RuntimeException("FoldersData - verifyDataStructure - foldersMetadatasInfoList/currFolderLevel: " + foldersMetadatasInfoList.size + "/" + currFolderLevel)
+        if (foldersMetadataArrayInfoList.size != currFolderLevel + 1) {
+            throw RuntimeException("FoldersData - verifyDataStructure - foldersMetadataArrayInfoList/currFolderLevel: " + foldersMetadataArrayInfoList.size + "/" + currFolderLevel)
         }
         if (foldersFilesTitlesList.size != currFolderLevel + 1) {
             throw RuntimeException("FoldersData - verifyDataStructure - foldersFilesTitlesList/currFolderLevel: " + foldersFilesTitlesList.size + "/" + currFolderLevel)
@@ -389,7 +392,7 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
     }
 
     fun getFoldersMetadatasInfoList(): List<ArrayList<FileMetadataInfo>> {
-        return foldersMetadatasInfoList
+        return foldersMetadataArrayInfoList
     }
 
     fun getFoldersFilesTitlesList(): List<ArrayList<String>> {
