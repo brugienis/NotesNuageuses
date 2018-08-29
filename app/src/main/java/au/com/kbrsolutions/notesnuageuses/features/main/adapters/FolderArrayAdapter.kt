@@ -64,12 +64,12 @@ class FolderArrayAdapter<T>(
         if (folderItem != null) {
             if (fileNameTv != null) {
                 fileNameTv!!.text = folderItem.fileName
-                //				fileUpdateTsTv.setText(activity.getString(R.string.folder_array_adapter_updated) + "  " + dateFormat.format(folderItem.fileUpdateTime));
+                //				fileUpdateTsTv.setText(context.getString(R.string.folder_array_adapter_updated) + "  " + dateFormat.format(folderItem.fileUpdateTime));
                 fileUpdateTsTv!!.setText(mContext.getString(R.string.folder_array_adapter_updated) + "  " + DateFormat.getDateTimeInstance().format(folderItem.fileUpdateTime))
             }
             mimeType = folderItem.mimeType
             if (mimeType != null) {
-                if (folderItem.isTrashed) {        //activity.foldersData.getCurrFolderMetadataInfo().get(position).mIsTrashed) {
+                if (folderItem.isTrashed) {        //context.foldersData.getCurrFolderMetadataInfo().get(position).mIsTrashed) {
                     fileImage!!.setBackgroundColor(Color.LTGRAY)
                     //					Log.i(TAG, "getView - will  grey name/mIsTrashed: " + folderItem.fileName + "/" + folderItem.mIsTrashed);
                 } else {

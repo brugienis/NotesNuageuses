@@ -135,7 +135,7 @@ class FolderFragment : ListFragment(), OnClickListener {
 //                    null)
 //
 //            val c: Callable<String> = DownloadFolderInfoTask.Builder()
-//            .activity = listener
+//            .context = listener
 //                .eventBus = eventBus
 //                .setDriveResourceClient(mDriveResourceClient)
 //                .setSelectedFolderTitle(selectedFileTitle)
@@ -146,7 +146,7 @@ class FolderFragment : ListFragment(), OnClickListener {
 //                .build()
 //
 //            listener!!.getHandleCancellableFuturesCallable().submitCallable(DownloadFolderInfoTask.Builder()
-//                    .activity = listener
+//                    .context = listener
 //                    .eventBus = eventBus
 //                    .setDriveResourceClient(mDriveResourceClient)
 //                    .setSelectedFolderTitle(selectedFileTitle)
@@ -319,8 +319,8 @@ class FolderFragment : ListFragment(), OnClickListener {
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
+     * to the context and potentially other fragments contained in that
+     * context.
      *
      *
      * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.

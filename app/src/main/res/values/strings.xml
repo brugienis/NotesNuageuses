@@ -49,4 +49,15 @@
     <string name="base_handler_create_folder_no_connection">Couldn\'t create folder: %1$s - no connection to Google Drive. Try again later.</string>
     <string name="base_handler_create_folder_problems">Couldn\'t create folder: %1$s. Try again later.</string>
 
+
+    <string name="base_handler_encrypted_text_file_extension">.pntxt</string>
+    <string name="base_handler_plain_photo_file_extension">.png</string>
+    <string name="base_handler_encrypted_photo_file_extension">.pnpng</string>
+    <string name="base_handler_could_not_decrypt_file">%1$s - couldn\'t decrypt file - check your password."</string>
+    <string name="base_handler_could_not_encrypt_file">Couldn\'t encrypt file: %1$s."</string>
+
+    <string name="base_handler_upload_time_details">\'%1$s\' uploaded in %2$4.3f secs. Encrypt time: %3$4.3f secs.</string>
+    <string name="base_handler_upload_problem_will_try_later">Couldn\'t upload file: %1$s. Will try again later.</string>
+    <string name="base_handler_upload_problem">Couldn\'t upload file: %1$s. </string>
+
 </resources>
