@@ -3,7 +3,7 @@ package au.com.kbrsolutions.notesnuageuses.features.tasks
 import android.content.Context
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
-import au.com.kbrsolutions.notesnuageuses.features.events.ActivitiesEvents
+import au.com.kbrsolutions.notesnuageuses.features.events.FilesEvents
 import com.google.android.gms.drive.*
 import org.greenrobot.eventbus.EventBus
 import java.io.IOException
@@ -15,7 +15,7 @@ data class SendTextToGoogleDriveCallable(
         var context: Context,
         var eventBus: EventBus,
         var driveResourceClient: DriveResourceClient,
-        var createDt: Date? = null,
+        var createDt: Date,
         val parentFolderLevel: Int,
         val parentFolderDriveId: DriveId,
         val existingFileDriveId: DriveId?,
@@ -56,7 +56,7 @@ data class SendTextToGoogleDriveCallable(
                         .getString(R.string.base_handler_encrypted_text_file_extension))
         msg = null
         try {
-            sendUpdateEvent(ActivitiesEvents.HomeEvents.TEXT_UPLOADING, msg, fileNameWithExtension)
+            sendUpdateEvent(FilesEvents.Events.TEXT_UPLOADING, msg, fileNameWithExtension)
 
             val driveContentsResult: DriveApi.DriveContentsResult? = null
             var uploadSuccessful = false
@@ -71,7 +71,7 @@ data class SendTextToGoogleDriveCallable(
                 if (driveContentsResult!!.status.isSuccess) {
                     val driveContents = driveContentsResult.driveContents
                     outputStream = driveContents.outputStream
-                    outputStream!!.write(contentToSave)
+                    outputStream!!.write(contents)
                     val changeSet = MetadataChangeSet.Builder()
                             .setLastViewedByMeDate(Date()).build()
                     // fixLater - uncomment below line and use new Drive API
@@ -86,7 +86,7 @@ data class SendTextToGoogleDriveCallable(
                 //                    driveContentsResult = Drive.DriveApi.newDriveContents(mGoogleApiClient).await();
                 if (driveContentsResult!!.status.isSuccess) {
                     outputStream = driveContentsResult.driveContents.outputStream
-                    outputStream!!.write(contentToSave)
+                    outputStream!!.write(contents)
                     val metadataChangeSet = MetadataChangeSet.Builder()
                             .setMimeType(mimeType)
                             .setTitle(fileNameWithExtension!!)
@@ -111,16 +111,16 @@ data class SendTextToGoogleDriveCallable(
 
             if (uploadSuccessful) {
                 msg = context.resources.getString(R.string.base_handler_upload_time_details, fileName, (System.currentTimeMillis() - startMillis) / 1000f, encryptMillis / 1000f)
-                sendUpdateEvent(ActivitiesEvents.HomeEvents.TEXT_UPLOADED, msg, fileNameWithExtension)
+                sendUpdateEvent(FilesEvents.Events.TEXT_UPLOADED, msg, fileNameWithExtension)
             } else {
-                sendProblemEvent(ActivitiesEvents.HomeEvents.UPLOAD_PROBLEMS, true, fileName)
+                sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, true, fileName)
             }
         } catch (e: IllegalStateException) {
-            sendProblemEvent(ActivitiesEvents.HomeEvents.UPLOAD_PROBLEMS, true, fileName)
+            sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, true, fileName)
         } catch (e: IOException) {
-            sendProblemEvent(ActivitiesEvents.HomeEvents.UPLOAD_PROBLEMS, false, fileName)
+            sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, false, fileName)
         } catch (e: Exception) {                                                                            // added to handle any exception
-            sendProblemEvent(ActivitiesEvents.HomeEvents.UPLOAD_PROBLEMS, false, fileName)
+            sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, false, fileName)
         } finally {
             if (outputStream != null) {
                 try {
@@ -135,7 +135,7 @@ data class SendTextToGoogleDriveCallable(
     }
 
     private fun sendProblemEvent(
-            event: ActivitiesEvents.HomeEvents,
+            event: FilesEvents.Events,
             willTryAgain: Boolean, fileName: String) {
         val msg = if (willTryAgain) {
             context.resources.getString(R.string.base_handler_upload_problem_will_try_later,
@@ -146,21 +146,18 @@ data class SendTextToGoogleDriveCallable(
         sendUpdateEvent(event, msg, fileName)
     }
 
-    private fun sendUpdateEvent(event: ActivitiesEvents.HomeEvents, msg: String?, fileName: String) {
-        eventBus.post(ActivitiesEvents.Builder(event)
-                .setMsgContents(msg)
-                .setParentFileName(parentFileName)
-                .setFileName(fileName)
-                .setCreateDate(createDt)
-                .setUpdateDate(Date())
-                .setFileItemId(fileItemId)
-                .setCurrFolderDriveId(parentFolderDriveId)
-                .setSelectedFileDriveId(thisFileDriveId)
-                .setIsFolder(false)
-                .setMimeType(mimeType)
-                .setIsEncryptedFile(encryptFile)
-                .setCurrFolderLevel(parentFolderLevel)
-                .setIdxInTheFolderFilesList(idxInTheFolderFilesList)
+    private fun sendUpdateEvent(event: FilesEvents.Events, msg: String?, fileName: String) {
+        eventBus.post(FilesEvents.Builder(event)
+                .msgContents(msg)
+                .parentFileName(parentFileName)
+                .fileName(fileName)
+                .createDate(createDt)
+                .updateDate(Date())
+                .fileItemId(fileItemId)
+                .currFolderDriveId(parentFolderDriveId)
+                .selectedFileDriveId(thisFileDriveId)
+                .mimeType(mimeType)
+                .folderLevel(parentFolderLevel)
                 .build())
     }
 
@@ -169,7 +166,7 @@ data class SendTextToGoogleDriveCallable(
         private lateinit var context: Context
         private lateinit var eventBus: EventBus
         private lateinit var driveResourceClient: DriveResourceClient
-        private var createDt: Date? = null
+        private lateinit var createDt: Date
         private var parentFolderLevel: Int = 0
         private lateinit var parentFolderDriveId: DriveId
         private var existingFileDriveId: DriveId? = null
