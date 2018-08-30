@@ -5,13 +5,18 @@ import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
 import au.com.kbrsolutions.notesnuageuses.features.events.FilesEvents
 import com.google.android.gms.drive.*
+import com.google.android.gms.tasks.Tasks
 import org.greenrobot.eventbus.EventBus
 import java.io.IOException
 import java.io.OutputStream
+import java.io.OutputStreamWriter
 import java.util.*
 import java.util.concurrent.Callable
 
-data class SendTextToGoogleDriveCallable(
+
+
+
+data class SendTextFileToGoogleDriveTask(
         var context: Context,
         var eventBus: EventBus,
         var driveResourceClient: DriveResourceClient,
@@ -19,7 +24,7 @@ data class SendTextToGoogleDriveCallable(
         val parentFolderLevel: Int,
         val parentFolderDriveId: DriveId,
         val existingFileDriveId: DriveId?,
-        val encryptPasswords: Array<String>,
+        val encryptPasswords: Array<String>?,
         val encryptKeyLength: Int,
         val encryptIterationCount: Int,
         val fileName: String,
@@ -41,8 +46,10 @@ data class SendTextToGoogleDriveCallable(
     var encryptMillis: Long = 0
 
     override fun call(): String {
+//        Log.v("SendTextFileToGoogleDriveTask", """call -
+//            |contents: ${String(contents)} """
+//                .trimMargin())
         val startMillis = System.currentTimeMillis()
-        val contentToSave: ByteArray
         if (!replaceFile || existingFileDriveId == null) {
             //				createDt = updateDt = new Date();
             createDt = Date()
@@ -84,43 +91,66 @@ data class SendTextToGoogleDriveCallable(
             } else {
                 // fixLater - uncomment below line and use new Drive API
                 //                    driveContentsResult = Drive.DriveApi.newDriveContents(mGoogleApiClient).await();
-                if (driveContentsResult!!.status.isSuccess) {
-                    outputStream = driveContentsResult.driveContents.outputStream
-                    outputStream!!.write(contents)
-                    val metadataChangeSet = MetadataChangeSet.Builder()
-                            .setMimeType(mimeType)
-                            .setTitle(fileNameWithExtension!!)
-                            .build()
-                    // fixLater - uncomment below line and use new Drive API
-                    val folder: DriveFolder? = null
-                    // fixLater - uncomment below line and use new Drive API
-                    //						folder = Drive.DriveApi.getFolder(mGoogleApiClient, parentFolderDriveId);
-                    val driveFileResult: DriveFolder.DriveFileResult? = null
-                    //						driveFileResult = folder.createFile(mGoogleApiClient, metadataChangeSet, driveContentsResult.getDriveContents()).await();
-                    // FIXME: add code to verify status
-                    if (driveFileResult!!.status.isSuccess) {
-                        thisFileDriveId = driveFileResult.driveFile.driveId
-                        uploadSuccessful = true
-                    } else {
-                        uploadSuccessful = false
-                    }
-                } else {
-                    uploadSuccessful = false
-                }
+
+                val createContentsTask = driveResourceClient.createContents()
+
+                Tasks.await(createContentsTask)
+
+                val contents = createContentsTask.getResult()
+                val outputStream = contents.getOutputStream()
+                OutputStreamWriter(outputStream).use { writer -> writer.write("Hello World!") }
+
+                val changeSet = MetadataChangeSet.Builder()
+                        .setTitle("HelloWorld.txt")
+                        .setMimeType("text/plain")
+                        .setStarred(true)
+                        .build()
+
+                val driveFileTask = driveResourceClient.createFile(parentFolderDriveId.asDriveFolder(), changeSet, contents)
+
+                Tasks.await(driveFileTask)
+
+                uploadSuccessful = true
+
+//                if (driveContentsResult!!.status.isSuccess) {
+//                    outputStream = driveContentsResult.driveContents.outputStream
+//                    outputStream!!.write(contents)
+//                    val metadataChangeSet = MetadataChangeSet.Builder()
+//                            .setMimeType(mimeType)
+//                            .setTitle(fileNameWithExtension!!)
+//                            .build()
+//                    // fixLater - uncomment below line and use new Drive API
+//                    val folder: DriveFolder? = null
+//                    // fixLater - uncomment below line and use new Drive API
+//                    //						folder = Drive.DriveApi.getFolder(mGoogleApiClient, parentFolderDriveId);
+//                    val driveFileResult: DriveFolder.DriveFileResult? = null
+//                    //						driveFileResult = folder.createFile(mGoogleApiClient, metadataChangeSet, driveContentsResult.getDriveContents()).await();
+//                    // FIXME: add code to verify status
+//                    if (driveFileResult!!.status.isSuccess) {
+//                        thisFileDriveId = driveFileResult.driveFile.driveId
+//                        uploadSuccessful = true
+//                    } else {
+//                        uploadSuccessful = false
+//                    }
+//                } else {
+//                    uploadSuccessful = false
+//                }
             }
 
             if (uploadSuccessful) {
-                msg = context.resources.getString(R.string.base_handler_upload_time_details, fileName, (System.currentTimeMillis() - startMillis) / 1000f, encryptMillis / 1000f)
+                msg = context.resources.getString(R.string.base_handler_upload_time_details,
+                        fileName, (System.currentTimeMillis() - startMillis) / 1000f,
+                        encryptMillis / 1000f)
                 sendUpdateEvent(FilesEvents.Events.TEXT_UPLOADED, msg, fileNameWithExtension)
             } else {
                 sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, true, fileName)
             }
         } catch (e: IllegalStateException) {
-            sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, true, fileName)
+            sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, true, fileName + e)
         } catch (e: IOException) {
-            sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, false, fileName)
+            sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, false, fileName + e)
         } catch (e: Exception) {                                                                            // added to handle any exception
-            sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, false, fileName)
+            sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, false, fileName + e)
         } finally {
             if (outputStream != null) {
                 try {
@@ -131,7 +161,7 @@ data class SendTextToGoogleDriveCallable(
 
             }
         }
-        return "SendTextToGoogleDriveCallable - successful end"
+        return "SendTextFileToGoogleDriveTask - successful end"
     }
 
     private fun sendProblemEvent(
@@ -172,7 +202,7 @@ data class SendTextToGoogleDriveCallable(
         private var existingFileDriveId: DriveId? = null
         private lateinit var fileName: String
         private lateinit var mimeType: String
-        private lateinit var encryptionPasswords: Array<String>
+        private var encryptionPasswords: Array<String>? = null
         private var encryptionKeyLength: Int = 0
         private var encryptionIterationCount: Int = 0
         private var replaceFile: Boolean = false
@@ -199,14 +229,14 @@ data class SendTextToGoogleDriveCallable(
         fun parentFolderDriveId(parentFolderDriveId: DriveId) =
                 apply { this.parentFolderDriveId = parentFolderDriveId }
 
-        fun existingFileDriveId(existingFileDriveId: DriveId) =
+        fun existingFileDriveId(existingFileDriveId: DriveId?) =
                 apply { this.existingFileDriveId = existingFileDriveId }
 
         fun fileName(fileName: String) = apply { this.fileName = fileName }
 
         fun mimeType(mimeType: String) = apply { this.mimeType = mimeType }
 
-        fun encryptionPasswords(encryptionPasswords: Array<String>) =
+        fun encryptionPasswords(encryptionPasswords: Array<String>?) =
                 apply { this.encryptionPasswords = encryptionPasswords }
 
         fun encryptionKeyLength(encryptionKeyLength: Int) =
@@ -234,7 +264,7 @@ data class SendTextToGoogleDriveCallable(
 
         fun foldersData(foldersData: FoldersData) = apply { this.foldersData = foldersData }
 
-        fun build() = SendTextToGoogleDriveCallable (
+        fun build() = SendTextFileToGoogleDriveTask (
                 context,
                 eventBus,
                 driveResourceClient,

@@ -14,6 +14,7 @@ import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.addFragment
 import au.com.kbrsolutions.notesnuageuses.features.events.ActivitiesEvents
+import au.com.kbrsolutions.notesnuageuses.features.events.FilesEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
@@ -23,6 +24,8 @@ import au.com.kbrsolutions.notesnuageuses.features.main.fragments.EmptyFolderFra
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FolderFragment
 import au.com.kbrsolutions.notesnuageuses.features.tasks.CreateDriveFolderTask
 import au.com.kbrsolutions.notesnuageuses.features.tasks.DownloadFolderInfoTask
+import au.com.kbrsolutions.notesnuageuses.features.tasks.SendTextFileToGoogleDriveTask
+import com.google.android.gms.drive.DriveId
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -325,6 +328,13 @@ class HomeActivity : BaseActivity(),
 //    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: FilesEvents) {
+        val request = event.request
+        val msgContents = event.msgContents
+        Log.v(TAG, "onMessageEvent - request: $request msgContents: $msgContents")
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FoldersEvents) {
         val request = event.request
         val msgContents = event.msgContents
@@ -619,6 +629,7 @@ class HomeActivity : BaseActivity(),
         // true, then it has handled the app icon touch event
 
         when (item.itemId) {
+            R.id.action_connect_to_google_drive -> sendTextFileToDrive()
             R.id.menuQuickPhoto -> handleCameraOptionSelected()
             R.id.menuRefresh -> handleRefreshOptionSelected()
 //            R.id.menuCreateFile -> handleCreateFileOptionSelected()
@@ -646,6 +657,32 @@ class HomeActivity : BaseActivity(),
             else -> return super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    private fun sendTextFileToDrive() {
+
+        val c = Calendar.getInstance()
+        val createDt = c.time
+        val existingFileDriveId: DriveId? = null
+        val fileName = "test.txt"
+        val plainContents: ByteArray = "Hello Drive".toByteArray(Charsets.UTF_8)
+
+        val sendTextToGoogleDriveCallable = SendTextFileToGoogleDriveTask.Builder()
+                .context(applicationContext)
+                .eventBus(eventBus)
+                .driveResourceClient(mDriveResourceClient)
+                .parentFolderLevel(foldersData.getCurrFolderLevel())
+                .parentFolderDriveId(foldersData.getCurrFolderDriveId()!!)
+                .existingFileDriveId(existingFileDriveId)
+                .createDt(createDt)
+                .fileName(fileName)
+                .replaceFile(false)
+                .mimeType(MIME_TYPE_TEXT_FILE)
+                .contents(plainContents)
+                .foldersData(foldersData)
+                .build()
+
+        handleNonCancellableFuturesCallable!!.submitCallable(sendTextToGoogleDriveCallable)
     }
 
     override fun showFileDialog() {
