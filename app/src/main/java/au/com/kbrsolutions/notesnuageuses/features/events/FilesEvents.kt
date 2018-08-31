@@ -22,6 +22,8 @@ class FilesEvents(
         TEXT_UPLOADING,
         TEXT_UPLOADED,
         FILE_DOWNLOADING,
+        FILE_DOWNLOADED,
+        UPLOAD_PROBLEMS,
         CREATE_FOLDER,
         CANCEL_CREATE,
         SAVE_TEXT_NOTE,
@@ -33,7 +35,6 @@ class FilesEvents(
         RENAME_FILE_START,
         RENAME_FILE_FINISHED,
         RENAME_FILE_PROBLEMS,
-        UPLOAD_PROBLEMS,
         SCHEDULE_FILE_RESEND,
         FILE_DOWNLOAD_PROBLEMS,
         FILE_DOWNLOAD_DECRYPT_PROBLEMS,
@@ -84,19 +85,20 @@ class FilesEvents(
         fun updateDate(updateDate: Date) = apply { this.updateDate = updateDate }
 
         fun build() = FilesEvents(
-                    request,
-                    msgContents,
-                    textContents,
-                    fileItemId,
-                    selectedFileDriveId,
-                    mimeType,
-                    folderLevel,
-                    parentFileName,
-                    fileName,
-                    newFileName,
-                    currFolderDriveId,
-                    createDate,
-                    updateDate)
-        }
+                request,
+                msgContents,
+                textContents,
+                fileItemId,
+                selectedFileDriveId,
+                mimeType,
+                folderLevel,
+                parentFileName,
+                fileName,
+                newFileName,
+                currFolderDriveId,
+                createDate,
+                updateDate)
     }
+
+}
 

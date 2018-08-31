@@ -59,5 +59,8 @@
     <string name="base_handler_upload_time_details">\'%1$s\' uploaded in %2$4.3f secs. Encrypt time: %3$4.3f secs.</string>
     <string name="base_handler_upload_problem_will_try_later">Couldn\'t upload file: %1$s. Will try again later.</string>
     <string name="base_handler_upload_problem">Couldn\'t upload file: %1$s. </string>
+    <string name="base_handler_download_problem">%1$s - download unsuccessful - try again later.</string>
+    <string name="base_handler_download_no_connection">%1$s - couldn\'t download file - no connection to Google Drive. Try again later.</string>
+    <string name="base_handler_download_time_details">\'%1$s\' downloaded in %2$4.3f secs. Decrypt time: %3$4.3f secs.</string>
 
 </resources>

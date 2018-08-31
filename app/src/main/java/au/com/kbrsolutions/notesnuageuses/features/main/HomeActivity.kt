@@ -24,7 +24,7 @@ import au.com.kbrsolutions.notesnuageuses.features.main.fragments.EmptyFolderFra
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FolderFragment
 import au.com.kbrsolutions.notesnuageuses.features.tasks.CreateDriveFolderTask
 import au.com.kbrsolutions.notesnuageuses.features.tasks.DownloadFolderInfoTask
-import au.com.kbrsolutions.notesnuageuses.features.tasks.SendTextFileToGoogleDriveTask
+import au.com.kbrsolutions.notesnuageuses.features.tasks.SendFileToDriveTask
 import com.google.android.gms.drive.DriveId
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
@@ -664,10 +664,10 @@ class HomeActivity : BaseActivity(),
         val c = Calendar.getInstance()
         val createDt = c.time
         val existingFileDriveId: DriveId? = null
-        val fileName = "test.txt"
+        val fileName = "test1.txt"
         val plainContents: ByteArray = "Hello Drive".toByteArray(Charsets.UTF_8)
 
-        val sendTextToGoogleDriveCallable = SendTextFileToGoogleDriveTask.Builder()
+        val sendTextToGoogleDriveCallable = SendFileToDriveTask.Builder()
                 .context(applicationContext)
                 .eventBus(eventBus)
                 .driveResourceClient(mDriveResourceClient)
@@ -730,18 +730,33 @@ class HomeActivity : BaseActivity(),
         onDriveClientReady()
     }
 
-    override fun startDownloadFolderInfoAtIndex(position: Int) {
+    override fun handleOnFolderOrFileClick(position: Int) {
         val idx = getIdxOfClickedFolderItem(position)
+        val folderMetadataArrayInfo = foldersData.getCurrFolderMetadataInfo()
+        val folderMetadataInfo: FileMetadataInfo = folderMetadataArrayInfo!![idx]
+        if (folderMetadataInfo.isFolder) {
+            startDownloadFolderInfo(folderMetadataInfo)
+        } else {
+            Log.v("HomeActivity", """handleOnFolderOrFileClick - position: ${position} """)
+            startDownloadFileContents(folderMetadataInfo)
+        }
+    }
+
+    private fun startDownloadFileContents(folderMetadataInfo: FileMetadataInfo) {
+        Log.v("HomeActivity", """startDownloadFileContents -
+            |folderMetadataInfo: ${folderMetadataInfo.fileTitle} """.trimMargin())
+    }
+
+    private fun startDownloadFolderInfo(folderMetadataInfo: FileMetadataInfo) {
+//        val idx = getIdxOfClickedFolderItem(position)
 
         val currFolderLevel = foldersData.getCurrFolderLevel()
         val folderMetadataArrayInfo = foldersData.getCurrFolderMetadataInfo()
         val currFolderParentDriveId = foldersData.getCurrFolderDriveId()
 
-        val folderMetadataInfo: FileMetadataInfo = folderMetadataArrayInfo!![idx]
+//        val folderMetadataInfo: FileMetadataInfo = folderMetadataArrayInfo!![idx]
         Log.v("HomeActivity", """
-            | startDownloadFolderInfoAtIndex -
-            | position: $position
-            | idx: $idx
+            | startDownloadFolderInfo -
             | folderMetadataInfo - fileDriveId: ${folderMetadataInfo.fileDriveId}
             | parentDriveId: ${foldersData.getCurrParentDriveId(currFolderLevel)}
             |""".trimMargin())

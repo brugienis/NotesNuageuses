@@ -102,6 +102,7 @@ class FolderFragment : ListFragment(), OnClickListener {
 
     override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
         super.onListItemClick(l, v, position, id)
+        Log.v("FolderFragment", """onListItemClick - id: ${id} """)
         // fixLater: Aug 24, 2018 - uncomment below - isAppFinishing is set up in removeTopFragment(...)
 //        if (isAppFinishing) {
 //            return
@@ -112,58 +113,8 @@ class FolderFragment : ListFragment(), OnClickListener {
                 }
             }
 
-//        val foldersData = listener!!.getFoldersData()
-//        val folderMetadatasInfo = foldersData.getCurrFolderMetadataInfo()
-        listener!!.startDownloadFolderInfoAtIndex(position)
+        listener!!.handleOnFolderOrFileClick(position)
 
-//        val folderMetadataInfo: FileMetadataInfo = folderMetadatasInfo.get(getIdxOfClickedFolderItem(position))
-//        val selectedDriveId = folderMetadataInfo.fileDriveId
-//        val selectedFileTitle = folderMetadataInfo.fileTitle
-//        if (selectedDriveId == null) {
-//            Log.v("FolderFragment", "onListItemClick - getString(R.string.file_not_uploaded_yet): ${getString(R.string.file_not_uploaded_yet)} ")
-////            addMsgToActivityLogShowOnScreen(getString(R.string.file_not_uploaded_yet), false, true)
-//            return
-//        }
-//        if (folderMetadataInfo.isFolder) run {
-//            val currFolderLevel = foldersData.getCurrFolderLevel()
-//            listener!!.setFragment(
-//                    FragmentsEnum.RETRIEVE_FOLDER_PROGRESS_FRAGMENT,
-//                    getString(R.string.retrieving_folder_title),
-//                    true,
-//                    FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
-//                    null,
-//                    null)
-//
-//            val c: Callable<String> = DownloadFolderInfoTask.Builder()
-//            .context = listener
-//                .eventBus = eventBus
-//                .setDriveResourceClient(mDriveResourceClient)
-//                .setSelectedFolderTitle(selectedFileTitle)
-//                .setParentFolderLevel(foldersData.getCurrFolderLevel())
-//                .setSelectedFiledDriveId(selectedDriveId)
-//                .setTParentFolderDriveId(selectedDriveId)
-//                .setCurrentFolderDriveId(foldersData.getCurrFolderDriveId())
-//                .build()
-//
-//            listener!!.getHandleCancellableFuturesCallable().submitCallable(DownloadFolderInfoTask.Builder()
-//                    .context = listener
-//                    .eventBus = eventBus
-//                    .setDriveResourceClient(mDriveResourceClient)
-//                    .setSelectedFolderTitle(selectedFileTitle)
-//                    .setParentFolderLevel(foldersData.getCurrFolderLevel())
-//                    .setSelectedFiledDriveId(selectedDriveId)
-//                    .setTParentFolderDriveId(selectedDriveId)
-//                    .setCurrentFolderDriveId(foldersData.getCurrFolderDriveId())
-//                    .build())
-
-            //            handleCancellableFuturesCallable.submitCallable(new RetrieveDriveFolderInfoCallable(
-            //                    selectedFileTitle,
-            //                    selectedDriveId,
-            //                    foldersData.getCurrFolderLevel(),
-            //                    foldersData.getFolderDriveId(currFolderLevel),
-            //                    foldersData.getCurrFolderDriveId()));
-//        }
-//        mContext!!.fileOrFolderClicked(position)
     }
 
     override fun onClick(v: View) {
@@ -327,7 +278,7 @@ class FolderFragment : ListFragment(), OnClickListener {
      */
     interface OnFolderFragmentInteractionListener {
         fun showFileDialog()
-        fun startDownloadFolderInfoAtIndex(position: Int)
+        fun handleOnFolderOrFileClick(position: Int)
     }
 
     companion object {

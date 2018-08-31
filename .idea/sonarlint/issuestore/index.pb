@@ -75,7 +75,7 @@ N
 ^app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/dialogs/CreateFileDialog.kt,4/8/488dcc66cfc187f9455eafb84ffbad8b238af039
 ç
 ]app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/DownloadFolderInfoTask.kt,7/5/7588a98d122dbaec671041506c704e03b19caef0
-î
-dapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/SendTextFileToGoogleDriveTask.kt,c/8/c807b11e537cb810683c3f4740ab846cf915512c
 É
 Sapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/events/FilesEvents.kt,f/2/f26b8463fb8dfd727b2dfc2f2ef8f3bc6dfa8259
+ä
+Zapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/SendFileToDriveTask.kt,8/1/813c530bf8704436233dc390c0f9498e0d7545da
