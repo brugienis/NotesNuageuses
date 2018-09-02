@@ -2,7 +2,6 @@ package au.com.kbrsolutions.notesnuageuses.features.main.adapters
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
@@ -25,41 +24,26 @@ class FolderArrayAdapter<T>(
     private var fileImage: ImageView? = null
     private var infoImage: ImageView? = null
 
-    //    private val TAG = FolderArrayAdapter::class.simpleName
-    private val TAG = "FolderArrayAdapter"
-//    private val folderOnClickListener: OnClickListener
-    //	@SuppressLint("SimpleDateFormat")
-    //	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss");
-//    private val dateFormat = SimpleDateFormat("yyyy-MMM.d hh:mm:ss", Locale.getDefault())
-
-    init {
-//        folderOnClickListener = folderFragment
-        		Log.i(TAG, "constructor - end - objects.size(): ${objects.size}")
-    }
-
     fun getFolderItem(idx: Int): FolderItem {
         return objects[idx]
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        Log.i(TAG, "getView - start")
-        var v = convertView
-        if (v == null) {
+        var view = convertView
+        if (view == null) {
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)
                     as LayoutInflater
-            v = inflater.inflate(R.layout.fragment_list_screen_layout, parent, false)
+            view = inflater.inflate(R.layout.fragment_list_screen_layout, parent, false)
         }
-        fileImage = v!!.findViewById<View>(R.id.folderFileImageId) as ImageView
+        fileImage = view!!.findViewById<View>(R.id.folderFileImageId) as ImageView
 
-        infoImage = v.findViewById<View>(R.id.infoImageId) as ImageView
+        infoImage = view.findViewById<View>(R.id.infoImageId) as ImageView
         infoImage!!.setOnClickListener(folderOnClickListener)
 
-        fileNameTv = v.findViewById<View>(R.id.fileNameId) as TextView
-        fileUpdateTsTv = v.findViewById<View>(R.id.fileUpdateTsId) as TextView
+        fileNameTv = view.findViewById<View>(R.id.fileNameId) as TextView
+        fileUpdateTsTv = view.findViewById<View>(R.id.fileUpdateTsId) as TextView
 
         val folderItem = objects[position]
-        Log.i(TAG, "getView - name/mIsTrashed: " + folderItem.fileName + "/" +
-                folderItem.isTrashed)
         val mimeType: String?
         if (folderItem != null) {
             if (fileNameTv != null) {
@@ -82,26 +66,8 @@ class FolderArrayAdapter<T>(
                     else -> fileImage!!.setImageResource(R.mipmap.ic_type_file)
                 }
             }
-        } else {
-            Log.i(TAG, "getView - end - folderItem null")
         }
-        return v
-    }
 
-    companion object {
-//        private val TAG = FolderArrayAdapter::class.simpleName
+        return view
     }
-
-    //	private OnClickListener MyOnClickListener  = new OnClickListener() {
-    //
-    //		@Override
-    //		public void onClick(View v) {
-    //			Log.i(TAG, "onClick - start");
-    //      final int position = getListView().getPositionForView(v);
-    //      if (position != ListView.INVALID_POSITION) {
-    //          showMessage(getString(R.string.you_want_to_buy_format, CHEESES[position]));
-    //      }
-    //		}
-    //
-    //	};
 }

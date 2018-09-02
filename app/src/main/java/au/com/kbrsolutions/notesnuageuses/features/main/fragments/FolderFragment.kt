@@ -14,13 +14,6 @@ import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdap
 class FolderFragment : ListFragment(), OnClickListener {
 
     private var mTrashedFilesCnt: Int = 0
-    //	private TextView emptyFolderViewTv;
-    //	private LinearLayout nonEmptyFolderViewLl;
-    private var mContext: Context? = null
-    //	private Object mActionMode;
-    //	private int selectedItem = -1;
-    //	private boolean isFolderEmpty = false;
-    //	private Menu mMenu;
     private var listener: OnFolderFragmentInteractionListener? = null
     private var mArgsProcessed = false
 
@@ -264,7 +257,6 @@ class FolderFragment : ListFragment(), OnClickListener {
 
     fun setTrashedFilesCnt(trashedFilesCnt: Int) {
         this.mTrashedFilesCnt = trashedFilesCnt
-        Log.v("EmptyFolderFragment", "setTrashedFilesCnt - mTrashedFilesCnt: ${mTrashedFilesCnt} ")
     }
 
     /**
@@ -283,9 +275,7 @@ class FolderFragment : ListFragment(), OnClickListener {
 
     companion object {
         private val TAG = FolderFragment::class.java.simpleName
-        const val ARG_TRASH_FILES_CNT_KEY = "arg_trash_files_cnt_key"
-
-        const val ARG_COLUMN_COUNT = "column-count"
+        private const val ARG_TRASH_FILES_CNT_KEY = "arg_trash_files_cnt_key"
 
         @JvmStatic
         fun newInstance(trashFilesCnt: Int) =

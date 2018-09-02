@@ -30,10 +30,8 @@ data class DownloadFolderInfoTask(
     override fun call(): String {
 
         try {
-            val foldersAddData: FolderData = getFolderFilesList(driveResourceClient, selectedFolderDriveId)
-
-            // fixLater: Aug 27, 2018 - remove when not needed for testing
-            Thread.sleep(1000)  // delay at development time
+            val foldersAddData: FolderData = getFolderFilesList(
+                    driveResourceClient, selectedFolderDriveId)
 
             eventBus.post(FoldersEvents.Builder(FoldersEvents.Events.FOLDER_DATA_RETRIEVED)
                     .foldersAddData(foldersAddData)

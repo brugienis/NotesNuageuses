@@ -57,9 +57,15 @@ data class GetFileFromDriveTask(
                 |fileContents: ${fileContents} """.trimMargin())
 
             val discardTask = driveResourceClient.discardContents(contents)
+            Tasks.await(discardTask)
+            Log.v("GetFileFromDriveTask", """call -
+                |discardTask isSuccessful: ${discardTask.isSuccessful}
+                | isCanceled: ${discardTask.isCanceled}
+                | isComplete: ${discardTask.isComplete}
+                |"""
+                    .trimMargin())
 
             if (discardTask.isSuccessful) {
-
                 val msg = context.resources.
                         getString(
                         R.string.base_handler_download_time_details, fileName, (System.currentTimeMillis() - startMillis) / 1000f, decryptMillis / 1000f)
@@ -144,7 +150,6 @@ data class GetFileFromDriveTask(
                 fileName,
                 mimeType
         )
-
     }
 
 }

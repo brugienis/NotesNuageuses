@@ -13,7 +13,6 @@ import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.addFragment
-import au.com.kbrsolutions.notesnuageuses.features.events.ActivitiesEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FilesEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
@@ -22,8 +21,10 @@ import au.com.kbrsolutions.notesnuageuses.features.main.dialogs.CreateFileDialog
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.DownloadFragment
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.EmptyFolderFragment
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FolderFragment
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.TextFragment
 import au.com.kbrsolutions.notesnuageuses.features.tasks.CreateDriveFolderTask
 import au.com.kbrsolutions.notesnuageuses.features.tasks.DownloadFolderInfoTask
+import au.com.kbrsolutions.notesnuageuses.features.tasks.GetFileFromDriveTask
 import au.com.kbrsolutions.notesnuageuses.features.tasks.SendFileToDriveTask
 import com.google.android.gms.drive.DriveId
 import kotlinx.android.synthetic.main.activity_main.*
@@ -43,7 +44,8 @@ import java.util.concurrent.Future
 class HomeActivity : BaseActivity(),
         EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
         FolderFragment.OnFolderFragmentInteractionListener,
-        CreateFileDialog.OnCreateFileDialogInteractionListener {
+        CreateFileDialog.OnCreateFileDialogInteractionListener,
+        TextFragment.OnTextFragmentInteractionListener {
 
     private lateinit var eventBus: EventBus
     private var mToolbar: Toolbar? = null
@@ -63,11 +65,13 @@ class HomeActivity : BaseActivity(),
     private var folderFragment: FolderFragment? = null
     private var downloadFragment: DownloadFragment? = null
     private var folderArrayAdapter: FolderArrayAdapter<FolderItem>? = null
+    private var textFragment: TextFragment? = null
 
     companion object {
         private val TAG = HomeActivity::class.java.simpleName
 
         const val EMPTY_FOLDER_TAG = "empty_folder_tag"
+        const val TEXT_FRAGMENT_TAG = "text_fragment_tag"
         const val FOLDER_TAG = "folder_tag"
         const val RETRIEVE_FOLDER_PROGRESS_TAG = "retrieve_folder_progress_tag"
         const val RETRIEVING_FOLDER_TITLE_KEY = "retrieving_folder_title_key"
@@ -250,6 +254,17 @@ class HomeActivity : BaseActivity(),
                 fragmentTransaction.commit()
             }
 
+            FragmentsEnum.TEXT_VIEW_FRAGMENT -> {
+                if (textFragment == null) {
+                    textFragment = TextFragment()
+                }
+//                textFragment!!.setEnableTextView(true)
+
+                fragmentTransaction = fragmentManager.beginTransaction()
+                fragmentTransaction.replace(R.id.fragments_frame, textFragment, TEXT_FRAGMENT_TAG)
+                fragmentTransaction.commit()
+            }
+
             FragmentsEnum.DOWNLOAD_FRAGMENT -> {
                 val retrievingFolderName = fragmentArgs!!.getString(RETRIEVING_FOLDER_TITLE_KEY)
                 if (downloadFragment == null) {
@@ -331,18 +346,29 @@ class HomeActivity : BaseActivity(),
     fun onMessageEvent(event: FilesEvents) {
         val request = event.request
         val msgContents = event.msgContents
-        Log.v(TAG, "onMessageEvent - request: $request msgContents: $msgContents")
+        Log.v(TAG, "onMessageEvent.FilesEvents - request: $request msgContents: $msgContents")
+
+        when (request) {
+
+            FilesEvents.Events.TEXT_UPLOADED -> {
+                throw RuntimeException(
+                        "$TAG - onMessageEvent.FilesEvents - no code to handle request: $request")
+            }
+
+            else -> throw RuntimeException(
+                    "$TAG - onMessageEvent.FilesEvents - no code to handle request: $request")
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FoldersEvents) {
         val request = event.request
         val msgContents = event.msgContents
-        Log.v(TAG, "onMessageEvent - request: $request")
+        Log.v(TAG, "onMessageEvent.FoldersEvents - request: $request")
 
         when (request) {
 
-            ActivitiesEvents.HomeEvents.CREATE_FILE_DIALOG_CANCELLED -> {
+            FoldersEvents.Events.CREATE_FILE_DIALOG_CANCELLED -> {
                 removeTopFragment(
                         "onMessageEvent.FoldersEvents-CREATE_FILE_DIALOG_CANCELLED",
                         true
@@ -408,7 +434,7 @@ class HomeActivity : BaseActivity(),
             }
 
             else -> throw RuntimeException(
-                    "$TAG - onEventMainThread - no code to handle folderRequest: $request")
+                    "$TAG - onMessageEvent.FoldersEvents - no code to handle request: $request")
         }
     }
 
@@ -424,6 +450,7 @@ class HomeActivity : BaseActivity(),
 
     @Synchronized
     fun removeTopFragment(source: String, actionCancelled: Boolean): Boolean {
+        Log.v("HomeActivity", """removeTopFragment - source: ${source} """)
         val fragmentsStackResponse = fragmentsStack.removeTopFragment(source, actionCancelled)
         if (fragmentsStackResponse == null) {
             isAppFinishing = true
@@ -629,7 +656,9 @@ class HomeActivity : BaseActivity(),
         // true, then it has handled the app icon touch event
 
         when (item.itemId) {
-            R.id.action_connect_to_google_drive -> sendTextFileToDrive()
+            R.id.action_connect_to_google_drive ->
+                sendTextFileToDrive(null,"test1.txt",
+                        "Hello Drive".toByteArray(Charsets.UTF_8))
             R.id.menuQuickPhoto -> handleCameraOptionSelected()
             R.id.menuRefresh -> handleRefreshOptionSelected()
 //            R.id.menuCreateFile -> handleCreateFileOptionSelected()
@@ -659,13 +688,10 @@ class HomeActivity : BaseActivity(),
         return true
     }
 
-    private fun sendTextFileToDrive() {
-
-        val c = Calendar.getInstance()
-        val createDt = c.time
-        val existingFileDriveId: DriveId? = null
-        val fileName = "test1.txt"
-        val plainContents: ByteArray = "Hello Drive".toByteArray(Charsets.UTF_8)
+    override fun sendTextFileToDrive(
+            existingFileDriveId: DriveId?,
+            fileName: String,
+            fileContents: ByteArray) {
 
         val sendTextToGoogleDriveCallable = SendFileToDriveTask.Builder()
                 .context(applicationContext)
@@ -674,11 +700,10 @@ class HomeActivity : BaseActivity(),
                 .parentFolderLevel(foldersData.getCurrFolderLevel())
                 .parentFolderDriveId(foldersData.getCurrFolderDriveId()!!)
                 .existingFileDriveId(existingFileDriveId)
-                .createDt(createDt)
                 .fileName(fileName)
                 .replaceFile(false)
                 .mimeType(MIME_TYPE_TEXT_FILE)
-                .contents(plainContents)
+                .contents(fileContents)
                 .foldersData(foldersData)
                 .build()
 
@@ -690,7 +715,6 @@ class HomeActivity : BaseActivity(),
         dialog.show(fragmentManager, "dialog")
     }
     override fun createFolder(fileName: CharSequence) {
-//        emptyFolderFragment!!.createFolder(fileName)
         handleNonCancellableFuturesCallable!!.submitCallable(
                 CreateDriveFolderTask.Builder()
                         .activity(this)
@@ -717,8 +741,25 @@ class HomeActivity : BaseActivity(),
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun createTextNote() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun createTextNote(fileName: CharSequence) {
+        if (textFragment == null) {
+            textFragment = TextFragment()
+        }
+        textFragment!!.setEnableTextView(true)
+
+        setFragment(
+                FragmentsEnum.TEXT_VIEW_FRAGMENT,
+                fileName.toString(),
+                true,
+                FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
+                null,
+                null)
+
+
+        setActionBarTitle(fileName)
+
+//        sendTextFileToDrive(null, fileName.toString(),
+//                "Hello Drive".toByteArray(Charsets.UTF_8))
     }
 
     /*
@@ -737,7 +778,7 @@ class HomeActivity : BaseActivity(),
         if (folderMetadataInfo.isFolder) {
             startDownloadFolderInfo(folderMetadataInfo)
         } else {
-            Log.v("HomeActivity", """handleOnFolderOrFileClick - position: ${position} """)
+            Log.v("HomeActivity", """handleOnFolderOrFileClick - position: $position """)
             startDownloadFileContents(folderMetadataInfo)
         }
     }
@@ -745,21 +786,40 @@ class HomeActivity : BaseActivity(),
     private fun startDownloadFileContents(folderMetadataInfo: FileMetadataInfo) {
         Log.v("HomeActivity", """startDownloadFileContents -
             |folderMetadataInfo: ${folderMetadataInfo.fileTitle} """.trimMargin())
+
+        if (textFragment == null) {
+            textFragment = TextFragment()
+        }
+        textFragment!!.setEnableTextView(true)
+        setFragment(
+                FragmentsEnum.TEXT_VIEW_FRAGMENT,
+                folderMetadataInfo.fileTitle,
+                true,
+                FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
+                null,
+                null)
+
+        handleCancellableFuturesCallable!!.submitCallable(GetFileFromDriveTask.Builder()
+                .context(applicationContext)
+                .eventBus(eventBus)
+                .driveResourceClient(mDriveResourceClient)
+                .selectedDriveId(folderMetadataInfo.fileDriveId)
+                .fileName(folderMetadataInfo.fileTitle)
+                .mimeType(folderMetadataInfo.mimeType)
+                .build())
     }
 
     private fun startDownloadFolderInfo(folderMetadataInfo: FileMetadataInfo) {
-//        val idx = getIdxOfClickedFolderItem(position)
-
         val currFolderLevel = foldersData.getCurrFolderLevel()
         val folderMetadataArrayInfo = foldersData.getCurrFolderMetadataInfo()
         val currFolderParentDriveId = foldersData.getCurrFolderDriveId()
 
 //        val folderMetadataInfo: FileMetadataInfo = folderMetadataArrayInfo!![idx]
-        Log.v("HomeActivity", """
-            | startDownloadFolderInfo -
-            | folderMetadataInfo - fileDriveId: ${folderMetadataInfo.fileDriveId}
-            | parentDriveId: ${foldersData.getCurrParentDriveId(currFolderLevel)}
-            |""".trimMargin())
+//        Log.v("HomeActivity", """
+//            | startDownloadFolderInfo -
+//            | folderMetadataInfo - fileDriveId: ${folderMetadataInfo.fileDriveId}
+//            | parentDriveId: ${foldersData.getCurrParentDriveId(currFolderLevel)}
+//            |""".trimMargin())
         val selectedDriveId = folderMetadataInfo.fileDriveId
         val selectedFileTitle = folderMetadataInfo.fileTitle
         if (folderMetadataInfo.isFolder) {

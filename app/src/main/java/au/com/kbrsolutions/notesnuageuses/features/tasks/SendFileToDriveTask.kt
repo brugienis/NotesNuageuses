@@ -18,27 +18,17 @@ data class SendFileToDriveTask(
         var context: Context,
         var eventBus: EventBus,
         var driveResourceClient: DriveResourceClient,
-        var createDt: Date,
         val parentFolderLevel: Int,
         val parentFolderDriveId: DriveId,
         val existingFileDriveId: DriveId?,
-        val encryptPasswords: Array<String>?,
-        val encryptKeyLength: Int,
-        val encryptIterationCount: Int,
         val fileName: String,
         val mimeType: String,
         val replaceFile: Boolean,
-        val encryptFile: Boolean,
-        val idxInTheFolderFilesList: Int,
         val contents: ByteArray,
-        val maxContinuesIncorrectPassword: Int,
-        val lockMillis: Int,
-        val showLockTime: Boolean,
         val foldersData: FoldersData): Callable<String> {
 
     val parentFileName: String? = foldersData.getFolderTitle(parentFolderLevel)
-    var fileItemId: Long = 0
-    var fileNameWithExtension: String? = null
+    val createDt: Date = Date()
     var msg: String? = null
     var thisFileDriveId: DriveId? = null
     var encryptMillis: Long = 0
@@ -48,13 +38,7 @@ data class SendFileToDriveTask(
 //            |contents: ${String(contents)} """
 //                .trimMargin())
         val startMillis = System.currentTimeMillis()
-        if (!replaceFile || existingFileDriveId == null) {
-            //				createDt = updateDt = new Date();
-            createDt = Date()
-        } else {
-            thisFileDriveId = existingFileDriveId
-        }
-        fileItemId = createDt!!.time
+
         var outputStream: OutputStream? = null
         val fileNameWithExtension = fileName + (context.resources
                         .getString(R.string.base_handler_encrypted_text_file_extension))
@@ -75,12 +59,16 @@ data class SendFileToDriveTask(
 
                 val out: OutputStream = driveContents.outputStream
 
+                // fixLater: Sep 01, 2018 - test finally
                 out.write("Hello world replacement".toByteArray())
+//                    throw RuntimeException("BR - after write")
 
                 val commitTask =
                         driveResourceClient.commitContents(driveContents, null)
                 Tasks.await(commitTask)
+
                 if (commitTask.isSuccessful) {
+                    thisFileDriveId = existingFileDriveId
                     uploadSuccessful = true
                 }
 
@@ -110,7 +98,10 @@ data class SendFileToDriveTask(
 
                 Tasks.await(driveFileTask)
 
-                uploadSuccessful = true
+                if (driveFileTask.isSuccessful) {
+                    thisFileDriveId = driveFileTask.result.driveId
+                    uploadSuccessful = true
+                }
             }
 
             if (uploadSuccessful) {
@@ -154,6 +145,8 @@ data class SendFileToDriveTask(
     }
 
     private fun sendUpdateEvent(event: FilesEvents.Events, msg: String?, fileName: String) {
+
+        val fileItemId = createDt.time
         eventBus.post(FilesEvents.Builder(event)
                 .msgContents(msg)
                 .parentFileName(parentFileName)
@@ -173,22 +166,13 @@ data class SendFileToDriveTask(
         private lateinit var context: Context
         private lateinit var eventBus: EventBus
         private lateinit var driveResourceClient: DriveResourceClient
-        private lateinit var createDt: Date
         private var parentFolderLevel: Int = 0
         private lateinit var parentFolderDriveId: DriveId
         private var existingFileDriveId: DriveId? = null
         private lateinit var fileName: String
         private lateinit var mimeType: String
-        private var encryptionPasswords: Array<String>? = null
-        private var encryptionKeyLength: Int = 0
-        private var encryptionIterationCount: Int = 0
         private var replaceFile: Boolean = false
-        private var encryptFile: Boolean = false
-        private var idxInTheFolderFilesList: Int = 0
         private lateinit var contents: ByteArray
-        private var maxContinuesIncorrectPassword: Int = 0
-        private var lockMillis: Int = 0
-        private var showLockTime: Boolean = false
         private lateinit var foldersData: FoldersData
 
         fun context(context: Context) = apply { this.context = context }
@@ -197,8 +181,6 @@ data class SendFileToDriveTask(
 
         fun driveResourceClient(driveResourceClient: DriveResourceClient) =
                 apply { this.driveResourceClient = driveResourceClient }
-
-        fun createDt(createDt: Date) = apply { this.createDt = createDt }
 
         fun parentFolderLevel(parentFolderLevel: Int) =
                 apply { this.parentFolderLevel = parentFolderLevel }
@@ -213,31 +195,9 @@ data class SendFileToDriveTask(
 
         fun mimeType(mimeType: String) = apply { this.mimeType = mimeType }
 
-        fun encryptionPasswords(encryptionPasswords: Array<String>?) =
-                apply { this.encryptionPasswords = encryptionPasswords }
-
-        fun encryptionKeyLength(encryptionKeyLength: Int) =
-                apply { this.encryptionKeyLength = encryptionKeyLength }
-
-        fun encryptionIterationCount(encryptionIterationCount: Int) =
-                apply { this.encryptionIterationCount = encryptionIterationCount }
-
         fun replaceFile(replaceFile: Boolean) = apply { this.replaceFile = replaceFile }
 
-
-        fun encryptFile(encryptFile: Boolean) = apply { this.encryptFile = encryptFile }
-
-        fun idxInTheFolderFilesList(idxInTheFolderFilesList: Int) =
-                apply { this.idxInTheFolderFilesList = idxInTheFolderFilesList }
-
         fun contents(contents: ByteArray) = apply { this.contents = contents }
-
-        fun maxContinuesIncorrectPassword(maxContinuesIncorrectPassword: Int) =
-                apply { this.maxContinuesIncorrectPassword = maxContinuesIncorrectPassword }
-
-        fun lockMillis(lockMillis: Int) = apply { this.lockMillis = lockMillis }
-
-        fun showLockTime(showLockTime: Boolean) = apply { this.showLockTime = showLockTime }
 
         fun foldersData(foldersData: FoldersData) = apply { this.foldersData = foldersData }
 
@@ -245,22 +205,13 @@ data class SendFileToDriveTask(
                 context,
                 eventBus,
                 driveResourceClient,
-                createDt,
                 parentFolderLevel,
                 parentFolderDriveId,
                 existingFileDriveId,
-                encryptionPasswords,
-                encryptionKeyLength,
-                encryptionIterationCount,
                 fileName,
                 mimeType,
                 replaceFile,
-                encryptFile,
-                idxInTheFolderFilesList,
                 contents,
-                maxContinuesIncorrectPassword,
-                lockMillis,
-                showLockTime,
                 foldersData)
     }
 

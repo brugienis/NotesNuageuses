@@ -48,19 +48,19 @@ object FoldersData {
 
     @Synchronized
     fun addFolderData(folderData: FolderData) {
-        showFoldersDataInfo()
-        Log.v(TAG, """
-            addFolderData -  start - currFolderLevel: $currFolderLevel
-            folderData.folderLevel: ${folderData.folderLevel}
-             newFolderTitle:${folderData.newFolderTitle}
-             newFolderDriveId: ${folderData.newFolderDriveId}
-             fileParentFolderDriveId: ${folderData.fileParentFolderDriveId}
-             """)
+//        showFoldersDataInfo()
+//        Log.v(TAG, """
+//            addFolderData -  start - currFolderLevel: $currFolderLevel
+//            folderData.folderLevel: ${folderData.folderLevel}
+//             newFolderTitle:${folderData.newFolderTitle}
+//             newFolderDriveId: ${folderData.newFolderDriveId}
+//             fileParentFolderDriveId: ${folderData.fileParentFolderDriveId}
+//             """)
         if (currFolderLevel > -1 && folderData.folderLevel > -1) {
-            Log.v("FoldersData", """addFolderData -
-                | folderData fileParentFolderDriveId: ${folderData.fileParentFolderDriveId}
-                | array foldersDriveIdsList: ${foldersDriveIdsList[folderData.folderLevel]}
-                | """.trimMargin())
+//            Log.v("FoldersData", """addFolderData -
+//                | folderData fileParentFolderDriveId: ${folderData.fileParentFolderDriveId}
+//                | array foldersDriveIdsList: ${foldersDriveIdsList[folderData.folderLevel]}
+//                | """.trimMargin())
         }
         verifyDataStructure()
         if (currFolderLevel > -1 && currFolderLevel < folderData.folderLevel) {
@@ -78,8 +78,8 @@ object FoldersData {
         foldersTitlesList.add(folderData.newFolderTitle)
         processFolderMetadata(folderData.filesMetadatasInfo, false)
         verifyDataStructure()
-        Log.v("FoldersData", "addFolderData - folderData.filesMetadatasInfo: ${folderData.filesMetadatasInfo} ")
-        Log.v(TAG, "addFolderData -  end   - currFolderLevel: $currFolderLevel array foldersDriveIdsList: ${foldersDriveIdsList[currFolderLevel]} newFolderTitle: ${folderData.newFolderTitle}")
+//        Log.v("FoldersData", "addFolderData - folderData.filesMetadatasInfo: ${folderData.filesMetadatasInfo} ")
+//        Log.v(TAG, "addFolderData -  end   - currFolderLevel: $currFolderLevel array foldersDriveIdsList: ${foldersDriveIdsList[currFolderLevel]} newFolderTitle: ${folderData.newFolderTitle}")
     }
     /*
 

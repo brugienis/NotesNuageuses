@@ -3,7 +3,6 @@ package au.com.kbrsolutions.notesnuageuses.features.main.dialogs
 import android.app.DialogFragment
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,7 +57,6 @@ class CreateFileDialog : DialogFragment() {
     }
 
     private fun createFolder() {
-        Log.i(LOC_CAT_TAG, "createFolder - start")
         listener!!.createFolder(fileNameTv!!.text)
         dismiss()
         // move code below to a new method in HomeActivity
@@ -68,19 +66,16 @@ class CreateFileDialog : DialogFragment() {
     }
 
     private fun cancelCreateFileDialog() {
-        Log.i(LOC_CAT_TAG, "createFolder - start")
         dismiss()
     }
 
     private fun createPhotoNote() {
-        Log.i(LOC_CAT_TAG, "createPhoto - start")
         listener!!.createPhotoNote()
         dismiss()
     }
 
     private fun createTextNote() {
-        Log.i(LOC_CAT_TAG, "createFolder - start")
-        listener!!.createTextNote()
+        listener!!.createTextNote(fileNameTv!!.text)
         dismiss()
     }
 
@@ -103,14 +98,11 @@ class CreateFileDialog : DialogFragment() {
     interface OnCreateFileDialogInteractionListener {
         fun createFolder(fileName: CharSequence)
         fun createPhotoNote()
-        fun createTextNote()
+        fun createTextNote(fileName: CharSequence)
 
     }
 
     companion object {
-        //	private FolderNameSelectable folderNameSelectable;
-
-        private val LOC_CAT_TAG = CreateFileDialog::class.java.simpleName
 
         fun newInstance(): CreateFileDialog {
 

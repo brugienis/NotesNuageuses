@@ -43,6 +43,9 @@
     <string name="folder_array_adapter_updated">Updated</string>
     <string name="title_activity_test_google_drive_connection">TestGoogleDriveConnectionActivity</string>
 
+    <!-- text fragment menu items -->
+    <string name="menu_save_file">Save file</string>
+
     <string name="retrieving_folder_title_key">retrievingFolderTitleKey</string>
     <string name="retrieving_folder_default_title">not defined</string>
 

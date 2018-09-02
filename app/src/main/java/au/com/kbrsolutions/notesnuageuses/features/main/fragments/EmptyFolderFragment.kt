@@ -225,8 +225,6 @@ class EmptyFolderFragment : Fragment() {
 
     companion object {
 
-//        private val TAG = EmptyFolderFragment::class.java.simpleName
-
         const val ARG_TRASH_FILES_CNT_KEY = "arg_trash_files_cnt_key"
 
         @JvmStatic
