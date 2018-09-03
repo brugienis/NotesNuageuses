@@ -75,6 +75,7 @@ class HomeActivity : BaseActivity(),
         const val FOLDER_TAG = "folder_tag"
         const val RETRIEVE_FOLDER_PROGRESS_TAG = "retrieve_folder_progress_tag"
         const val RETRIEVING_FOLDER_TITLE_KEY = "retrieving_folder_title_key"
+        const val FILE_NAME_KEY = "file_name_key"
     }
 
     private var fragmentsStack = FragmentsStack
@@ -255,10 +256,13 @@ class HomeActivity : BaseActivity(),
             }
 
             FragmentsEnum.TEXT_VIEW_FRAGMENT -> {
+                val fileName = fragmentArgs!!.getString(FILE_NAME_KEY)
                 if (textFragment == null) {
-                    textFragment = TextFragment()
+                    textFragment =
+                            TextFragment.newInstance(fileName)
+                } else {
+                    textFragment!!.setFileName(fileName)
                 }
-//                textFragment!!.setEnableTextView(true)
 
                 fragmentTransaction = fragmentManager.beginTransaction()
                 fragmentTransaction.replace(R.id.fragments_frame, textFragment, TEXT_FRAGMENT_TAG)
@@ -269,8 +273,7 @@ class HomeActivity : BaseActivity(),
                 val retrievingFolderName = fragmentArgs!!.getString(RETRIEVING_FOLDER_TITLE_KEY)
                 if (downloadFragment == null) {
                     downloadFragment =
-                            DownloadFragment
-                                    .newInstance(retrievingFolderName)
+                            DownloadFragment.newInstance(retrievingFolderName)
                 } else {
                     downloadFragment!!.setRetrievingFolderName(retrievingFolderName)
                 }
@@ -350,9 +353,37 @@ class HomeActivity : BaseActivity(),
 
         when (request) {
 
+            FilesEvents.Events.TEXT_UPLOADING -> {
+                Log.v(TAG, "onMessageEvent.FilesEvents - request" +
+                        " $request msgContents: $msgContents")
+            }
+
             FilesEvents.Events.TEXT_UPLOADED -> {
-                throw RuntimeException(
-                        "$TAG - onMessageEvent.FilesEvents - no code to handle request: $request")
+                Log.v(TAG, "onMessageEvent.FilesEvents - request" +
+                        " $request msgContents: $msgContents")
+            }
+
+            FilesEvents.Events.UPLOAD_PROBLEMS -> {
+                Log.v(TAG, "onMessageEvent.FilesEvents - request" +
+                        " $request msgContents: $msgContents")
+            }
+
+            FilesEvents.Events.FILE_DOWNLOADING -> {
+                Log.v(TAG, "onMessageEvent.FilesEvents - request" +
+                        " $request msgContents: $msgContents")
+            }
+
+            FilesEvents.Events.FILE_DOWNLOADED -> {
+                textFragment!!.showDownloadedTextNote(
+                        event.createDt,
+                        event.fileName,
+                        event.setSelectedFileDriveId,
+                        event.textContents)
+            }
+
+            FilesEvents.Events.FILE_DOWNLOAD_PROBLEMS -> {
+                Log.v(TAG, "onMessageEvent.FilesEvents - request" +
+                        " $request msgContents: $msgContents")
             }
 
             else -> throw RuntimeException(
@@ -742,10 +773,8 @@ class HomeActivity : BaseActivity(),
     }
 
     override fun createTextNote(fileName: CharSequence) {
-        if (textFragment == null) {
-            textFragment = TextFragment()
-        }
-        textFragment!!.setEnableTextView(true)
+        val args = Bundle()
+        args.putString(FILE_NAME_KEY, fileName.toString())
 
         setFragment(
                 FragmentsEnum.TEXT_VIEW_FRAGMENT,
@@ -753,7 +782,7 @@ class HomeActivity : BaseActivity(),
                 true,
                 FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
                 null,
-                null)
+                args)
 
 
         setActionBarTitle(fileName)
@@ -787,24 +816,23 @@ class HomeActivity : BaseActivity(),
         Log.v("HomeActivity", """startDownloadFileContents -
             |folderMetadataInfo: ${folderMetadataInfo.fileTitle} """.trimMargin())
 
-        if (textFragment == null) {
-            textFragment = TextFragment()
-        }
-        textFragment!!.setEnableTextView(true)
+        val args = Bundle()
+        val fileTitle = folderMetadataInfo.fileTitle
+        args.putString(FILE_NAME_KEY, fileTitle)
         setFragment(
                 FragmentsEnum.TEXT_VIEW_FRAGMENT,
                 folderMetadataInfo.fileTitle,
                 true,
                 FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
                 null,
-                null)
+                args)
 
         handleCancellableFuturesCallable!!.submitCallable(GetFileFromDriveTask.Builder()
                 .context(applicationContext)
                 .eventBus(eventBus)
                 .driveResourceClient(mDriveResourceClient)
                 .selectedDriveId(folderMetadataInfo.fileDriveId)
-                .fileName(folderMetadataInfo.fileTitle)
+                .fileName(fileTitle)
                 .mimeType(folderMetadataInfo.mimeType)
                 .build())
     }

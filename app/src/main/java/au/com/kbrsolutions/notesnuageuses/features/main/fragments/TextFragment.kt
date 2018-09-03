@@ -16,12 +16,14 @@ class TextFragment : Fragment() {
 
     private lateinit var listener: OnTextFragmentInteractionListener
 
+    private var mArgsProcessed = false
+
     private var textET: EditText? = null
     private var enableTextET = true
     private var imm: InputMethodManager? = null
     private var fragmentActive: Boolean = false
     private var creatingNewNote: Boolean = false
-    private var fileName: String = "Unknown"
+    private var mFileName: String = "Unknown"
     private var driveId: DriveId? = null
     private var createDt: Date? = null
     private var textContents: String? = null
@@ -39,6 +41,14 @@ class TextFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        retainInstance = true
+
+        if (!mArgsProcessed) {
+            arguments?.let {
+                mFileName = it.getString(ARG_FILE_NAME_KEY)
+            }
+            mArgsProcessed = true
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -69,20 +79,28 @@ class TextFragment : Fragment() {
         hideKeyboard()
         listener.sendTextFileToDrive(
                 driveId,
-                fileName,
+                mFileName,
                 textET!!.text.toString().toByteArray())
         cleanup("quickSaveClicked")
+    }
+
+    fun setFileName(fileName: String) {
+        mFileName = fileName
     }
 
     fun setDownloadProgressText(msg: String) {
         textET!!.setText(msg)
     }
 
-    fun showDownloadedTextNote(createDt: Date, fileName: String, encryptPasswords: Array<String>, driveId: DriveId, contents: String, maxContinuesIncorrectPassword: Int, lockMsecs: Int, showLockTime: Boolean) {
+    fun showDownloadedTextNote(
+            createDt: Date?,
+            fileName: String?,
+            driveId: DriveId?,
+            contents: String?) {
 
         textContents = contents
         this.createDt = createDt
-        this.fileName = fileName
+        this.mFileName = fileName ?: "Got null"
         this.driveId = driveId
 
         if (!fragmentActive) {
@@ -150,12 +168,12 @@ class TextFragment : Fragment() {
         return true
     }
 
-//    fun processFileNameAndPassword(fileName: String, encryptPasswords: Array<String>?, photoFilePath: String?, maxContinuesIncorrectPassword: Int, lockMillis: Int, showLockTime: Boolean, replaceFile: Boolean) {
+//    fun processFileNameAndPassword(mFileName: String, encryptPasswords: Array<String>?, photoFilePath: String?, maxContinuesIncorrectPassword: Int, lockMillis: Int, showLockTime: Boolean, replaceFile: Boolean) {
 //
 //        hideKeyboard()
 //        listener.sendTextFileToDrive(
 //                driveId,
-//                fileName,
+//                mFileName,
 //                textET!!.text.toString().toByteArray())
 //        cleanup("quickSaveClicked")
 //    }
@@ -174,6 +192,21 @@ class TextFragment : Fragment() {
                 existingFileDriveId: DriveId?,
                 fileName: String,
                 fileContents: ByteArray)
+    }
+
+    companion object {
+
+        private const val ARG_FILE_NAME_KEY = "arg_file_name_key"
+
+        @JvmStatic
+        fun newInstance(fileName: String) =
+                TextFragment().apply {
+                    arguments = Bundle().apply {
+                        putString(ARG_FILE_NAME_KEY, fileName)
+                    }
+                    Log.v("TextFolderFragment", "newInstance - arguments: $arguments ")
+                }
+
     }
 
 }
