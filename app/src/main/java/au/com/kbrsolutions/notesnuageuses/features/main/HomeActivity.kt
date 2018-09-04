@@ -18,10 +18,7 @@ import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import au.com.kbrsolutions.notesnuageuses.features.main.dialogs.CreateFileDialog
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.DownloadFragment
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.EmptyFolderFragment
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FolderFragment
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.TextFragment
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.*
 import au.com.kbrsolutions.notesnuageuses.features.tasks.CreateDriveFolderTask
 import au.com.kbrsolutions.notesnuageuses.features.tasks.DownloadFolderInfoTask
 import au.com.kbrsolutions.notesnuageuses.features.tasks.GetFileFromDriveTask
@@ -45,7 +42,8 @@ class HomeActivity : BaseActivity(),
         EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
         FolderFragment.OnFolderFragmentInteractionListener,
         CreateFileDialog.OnCreateFileDialogInteractionListener,
-        TextFragment.OnTextFragmentInteractionListener {
+        TextFragment.OnTextFragmentInteractionListener,
+        FileFragment.OnFileFragmentInteractionListener {
 
     private lateinit var eventBus: EventBus
     private var mToolbar: Toolbar? = null
@@ -66,6 +64,7 @@ class HomeActivity : BaseActivity(),
     private var downloadFragment: DownloadFragment? = null
     private var folderArrayAdapter: FolderArrayAdapter<FolderItem>? = null
     private var textFragment: TextFragment? = null
+    private var fileFragment: FileFragment? = null
 
     companion object {
         private val TAG = HomeActivity::class.java.simpleName
@@ -257,15 +256,21 @@ class HomeActivity : BaseActivity(),
 
             FragmentsEnum.TEXT_VIEW_FRAGMENT -> {
                 val fileName = fragmentArgs!!.getString(FILE_NAME_KEY)
-                if (textFragment == null) {
-                    textFragment =
-                            TextFragment.newInstance(fileName)
+//                if (textFragment == null) {
+//                    textFragment =
+//                            TextFragment.newInstance(fileName)
+//                } else {
+//                    textFragment!!.setFileName(fileName)
+//                }
+                if (fileFragment == null) {
+                    fileFragment =
+                            FileFragment.newInstance(fileName)
                 } else {
-                    textFragment!!.setFileName(fileName)
+                    fileFragment!!.setFileName(fileName)
                 }
 
                 fragmentTransaction = fragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.fragments_frame, textFragment, TEXT_FRAGMENT_TAG)
+                fragmentTransaction.replace(R.id.fragments_frame, fileFragment, TEXT_FRAGMENT_TAG)
                 fragmentTransaction.commit()
             }
 
@@ -874,6 +879,9 @@ class HomeActivity : BaseActivity(),
                     .foldersData(foldersData)
                     .build())
         }
+    }
+    override fun onUpButtonPressedInFragment() {
+        onBackPressed()
     }
 
     /**

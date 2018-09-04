@@ -8,33 +8,28 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import au.com.kbrsolutions.notesnuageuses.R
+import au.com.kbrsolutions.notesnuageuses.features.Utilities
 import com.google.android.gms.drive.DriveId
 import kotlinx.android.synthetic.main.fragment_text_viewer.view.*
-import java.util.*
 
-class TextFragment : Fragment() {
+class FileFragment : Fragment() {
 
-    private lateinit var listener: OnTextFragmentInteractionListener
+    private lateinit var listener: OnFileFragmentInteractionListener
 
     private var mArgsProcessed = false
-
-    private var textET: EditText? = null
-    private var enableTextET = true
-    private var imm: InputMethodManager? = null
-    private var fragmentActive: Boolean = false
-    private var creatingNewNote: Boolean = false
     private var mFileName: String = "Unknown"
-    private var driveId: DriveId? = null
-    private var createDt: Date? = null
+    private var imm: InputMethodManager? = null
+    private var textET: EditText? = null
     private var textContents: String? = null
+    private var driveId: DriveId? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnTextFragmentInteractionListener) {
+        if (context is OnFileFragmentInteractionListener) {
             listener = context
         } else {
             throw RuntimeException(context.toString() +
-                    " must implement OnTextFragmentInteractionListener")
+                    " must implement OnFileFragmentInteractionListener")
         }
     }
 
@@ -62,21 +57,12 @@ class TextFragment : Fragment() {
         return rootView
     }
 
-    override fun onResume() {
-        super.onResume()
-        fragmentActive = true
-        if (textContents != null) {
-            textET!!.setText(textContents)
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        fragmentActive = false
+    fun setFileName(fileName: String) {
+        mFileName = fileName
     }
 
     private fun handleSaveMenuItemClicked() {
-        Log.v("TextFragment", """handleSaveMenuItemClicked - handleSaveMenuItemClicked: start """)
+        Log.v("FileFragment", """handleSaveMenuItemClicked - handleSaveMenuItemClicked: start """)
         hideKeyboard()
         listener.sendTextFileToDrive(
                 driveId,
@@ -85,37 +71,9 @@ class TextFragment : Fragment() {
         cleanup("quickSaveClicked")
     }
 
-    fun setFileName(fileName: String) {
-        mFileName = fileName
-    }
-
-    fun setDownloadProgressText(msg: String) {
-        textET!!.setText(msg)
-    }
-
-    fun showDownloadedTextNote(
-            createDt: Date?,
-            fileName: String?,
-            driveId: DriveId?,
-            contents: String?) {
-
-        textContents = contents
-        this.createDt = createDt
-        this.mFileName = fileName ?: "Got null"
-        this.driveId = driveId
-
-        if (!fragmentActive) {
-            return
-        }
-        textET!!.setText(contents)
-        textET?.let {
-            it.setText(contents)
-            it.isEnabled = true
-        }
-    }
-
-    fun handleDownloadProblems(msg: String) {
-        textET!!.setText(msg)
+    fun cleanup(source: String) {
+        textContents = null
+        textET!!.setText("")
         hideKeyboard()
     }
 
@@ -127,39 +85,39 @@ class TextFragment : Fragment() {
         }
     }
 
-    fun setEnableTextView(enableTextView: Boolean) {
-        enableTextET = enableTextView
-    }
-
-    fun setCreatingNewNote() {
-        creatingNewNote = true
-    }
-
-    fun cleanup(source: String) {
-        textContents = null
-        textET!!.setText("")
-        hideKeyboard()
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.text_fragment_menu, menu)
-        Log.v("TextFragment", """onCreateOptionsMenu - called """)
+        Log.v("FileFragment", """onCreateOptionsMenu - called """)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         val menuItem: MenuItem = menu.findItem(R.id.menuSaveOpenedFile)
         menuItem.isVisible = true
         menuItem.isEnabled = true
-        Log.v("TextFragment", """onPrepareOptionsMenu - menuItem: $menuItem """)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Log.v("TextFragment", """onOptionsItemSelected - item: $item """)
+        Log.v("FileFragment", """onOptionsItemSelected - item: $item """)
+        Log.v("FileFragment", """onOptionsItemSelected -
+            | menuItem itemId: ${item.itemId}
+            | hex id: ${Utilities.getClassHashCode(item.itemId)}
+            | menuItem menuInfo: ${item.menuInfo}
+            |
+            | """.trimMargin())
         when (item.itemId) {
+
+            android.R.id.home -> onUpButtonPressed()
+
             R.id.menuSaveOpenedFile -> handleSaveMenuItemClicked()
         }
         return true
     }
+
+    private fun onUpButtonPressed() {
+        Log.v("FileFragment", """onUpButtonPressed - onUpButtonPressed: start """)
+        listener.onUpButtonPressedInFragment()
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -170,11 +128,12 @@ class TextFragment : Fragment() {
      *
      * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
-    interface OnTextFragmentInteractionListener {
+    interface OnFileFragmentInteractionListener {
         fun sendTextFileToDrive(
                 existingFileDriveId: DriveId?,
                 fileName: String,
                 fileContents: ByteArray)
+        fun onUpButtonPressedInFragment()
     }
 
     companion object {
@@ -183,13 +142,12 @@ class TextFragment : Fragment() {
 
         @JvmStatic
         fun newInstance(fileName: String) =
-                TextFragment().apply {
+                FileFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_FILE_NAME_KEY, fileName)
                     }
-                    Log.v("TextFolderFragment", "newInstance - arguments: $arguments ")
+                    Log.v("FileFragment", "newInstance - arguments: $arguments ")
                 }
 
     }
-
 }

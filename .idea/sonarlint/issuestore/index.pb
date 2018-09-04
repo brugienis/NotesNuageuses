@@ -87,3 +87,13 @@ Zapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/SendFileToD
 ,app/src/main/res/menu/text_fragment_menu.xml,7/7/778e27ed9bbb15f6350b9ae77fdc86897bfd6607
 `
 0app/src/main/res/layout/fragment_text_viewer.xml,5/2/5292a0824eaf2d8556bc738d07a16f49fa771bdb
+p
+@app/build/generated/source/r/debug/android/support/compat/R.java,0/3/0385cfd1abefe04d4851c2f653afa3a4200afa29
+r
+Bapp/build/generated/source/r/debug/android/support/fragment/R.java,c/3/c3124866f4d3b979cc68cb400632d192bd1d6a44
+v
+Fapp/build/generated/source/r/debug/android/support/v7/appcompat/R.java,0/e/0e62372458d658ae455f0d233369705b61c67e63
+l
+<app/build/generated/source/r/debug/android/support/v4/R.java,8/0/807458aac103ebc4b2d281ef7f19b072bbd4dec4
+Œ
+\app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/FileFragment.kt,2/5/250360022416311b661f842f8116137f86d6f322
