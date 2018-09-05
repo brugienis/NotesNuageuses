@@ -11,6 +11,7 @@ import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.Utilities
 import com.google.android.gms.drive.DriveId
 import kotlinx.android.synthetic.main.fragment_text_viewer.view.*
+import java.util.*
 
 class FileFragment : Fragment() {
 
@@ -22,6 +23,8 @@ class FileFragment : Fragment() {
     private var textET: EditText? = null
     private var textContents: String? = null
     private var driveId: DriveId? = null
+    private var createDt: Date? = null
+    private var fragmentActive: Boolean = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -77,6 +80,37 @@ class FileFragment : Fragment() {
         hideKeyboard()
     }
 
+    fun setDownloadProgressText(msg: String) {
+        textET!!.setText(msg)
+    }
+
+    fun showDownloadedTextNote(
+            createDt: Date?,
+            fileName: String?,
+            driveId: DriveId?,
+            fileContents: String?) {
+
+        textContents = fileContents
+        this.createDt = createDt
+        this.mFileName = fileName ?: "Got null"
+        this.driveId = driveId
+        Log.v("FileFragment", """showDownloadedTextNote - fileContents: ${fileContents} """)
+
+        if (!fragmentActive) {
+            return
+        }
+        textET!!.setText(fileContents)
+        textET?.let {
+            it.setText(fileContents)
+            it.isEnabled = true
+        }
+    }
+
+    fun handleDownloadProblems(msg: String) {
+        textET!!.setText(msg)
+        hideKeyboard()
+    }
+
     private fun hideKeyboard() {
         // A_MUST: during monkey test got NullPointer Exception
         val view = view
@@ -111,6 +145,19 @@ class FileFragment : Fragment() {
             R.id.menuSaveOpenedFile -> handleSaveMenuItemClicked()
         }
         return true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fragmentActive = true
+        if (textContents != null) {
+            textET!!.setText(textContents)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        fragmentActive = false
     }
 
     private fun onUpButtonPressed() {

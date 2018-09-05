@@ -194,13 +194,13 @@ object FragmentsStack {
 
                     // TOP: will it also cover image fragment?
                     /*
-					 *			[ACTIVITY_LOG_FRAGMENT, FOLDER_FRAGMENT, EMPTY_FOLDER_FRAGMENT, CREATE_FILE_FRAGMENT, TEXT_VIEW_FRAGMENT]
+					 *			[ACTIVITY_LOG_FRAGMENT, FOLDER_FRAGMENT, EMPTY_FOLDER_FRAGMENT, CREATE_FILE_FRAGMENT, FILE_VIEW_FRAGMENT]
 					 * or
-					 *			[ACTIVITY_LOG_FRAGMENT, FOLDER_FRAGMENT, FOLDER_FRAGMENT,       CREATE_FILE_FRAGMENT, TEXT_VIEW_FRAGMENT]
+					 *			[ACTIVITY_LOG_FRAGMENT, FOLDER_FRAGMENT, FOLDER_FRAGMENT,       CREATE_FILE_FRAGMENT, FILE_VIEW_FRAGMENT]
 					 * or
-					 *			[ACTIVITY_LOG_FRAGMENT, FOLDER_FRAGMENT, FOLDER_FRAGMENT,                           , TEXT_VIEW_FRAGMENT] existing note was opened and Cancel clicked
+					 *			[ACTIVITY_LOG_FRAGMENT, FOLDER_FRAGMENT, FOLDER_FRAGMENT,                           , FILE_VIEW_FRAGMENT] existing note was opened and Cancel clicked
 					 */
-                    HomeActivity.FragmentsEnum.TEXT_VIEW_FRAGMENT -> {
+                    HomeActivity.FragmentsEnum.FILE_VIEW_FRAGMENT -> {
                         viewFragmentsCleanupRequired = true
                         if (currTopFragment === HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
                             if (actionCancelled) {
@@ -220,11 +220,11 @@ object FragmentsStack {
 
                     // TOP: will it also cover image fragment?
                     /*
-					 *			[ACTIVITY_LOG_FRAGMENT, FOLDER_FRAGMENT, EMPTY_FOLDER_FRAGMENT, TEXT_VIEW_FRAGMENT]
+					 *			[ACTIVITY_LOG_FRAGMENT, FOLDER_FRAGMENT, EMPTY_FOLDER_FRAGMENT, FILE_VIEW_FRAGMENT]
 					 * or
-					 *			[ACTIVITY_LOG_FRAGMENT, FOLDER_FRAGMENT, FOLDER_FRAGMENT,       TEXT_VIEW_FRAGMENT]
+					 *			[ACTIVITY_LOG_FRAGMENT, FOLDER_FRAGMENT, FOLDER_FRAGMENT,       FILE_VIEW_FRAGMENT]
 					 * or
-					 *			[ACTIVITY_LOG_FRAGMENT, FOLDER_FRAGMENT, FOLDER_FRAGMENT,                           , TEXT_VIEW_FRAGMENT] existing note was opened and Cancel clicked
+					 *			[ACTIVITY_LOG_FRAGMENT, FOLDER_FRAGMENT, FOLDER_FRAGMENT,                           , FILE_VIEW_FRAGMENT] existing note was opened and Cancel clicked
 					 */
                     HomeActivity.FragmentsEnum.IMAGE_VIEW_FRAGMENT -> {
                         viewFragmentsCleanupRequired = true

@@ -97,3 +97,5 @@ l
 <app/build/generated/source/r/debug/android/support/v4/R.java,8/0/807458aac103ebc4b2d281ef7f19b072bbd4dec4
 Œ
 \app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/FileFragment.kt,2/5/250360022416311b661f842f8116137f86d6f322
+z
+Japp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/Utilities.kt,d/5/d5038a035c73ff5e92f8e5569176f0b73922aba5

@@ -71,8 +71,10 @@ class HomeActivity : BaseActivity(),
 
         const val EMPTY_FOLDER_TAG = "empty_folder_tag"
         const val TEXT_FRAGMENT_TAG = "text_fragment_tag"
+        const val FILE_FRAGMENT_TAG = "file_fragment_tag"
         const val FOLDER_TAG = "folder_tag"
         const val RETRIEVE_FOLDER_PROGRESS_TAG = "retrieve_folder_progress_tag"
+
         const val RETRIEVING_FOLDER_TITLE_KEY = "retrieving_folder_title_key"
         const val FILE_NAME_KEY = "file_name_key"
     }
@@ -89,7 +91,7 @@ class HomeActivity : BaseActivity(),
         FOLDER_FRAGMENT,
         TRASH_FOLDER_FRAGMENT,
         //		SAVE_FILE_OPTIONS,
-        TEXT_VIEW_FRAGMENT,
+        FILE_VIEW_FRAGMENT,
         FILE_DETAILS_FRAGMENT,
         //		CREATE_FILE_FRAGMENT,
         IMAGE_VIEW_FRAGMENT,
@@ -195,7 +197,7 @@ class HomeActivity : BaseActivity(),
      * At the time of the call, the FoldersData and FragmentsStack have details of the previous
      * successfully retrieved folder.
      *
-     * The contents of the 'folderData' will be added to the FoldersData and FragmentsStack at the
+     * The fileContents of the 'folderData' will be added to the FoldersData and FragmentsStack at the
      * end of the setFolder() method.
      *
      * For example, if the 'foldersData' contains details of the root folder, there are no folders
@@ -254,7 +256,7 @@ class HomeActivity : BaseActivity(),
                 fragmentTransaction.commit()
             }
 
-            FragmentsEnum.TEXT_VIEW_FRAGMENT -> {
+            FragmentsEnum.FILE_VIEW_FRAGMENT -> {
                 val fileName = fragmentArgs!!.getString(FILE_NAME_KEY)
 //                if (textFragment == null) {
 //                    textFragment =
@@ -270,7 +272,7 @@ class HomeActivity : BaseActivity(),
                 }
 
                 fragmentTransaction = fragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.fragments_frame, fileFragment, TEXT_FRAGMENT_TAG)
+                fragmentTransaction.replace(R.id.fragments_frame, fileFragment, FILE_FRAGMENT_TAG)
                 fragmentTransaction.commit()
             }
 
@@ -379,7 +381,7 @@ class HomeActivity : BaseActivity(),
             }
 
             FilesEvents.Events.FILE_DOWNLOADED -> {
-                textFragment!!.showDownloadedTextNote(
+                fileFragment!!.showDownloadedTextNote(
                         event.createDt,
                         event.fileName,
                         event.setSelectedFileDriveId,
@@ -737,7 +739,6 @@ class HomeActivity : BaseActivity(),
                 .parentFolderDriveId(foldersData.getCurrFolderDriveId()!!)
                 .existingFileDriveId(existingFileDriveId)
                 .fileName(fileName)
-                .replaceFile(false)
                 .mimeType(MIME_TYPE_TEXT_FILE)
                 .contents(fileContents)
                 .foldersData(foldersData)
@@ -782,7 +783,7 @@ class HomeActivity : BaseActivity(),
         args.putString(FILE_NAME_KEY, fileName.toString())
 
         setFragment(
-                FragmentsEnum.TEXT_VIEW_FRAGMENT,
+                FragmentsEnum.FILE_VIEW_FRAGMENT,
                 fileName.toString(),
                 true,
                 FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
@@ -825,7 +826,7 @@ class HomeActivity : BaseActivity(),
         val fileTitle = folderMetadataInfo.fileTitle
         args.putString(FILE_NAME_KEY, fileTitle)
         setFragment(
-                FragmentsEnum.TEXT_VIEW_FRAGMENT,
+                FragmentsEnum.FILE_VIEW_FRAGMENT,
                 folderMetadataInfo.fileTitle,
                 true,
                 FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,

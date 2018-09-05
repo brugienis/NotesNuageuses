@@ -10,7 +10,6 @@ import com.google.android.gms.tasks.Tasks
 import org.greenrobot.eventbus.EventBus
 import java.io.IOException
 import java.io.OutputStream
-import java.io.OutputStreamWriter
 import java.util.*
 import java.util.concurrent.Callable
 
@@ -23,8 +22,7 @@ data class SendFileToDriveTask(
         val existingFileDriveId: DriveId?,
         val fileName: String,
         val mimeType: String,
-        val replaceFile: Boolean,
-        val contents: ByteArray,
+        val fileContents: ByteArray,
         val foldersData: FoldersData): Callable<String> {
 
     val parentFileName: String? = foldersData.getFolderTitle(parentFolderLevel)
@@ -35,7 +33,7 @@ data class SendFileToDriveTask(
 
     override fun call(): String {
 //        Log.v("SendFileToDriveTask", """call -
-//            |contents: ${String(contents)} """
+//            |fileContents: ${String(fileContents)} """
 //                .trimMargin())
         val startMillis = System.currentTimeMillis()
 
@@ -49,7 +47,7 @@ data class SendFileToDriveTask(
 
             var uploadSuccessful = false
 
-            if (replaceFile && existingFileDriveId != null) {
+            if (existingFileDriveId != null) {
 
                 val openTask = driveResourceClient.openFile(
                         existingFileDriveId.asDriveFile(), DriveFile.MODE_WRITE_ONLY)
@@ -60,7 +58,7 @@ data class SendFileToDriveTask(
                 val out: OutputStream = driveContents.outputStream
 
                 // fixLater: Sep 01, 2018 - test finally
-                out.write("Hello world replacement".toByteArray())
+                out.write(fileContents)
 //                    throw RuntimeException("BR - after write")
 
                 val commitTask =
@@ -79,10 +77,17 @@ data class SendFileToDriveTask(
 
                 val contents = createContentsTask.result
                 val outputStream = contents.outputStream
-                OutputStreamWriter(outputStream).use {
-                    writer -> writer.write("Hello World!")
-//                    throw RuntimeException("BR - after write")
-                }
+
+                outputStream.write(fileContents)
+                Log.v("SendFileToDriveTask", """call -
+                    |fileContents: ${String(fileContents)}
+                    | ; after write
+                    |""".trimMargin())
+
+//                OutputStreamWriter(outputStream).use {
+//                    writer -> writer.write("")
+////                    throw RuntimeException("BR - after write")
+//                }
 
                 val changeSet = MetadataChangeSet.Builder()
                         .setTitle(fileName)
@@ -119,7 +124,7 @@ data class SendFileToDriveTask(
         } catch (e: Exception) {                                    // added to handle any exception
             sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, false, fileName + e)
         } finally {
-            Log.v("SendFileToDriveTask", """call - finally - outputStream: ${outputStream} """)
+            Log.v("SendFileToDriveTask", """call - finally - outputStream: $outputStream """)
             if (outputStream != null) {
                 try {
                     outputStream.close()
@@ -171,7 +176,6 @@ data class SendFileToDriveTask(
         private var existingFileDriveId: DriveId? = null
         private lateinit var fileName: String
         private lateinit var mimeType: String
-        private var replaceFile: Boolean = false
         private lateinit var contents: ByteArray
         private lateinit var foldersData: FoldersData
 
@@ -195,8 +199,6 @@ data class SendFileToDriveTask(
 
         fun mimeType(mimeType: String) = apply { this.mimeType = mimeType }
 
-        fun replaceFile(replaceFile: Boolean) = apply { this.replaceFile = replaceFile }
-
         fun contents(contents: ByteArray) = apply { this.contents = contents }
 
         fun foldersData(foldersData: FoldersData) = apply { this.foldersData = foldersData }
@@ -210,7 +212,6 @@ data class SendFileToDriveTask(
                 existingFileDriveId,
                 fileName,
                 mimeType,
-                replaceFile,
                 contents,
                 foldersData)
     }
