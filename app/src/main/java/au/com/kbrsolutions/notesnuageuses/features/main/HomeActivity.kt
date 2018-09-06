@@ -13,6 +13,7 @@ import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.addFragment
+import au.com.kbrsolutions.notesnuageuses.features.events.FilesDownloadEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FilesEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
@@ -353,6 +354,24 @@ class HomeActivity : BaseActivity(),
 //    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: FilesDownloadEvents) {
+        val request = event.request
+        val msgContents = event.msgContents
+        Log.v(TAG, "onMessageEvent.FilesEvents - request: $request msgContents: $msgContents")
+
+        when (request) {
+
+            FilesEvents.Events.FILE_DOWNLOADED -> {
+                fileFragment!!.showDownloadedTextNote(
+//                        event.createDt,
+                        event.fileName,
+                        event.downloadedFileDriveId,
+                        event.textContents)
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FilesEvents) {
         val request = event.request
         val msgContents = event.msgContents
@@ -368,6 +387,46 @@ class HomeActivity : BaseActivity(),
             FilesEvents.Events.TEXT_UPLOADED -> {
                 Log.v(TAG, "onMessageEvent.FilesEvents - request" +
                         " $request msgContents: $msgContents")
+                if (event.selectedFileDriveId == null) {            // no file DriveId - we are going to upload a new file. We will know the DriveId after successful send
+                    foldersData.insertFolderItemView(
+                            event.fileItemId,
+                            event.folderLevel,
+                            event.currFolderDriveId,
+                            0,
+                            FileMetadataInfo(
+                                    event.parentFileName,
+                                    event.fileName +
+                                            getString(R.string.home_app_file_encrypting, " "),
+                                    event.selectedFileDriveId,
+                                    false,
+                                    event.mimeType,
+                                    event.createDt,
+                                    event.updateDt,
+                                    event.fileItemId,
+                                    true,
+                                    false))
+                } else {
+                    foldersData.updateFolderItemView(
+                            event.fileItemId,
+                            event.folderLevel,
+                            event.currFolderDriveId,
+                            FileMetadataInfo(
+                                    event.parentFileName,
+                                    event.fileName +
+                                            getString(R.string.home_app_file_uploading,
+                                                    " "),
+                                    event.selectedFileDriveId,
+                                    false,
+                                    event.mimeType,
+                                    event.createDt,
+                                    event.updateDt,
+                                    event.fileItemId,
+                                    true,
+                                    false)
+                    )
+                }
+//                fragmentsEnum = fragmentsStack.getCurrFragment()
+                removeTopFragment("onEventMainThread - $request", false)
             }
 
             FilesEvents.Events.UPLOAD_PROBLEMS -> {
@@ -382,9 +441,9 @@ class HomeActivity : BaseActivity(),
 
             FilesEvents.Events.FILE_DOWNLOADED -> {
                 fileFragment!!.showDownloadedTextNote(
-                        event.createDt,
+//                        event.createDt,
                         event.fileName,
-                        event.setSelectedFileDriveId,
+                        event.selectedFileDriveId,
                         event.textContents)
             }
 
@@ -730,18 +789,19 @@ class HomeActivity : BaseActivity(),
             existingFileDriveId: DriveId?,
             fileName: String,
             fileContents: ByteArray) {
+        val currFolderLevel = foldersData.getCurrFolderLevel()
 
         val sendTextToGoogleDriveCallable = SendFileToDriveTask.Builder()
                 .context(applicationContext)
                 .eventBus(eventBus)
                 .driveResourceClient(mDriveResourceClient)
-                .parentFolderLevel(foldersData.getCurrFolderLevel())
+                .parentFolderLevel(currFolderLevel)
                 .parentFolderDriveId(foldersData.getCurrFolderDriveId()!!)
                 .existingFileDriveId(existingFileDriveId)
                 .fileName(fileName)
                 .mimeType(MIME_TYPE_TEXT_FILE)
                 .contents(fileContents)
-                .foldersData(foldersData)
+                .parentFileName(foldersData.getFolderTitle(currFolderLevel)!!)
                 .build()
 
         handleNonCancellableFuturesCallable!!.submitCallable(sendTextToGoogleDriveCallable)
@@ -833,6 +893,7 @@ class HomeActivity : BaseActivity(),
                 null,
                 args)
 
+        Log.v("HomeActivity", """startDownloadFileContents - handleCancellableFuturesCallable: ${handleCancellableFuturesCallable} """)
         handleCancellableFuturesCallable!!.submitCallable(GetFileFromDriveTask.Builder()
                 .context(applicationContext)
                 .eventBus(eventBus)

@@ -3,6 +3,7 @@ package au.com.kbrsolutions.notesnuageuses.features.tasks
 import android.content.Context
 import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.R
+import au.com.kbrsolutions.notesnuageuses.features.events.FilesDownloadEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FilesEvents
 import com.google.android.gms.drive.DriveFile
 import com.google.android.gms.drive.DriveId
@@ -15,6 +16,7 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.util.concurrent.Callable
 
+// fixLater: Sep 06, 2018 - remove folderLevel
 data class GetFileFromDriveTask(
         var context: Context,
         var eventBus: EventBus,
@@ -26,6 +28,7 @@ data class GetFileFromDriveTask(
     private var decryptMillis: Long = 0
 
     override fun call(): String? {
+        Log.v("GetFileFromDriveTask", """call start - fileName: $fileName """)
         val startMillis = System.currentTimeMillis()
         val fileContents: String
 
@@ -34,66 +37,80 @@ data class GetFileFromDriveTask(
                 DriveFile.MODE_READ_ONLY)
         Tasks.await(openFileTask)
 
-        val contents = openFileTask.result
-        val builder = StringBuilder()
+        Log.v("GetFileFromDriveTask", """call - Tasks.await(openFileTask): after """)
 
-        try {
+        if (!openFileTask.isSuccessful) {
+            postDownloadProblemEvent(
+                    context.resources.getString(
+                            R.string.base_handler_download_problem,
+                            fileName + "; " + openFileTask.exception))
+        } else {
+            val contents = openFileTask.result
+            val builder = StringBuilder()
 
-            eventBus.post(FilesEvents.Builder(FilesEvents.Events.FILE_DOWNLOADING)
-                    .mimeType(mimeType)
-                    .build())
+            try {
+                Log.v("GetFileFromDriveTask", """call - eventBus.post(FilesEvents.Builder(FilesEvents.Events.FILE_DOWNLOADING): before """)
 
-            BufferedReader(
-                    InputStreamReader(contents.inputStream)).use { reader ->
-                var line = reader.readLine()
-                while (line != null) {
-                    builder.append(line).append("\n")
-                    line = reader.readLine()
+                // fixLater: Sep 06, 2018 - create seperate onMessage() for progress and problems
+//                eventBus.post(FilesEvents.Builder(FilesEvents.Events.FILE_DOWNLOADING)
+//                        .mimeType(mimeType)
+//                        .build())
+                Log.v("GetFileFromDriveTask", """call - eventBus.post(FilesEvents.Builder(FilesEvents.Events.FILE_DOWNLOADING): after """)
+
+                BufferedReader(
+                        InputStreamReader(contents.inputStream)).use { reader ->
+                    var line = reader.readLine()
+                    while (line != null) {
+                        builder.append(line).append("\n")
+                        line = reader.readLine()
+                    }
                 }
-            }
 
-            fileContents = builder.toString()
-            Log.v("GetFileFromDriveTask", """call -
+                fileContents = builder.toString()
+                Log.v("GetFileFromDriveTask", """call -
                 |fileContents: ${fileContents} """.trimMargin())
 
-            val discardTask = driveResourceClient.discardContents(contents)
-            Tasks.await(discardTask)
-            Log.v("GetFileFromDriveTask", """call -
+                val discardTask = driveResourceClient.discardContents(contents)
+                Tasks.await(discardTask)
+                Log.v("GetFileFromDriveTask", """call -
                 |discardTask isSuccessful: ${discardTask.isSuccessful}
                 | isCanceled: ${discardTask.isCanceled}
                 | isComplete: ${discardTask.isComplete}
                 |"""
-                    .trimMargin())
+                        .trimMargin())
 
-            if (discardTask.isSuccessful) {
-                val msg = context.resources.
-                        getString(
-                        R.string.base_handler_download_time_details, fileName, (System.currentTimeMillis() - startMillis) / 1000f, decryptMillis / 1000f)
-                eventBus.post(FilesEvents.Builder(FilesEvents.Events.FILE_DOWNLOADED)
-                        .msgContents(msg)
-                        .fileName(fileName)
-                        .selectedFileDriveId(selectedDriveId)
-                        .textContents(fileContents)
-                        .mimeType(mimeType)
-                        .build())
-            } else {
+                if (discardTask.isSuccessful) {
+                    val msg = context.resources.
+                            getString(
+                                    R.string.base_handler_download_time_details, fileName, (System.currentTimeMillis() - startMillis) / 1000f, decryptMillis / 1000f)
+                    Log.v("GetFileFromDriveTask", """call success - msg: $msg """)
+                    eventBus.post(FilesDownloadEvents.Builder(FilesDownloadEvents.Events.FILE_DOWNLOADED)
+                            .msgContents(msg)
+                            .fileName(fileName)
+                            .downloadedFileDriveId(selectedDriveId)
+                            .textContents(fileContents)
+                            .mimeType(mimeType)
+                            .build())
+                } else {
+                    Log.v("GetFileFromDriveTask", """call problem - msg: ${discardTask.exception} """)
+                    postDownloadProblemEvent(
+                            context.resources.getString(
+                                    R.string.base_handler_download_problem,
+                                    fileName + "; " + discardTask.exception))
+                }
+            } catch (e: IOException) {
                 postDownloadProblemEvent(
                         context.resources.getString(
-                                R.string.base_handler_download_problem,
-                                fileName + "; " + discardTask.exception))
+                                R.string.base_handler_download_problem, "$fileName; $e"))
+            } catch (e: IllegalStateException) {
+                postDownloadProblemEvent(
+                        context.resources.getString(
+                                R.string.base_handler_download_no_connection, "$fileName; $e"))
+            } catch (e: Exception) {        // added to test if any exception is handled properly
+                postDownloadProblemEvent(
+                        context.resources.getString(
+                                R.string.base_handler_download_problem, "$fileName; $e"))
             }
-        } catch (e: IOException) {
-            postDownloadProblemEvent(
-                    context.resources.getString(
-                            R.string.base_handler_download_problem, fileName + "; " + e))
-        } catch (e: IllegalStateException) {
-            postDownloadProblemEvent(
-                    context.resources.getString(
-                            R.string.base_handler_download_no_connection, fileName + "; " + e))
-        } catch (e: Exception) {                                                                    // added to test if any exception is handled properly
-            postDownloadProblemEvent(
-                    context.resources.getString(
-                            R.string.base_handler_download_problem, fileName + "; " + e))
         }
 
         return "Getting file done"
@@ -148,8 +165,7 @@ data class GetFileFromDriveTask(
                 driveResourceClient,
                 selectedDriveId,
                 fileName,
-                mimeType
-        )
+                mimeType)
     }
 
 }

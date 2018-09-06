@@ -99,3 +99,5 @@ l
 \app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/FileFragment.kt,2/5/250360022416311b661f842f8116137f86d6f322
 z
 Japp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/Utilities.kt,d/5/d5038a035c73ff5e92f8e5569176f0b73922aba5
+‹
+[app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/events/FilesDownloadEvents.kt,7/6/76aeefa12034f8bf244443aa9eee7dbc8c34da1d

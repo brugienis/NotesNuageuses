@@ -5,18 +5,18 @@ import java.util.*
 
 class FilesEvents(
         var request: Events,
-        var msgContents: String?,
-        var textContents: String?,
-        var fileItemId: Long?,
-        var setSelectedFileDriveId: DriveId?,
-        var mimeType: String?,
-        var folderLevel: Int?,
-        var parentFileName: String?,
-        var fileName: String?,
+        var msgContents: String,
+        var textContents: String,
+        var fileItemId: Long,
+        var selectedFileDriveId: DriveId,
+        var mimeType: String,
+        var folderLevel: Int,
+        var parentFileName: String,
+        var fileName: String,
         var newFileName: String?,
-        var currFolderDriveId: DriveId?,
-        var createDt: Date?,
-        var updateDt: Date?) {
+        var currFolderDriveId: DriveId,
+        var createDt: Date,
+        var updateDt: Date) {
 
     enum class Events {
         TEXT_UPLOADING,
@@ -45,26 +45,26 @@ class FilesEvents(
     }
 
     class Builder(private var request: Events) {
-        private var msgContents: String? = null
-        private var textContents: String? = null
+        private lateinit var msgContents: String
+        private lateinit var textContents: String
         private var fileItemId: Long = 0
-        private var selectedFileDriveId: DriveId? = null
-        private var mimeType: String? = null
+        private lateinit var selectedFileDriveId: DriveId
+        private lateinit var mimeType: String
         private var folderLevel: Int = 0
-        private var parentFileName: String? = null
-        private var fileName: String? = null
+        private lateinit var parentFileName: String
+        private lateinit var fileName: String
         private var newFileName: String? = null
-        private var currFolderDriveId: DriveId? = null
-        private var createDate: Date? = null
-        private var updateDate: Date? = null
+        private lateinit var currFolderDriveId: DriveId
+        private lateinit var createDate: Date
+        private lateinit var updateDate: Date
 
-        fun msgContents(msgContents: String?) = apply { this.msgContents = msgContents }
+        fun msgContents(msgContents: String) = apply { this.msgContents = msgContents }
 
         fun textContents(textContents: String) = apply { this.textContents = textContents }
 
         fun fileItemId(fileItemId: Long) = apply { this.fileItemId = fileItemId }
 
-        fun selectedFileDriveId(selectedFileDriveId: DriveId?) =
+        fun selectedFileDriveId(selectedFileDriveId: DriveId) =
                 apply { this.selectedFileDriveId = selectedFileDriveId }
 
         fun mimeType(mimeType: String) = apply { this.mimeType = mimeType }
@@ -73,14 +73,14 @@ class FilesEvents(
 
         fun fileName(fileName: String) = apply { this.fileName = fileName }
 
-        fun parentFileName(parentFileName: String?) = apply { this.parentFileName = parentFileName }
+        fun parentFileName(parentFileName: String) = apply { this.parentFileName = parentFileName }
 
         fun newFileName(newFileName: String) = apply { this.newFileName = newFileName }
 
         fun currFolderDriveId(currFolderDriveId: DriveId) =
                 apply { this.currFolderDriveId = currFolderDriveId }
 
-        fun createDate(createDate: Date?) = apply { this.createDate = createDate }
+        fun createDate(createDate: Date) = apply { this.createDate = createDate }
 
         fun updateDate(updateDate: Date) = apply { this.updateDate = updateDate }
 

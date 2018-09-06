@@ -144,7 +144,12 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
     }
 
     @Synchronized
-    fun insertFolderItemView(fileItemId: Long, folderLevel: Int, fileParentFolderDriveId: DriveId, position: Int, folderMetadataInfo: FileMetadataInfo) {
+    fun insertFolderItemView(
+            fileItemId: Long,
+            folderLevel: Int,
+            fileParentFolderDriveId: DriveId,
+            position: Int,
+            folderMetadataInfo: FileMetadataInfo) {
         // A_MUST: check if folderLevel and position have correct value. ALSO add folder DriverId
         // in case folder was removed and another opened on the same level
         showFoldersDataInfo()

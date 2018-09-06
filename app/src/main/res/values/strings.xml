@@ -65,5 +65,7 @@
     <string name="base_handler_download_problem">%1$s - download unsuccessful - try again later.</string>
     <string name="base_handler_download_no_connection">%1$s - couldn\'t download file - no connection to Google Drive. Try again later.</string>
     <string name="base_handler_download_time_details">\'%1$s\' downloaded in %2$4.3f secs. Decrypt time: %3$4.3f secs.</string>
+    <string name="home_app_file_encrypting">%1$sencrypting</string>
+    <string name="home_app_file_uploading">%1$suploading</string>
 
 </resources>

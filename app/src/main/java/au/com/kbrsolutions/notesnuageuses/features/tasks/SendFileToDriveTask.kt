@@ -3,7 +3,6 @@ package au.com.kbrsolutions.notesnuageuses.features.tasks
 import android.content.Context
 import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.R
-import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
 import au.com.kbrsolutions.notesnuageuses.features.events.FilesEvents
 import com.google.android.gms.drive.*
 import com.google.android.gms.tasks.Tasks
@@ -23,12 +22,14 @@ data class SendFileToDriveTask(
         val fileName: String,
         val mimeType: String,
         val fileContents: ByteArray,
-        val foldersData: FoldersData): Callable<String> {
+        val parentFileName: String): Callable<String> {
+//        val foldersData: FoldersData): Callable<String> {
 
-    val parentFileName: String? = foldersData.getFolderTitle(parentFolderLevel)
+//    val parentFileName: String? = foldersData.getFolderTitle(parentFolderLevel)
     val createDt: Date = Date()
-    var msg: String? = null
-    var thisFileDriveId: DriveId? = null
+    val fileItemId = createDt.time
+    var msg: String = ""
+    lateinit var thisFileDriveId: DriveId
     var encryptMillis: Long = 0
 
     override fun call(): String {
@@ -40,7 +41,7 @@ data class SendFileToDriveTask(
         var outputStream: OutputStream? = null
         val fileNameWithExtension = fileName + (context.resources
                         .getString(R.string.base_handler_encrypted_text_file_extension))
-        msg = null
+//        msg = null
 
         try {
             sendUpdateEvent(FilesEvents.Events.TEXT_UPLOADING, msg, fileNameWithExtension)
@@ -149,9 +150,7 @@ data class SendFileToDriveTask(
         sendUpdateEvent(event, msg, fileName)
     }
 
-    private fun sendUpdateEvent(event: FilesEvents.Events, msg: String?, fileName: String) {
-
-        val fileItemId = createDt.time
+    private fun sendUpdateEvent(event: FilesEvents.Events, msg: String, fileName: String) {
         eventBus.post(FilesEvents.Builder(event)
                 .msgContents(msg)
                 .parentFileName(parentFileName)
@@ -177,7 +176,7 @@ data class SendFileToDriveTask(
         private lateinit var fileName: String
         private lateinit var mimeType: String
         private lateinit var contents: ByteArray
-        private lateinit var foldersData: FoldersData
+        private lateinit var parentFileName: String
 
         fun context(context: Context) = apply { this.context = context }
 
@@ -201,7 +200,7 @@ data class SendFileToDriveTask(
 
         fun contents(contents: ByteArray) = apply { this.contents = contents }
 
-        fun foldersData(foldersData: FoldersData) = apply { this.foldersData = foldersData }
+        fun parentFileName(parentFileName: String) = apply { this.parentFileName = parentFileName }
 
         fun build() = SendFileToDriveTask (
                 context,
@@ -213,7 +212,7 @@ data class SendFileToDriveTask(
                 fileName,
                 mimeType,
                 contents,
-                foldersData)
+                parentFileName)
     }
 
 }

@@ -11,7 +11,6 @@ import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.Utilities
 import com.google.android.gms.drive.DriveId
 import kotlinx.android.synthetic.main.fragment_text_viewer.view.*
-import java.util.*
 
 class FileFragment : Fragment() {
 
@@ -23,7 +22,7 @@ class FileFragment : Fragment() {
     private var textET: EditText? = null
     private var textContents: String? = null
     private var driveId: DriveId? = null
-    private var createDt: Date? = null
+//    private var createDt: Date? = null
     private var fragmentActive: Boolean = false
 
     override fun onAttach(context: Context) {
@@ -85,16 +84,16 @@ class FileFragment : Fragment() {
     }
 
     fun showDownloadedTextNote(
-            createDt: Date?,
+//            createDt: Date?,
             fileName: String?,
             driveId: DriveId?,
             fileContents: String?) {
 
         textContents = fileContents
-        this.createDt = createDt
+//        this.createDt = createDt
         this.mFileName = fileName ?: "Got null"
         this.driveId = driveId
-        Log.v("FileFragment", """showDownloadedTextNote - fileContents: ${fileContents} """)
+        Log.v("FileFragment", """showDownloadedTextNote - fileContents: $fileContents """)
 
         if (!fragmentActive) {
             return
