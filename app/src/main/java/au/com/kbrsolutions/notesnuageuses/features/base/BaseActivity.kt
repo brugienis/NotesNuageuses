@@ -255,7 +255,8 @@ abstract class BaseActivity: AppCompatActivity() {
 
     private val cancellableExecutingTaskCnt = AtomicInteger()
 
-    protected inner class HandleCancellableFuturesCallable(mExecutorService: ExecutorService) : Callable<String> {
+    protected inner class HandleCancellableFuturesCallable(mExecutorService: ExecutorService):
+            Callable<String> {
 
         private val completionService: CompletionService<String>
         private var cancellableFuture: Future<String>? = null

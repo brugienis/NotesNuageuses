@@ -13,6 +13,7 @@ import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.addFragment
+import au.com.kbrsolutions.notesnuageuses.features.events.DriveAccessEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FilesDownloadEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FilesEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
@@ -348,20 +349,31 @@ class HomeActivity : BaseActivity(),
         setNewFragmentSet(true)
     }
 
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    fun onMessageEvent(event: ActivitiesEvents) {
-////        val request = event.request
-//    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: DriveAccessEvents) {
+        val request = event.request
+        val msgContents = event.msgContents
+        Log.v(TAG, "onMessageEvent.DriveAccessEvents - request: $request " +
+                "msgContents: $msgContents")
+
+        when (request) {
+
+            DriveAccessEvents.Events.MESSAGE -> {
+                showMessage(msgContents)
+            }
+        }
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FilesDownloadEvents) {
         val request = event.request
         val msgContents = event.msgContents
-        Log.v(TAG, "onMessageEvent.FilesEvents - request: $request msgContents: $msgContents")
+        Log.v(TAG, "onMessageEvent.FilesDownloadEvents - request: $request " +
+                "msgContents: $msgContents")
 
         when (request) {
 
-            FilesEvents.Events.FILE_DOWNLOADED -> {
+            FilesDownloadEvents.Events.FILE_DOWNLOADED -> {
                 fileFragment!!.showDownloadedTextNote(
 //                        event.createDt,
                         event.fileName,

@@ -3,6 +3,7 @@ package au.com.kbrsolutions.notesnuageuses.features.tasks
 import android.content.Context
 import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.R
+import au.com.kbrsolutions.notesnuageuses.features.events.DriveAccessEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FilesDownloadEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FilesEvents
 import com.google.android.gms.drive.DriveFile
@@ -51,10 +52,9 @@ data class GetFileFromDriveTask(
             try {
                 Log.v("GetFileFromDriveTask", """call - eventBus.post(FilesEvents.Builder(FilesEvents.Events.FILE_DOWNLOADING): before """)
 
-                // fixLater: Sep 06, 2018 - create seperate onMessage() for progress and problems
-//                eventBus.post(FilesEvents.Builder(FilesEvents.Events.FILE_DOWNLOADING)
-//                        .mimeType(mimeType)
-//                        .build())
+                eventBus.post(DriveAccessEvents.Builder(DriveAccessEvents.Events.MESSAGE)
+                        .msgContents(context.getString(R.string.file_download_starts))
+                        .build())
                 Log.v("GetFileFromDriveTask", """call - eventBus.post(FilesEvents.Builder(FilesEvents.Events.FILE_DOWNLOADING): after """)
 
                 BufferedReader(
