@@ -353,6 +353,7 @@ class HomeActivity : BaseActivity(),
     fun onMessageEvent(event: DriveAccessEvents) {
         val request = event.request
         val msgContents = event.msgContents
+        val isProblem = event.isProblem
         Log.v(TAG, "onMessageEvent.DriveAccessEvents - request: $request " +
                 "msgContents: $msgContents")
 
@@ -380,6 +381,10 @@ class HomeActivity : BaseActivity(),
                         event.downloadedFileDriveId,
                         event.textContents)
             }
+
+            else -> throw RuntimeException(
+                    "$TAG - onMessageEvent.FilesDownloadEvents - no code to handle " +
+                            "request: $request")
         }
     }
 
@@ -904,6 +909,7 @@ class HomeActivity : BaseActivity(),
                 FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
                 null,
                 args)
+        setActionBarTitle(fileTitle)
 
         Log.v("HomeActivity", """startDownloadFileContents - handleCancellableFuturesCallable: ${handleCancellableFuturesCallable} """)
         handleCancellableFuturesCallable!!.submitCallable(GetFileFromDriveTask.Builder()
