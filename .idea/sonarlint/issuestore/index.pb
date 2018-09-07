@@ -75,8 +75,6 @@ N
 ^app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/dialogs/CreateFileDialog.kt,4/8/488dcc66cfc187f9455eafb84ffbad8b238af039
 ç
 ]app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/DownloadFolderInfoTask.kt,7/5/7588a98d122dbaec671041506c704e03b19caef0
-É
-Sapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/events/FilesEvents.kt,f/2/f26b8463fb8dfd727b2dfc2f2ef8f3bc6dfa8259
 ä
 Zapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/SendFileToDriveTask.kt,8/1/813c530bf8704436233dc390c0f9498e0d7545da
 ã
@@ -101,3 +99,7 @@ z
 Japp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/Utilities.kt,d/5/d5038a035c73ff5e92f8e5569176f0b73922aba5
 ã
 [app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/events/FilesDownloadEvents.kt,7/6/76aeefa12034f8bf244443aa9eee7dbc8c34da1d
+â
+Yapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/events/DriveAccessEvents.kt,9/f/9f3f1628ef4aa769d19123bb6de5cd72fe8a7156
+â
+Yapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/events/FilesUploadEvents.kt,9/6/966ab3f3b927027fabf1c27803bd702953cb1868

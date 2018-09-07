@@ -7,7 +7,7 @@ import java.util.*
 data class FileMetadataInfo(
         var parentTitle: String,
         var fileTitle: String,
-        var fileDriveId: DriveId,
+        var fileDriveId: DriveId?,
         var isFolder: Boolean,
         var mimeType: String,
         var createDt: Date,
@@ -28,7 +28,7 @@ data class FileMetadataInfo(
             metadata.isTrashable,
             metadata.isTrashed) {
 
-        fun getFileDriveId(): DriveId = fileDriveId
+        fun getFileDriveId(): DriveId? = fileDriveId
     }
 
 }

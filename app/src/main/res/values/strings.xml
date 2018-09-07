@@ -67,6 +67,8 @@
     <string name="base_handler_download_time_details">\'%1$s\' downloaded in %2$4.3f secs. Decrypt time: %3$4.3f secs.</string>
     <string name="home_app_file_encrypting">%1$sencrypting</string>
     <string name="home_app_file_uploading">%1$suploading</string>
+    <string name="file_upload_starts">Starting file upload</string>
+    <string name="file_upload_problems">Upload problem</string>
     <string name="file_download_starts">Starting file download</string>
 
 </resources>

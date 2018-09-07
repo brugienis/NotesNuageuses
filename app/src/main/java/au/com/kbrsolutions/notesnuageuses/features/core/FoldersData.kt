@@ -155,6 +155,7 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
         showFoldersDataInfo()
         Log.v(TAG, "insertFolderItemView - fileParentFolderDriveId: $fileParentFolderDriveId")
         Log.v(TAG, "insertFolderItemView - foldersDriveIdsList.get(folderLevel): " + foldersDriveIdsList[folderLevel])
+        Log.v("FoldersData", """insertFolderItemView - currFolderLevel: $currFolderLevel  folderLevel: $folderLevel """)
         if (currFolderLevel < folderLevel) {
             verifyDataStructure()
             return
@@ -162,6 +163,7 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
             verifyDataStructure()
             return
         }
+        Log.v(TAG, "insertFolderItemView - validations passed")
         val folderFilesTitles = foldersFilesTitlesList[folderLevel]
         folderFilesTitles.add(position, folderMetadataInfo.fileTitle)
         val folderMetadatasInfoList = foldersMetadataArrayInfoList[folderLevel]
@@ -182,16 +184,21 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
             verifyDataStructure()
             return
         }
-        val folderMetadatasInfoList = foldersMetadataArrayInfoList[folderLevel]
+        val folderMetadatasInfoListAtLevel = foldersMetadataArrayInfoList[folderLevel]
         var fileItemIdIdx = -1
         var oneFolderMetadataInfo: FileMetadataInfo
         var i = 0
-        val cnt = folderMetadatasInfoList.size
+        val cnt = folderMetadatasInfoListAtLevel.size
+        Log.v("FoldersData", """updateFolderItemView -
+            |folderLevel: $folderLevel
+            |cnt: $cnt
+            |""".trimMargin())
         while (i < cnt) {
-            oneFolderMetadataInfo = folderMetadatasInfoList[i]
-            //			Log.i(LOC_CAT_TAG, "@@updateFolderItemView - fileItemId/oneFolderMetadataInfo.fileItemId: " + fileItemId + "/" + oneFolderMetadataInfo.fileItemId);
-            //			if (oneFolderMetadataInfo.fileItemId != null && oneFolderMetadataInfo.fileItemId.equals(fileItemId)) {
-            if (oneFolderMetadataInfo.fileItemId === fileItemId) {
+            oneFolderMetadataInfo = folderMetadatasInfoListAtLevel[i]
+            Log.v("FoldersData", """updateFolderItemView -
+                |oneFolderMetadataInfo.fileItemId: fileItemId: ${oneFolderMetadataInfo.fileItemId}
+                | fileItemId: $fileItemId """.trimMargin())
+            if (oneFolderMetadataInfo.fileItemId == fileItemId) {
                 fileItemIdIdx = i
                 break
             }
@@ -201,18 +208,6 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
         if (fileItemIdIdx == -1) {
             throw RuntimeException("updateFolderItemView - fileItemId not found")
         }
-        /*
-		from time to time I am getting - will have to investigate
-
-12-04 19:51:11.752 22980-22980/au.com.kbrsolutions.privatecloudnotes I/Choreographer: Skipped 32 frames!  The application may be doing too much work on its main thread.
-12-04 19:51:28.063 22980-22980/au.com.kbrsolutions.privatecloudnotes E/Event: Could not dispatch event: class au.com.kbrsolutions.privatecloudnotes.events.ActivitiesEvents to subscribing class class au.com.kbrsolutions.privatecloudnotes.core.HomeActivity
-                                                                              java.lang.RuntimeException: updateFolderItemView - fileItemId not found
-                                                                                  at au.com.kbrsolutions.privatecloudnotes.core.FoldersData.updateFolderItemView(FoldersData.java:151)
-                                                                                  at au.com.kbrsolutions.privatecloudnotes.core.HomeActivity.onEventMainThread(HomeActivity.java:1704)
-                                                                                  at java.lang.reflect.Method.invoke(Native Method)
-                                                                                  at java.lang.reflect.Method.invoke(Method.java:372)
-                                                                                  at de.greenrobot.event.EventBus.invokeSubscriber(EventBus.java:498)
-		 */
 
         val folderFilesTitles = foldersFilesTitlesList[folderLevel]
         folderFilesTitles[fileItemIdIdx] = fileMetadataInfo.fileTitle
@@ -239,7 +234,7 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
         //		Log.v(LOG_TAG, "updateFolderItemView - after - " + allCurrFolderFilesTrashedOrThereAreNoFiles() + "/" + getCurrentFolderTrashedFilesCnt());
 
 
-        folderMetadatasInfoList[fileItemIdIdx] = fileMetadataInfo
+        folderMetadatasInfoListAtLevel[fileItemIdIdx] = fileMetadataInfo
         verifyDataStructure()
     }
 

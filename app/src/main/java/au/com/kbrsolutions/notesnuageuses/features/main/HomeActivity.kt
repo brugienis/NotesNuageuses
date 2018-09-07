@@ -15,7 +15,7 @@ import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.addFragment
 import au.com.kbrsolutions.notesnuageuses.features.events.DriveAccessEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FilesDownloadEvents
-import au.com.kbrsolutions.notesnuageuses.features.events.FilesEvents
+import au.com.kbrsolutions.notesnuageuses.features.events.FilesUploadEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
@@ -389,22 +389,20 @@ class HomeActivity : BaseActivity(),
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: FilesEvents) {
+    fun onMessageEvent(event: FilesUploadEvents) {
         val request = event.request
         val msgContents = event.msgContents
-        Log.v(TAG, "onMessageEvent.FilesEvents - request: $request msgContents: $msgContents")
+        Log.v(TAG, "onMessageEvent.FilesUploadEvents - request: $request msgContents: $msgContents")
 
         when (request) {
 
-            FilesEvents.Events.TEXT_UPLOADING -> {
-                Log.v(TAG, "onMessageEvent.FilesEvents - request" +
-                        " $request msgContents: $msgContents")
-            }
-
-            FilesEvents.Events.TEXT_UPLOADED -> {
-                Log.v(TAG, "onMessageEvent.FilesEvents - request" +
-                        " $request msgContents: $msgContents")
-                if (event.selectedFileDriveId == null) {            // no file DriveId - we are going to upload a new file. We will know the DriveId after successful send
+            FilesUploadEvents.Events.TEXT_UPLOADING -> {
+                Log.v(TAG, "onMessageEvent.FilesUploadEvents - " +
+                        "request $request " +
+                        "msgContents: $msgContents" +
+                        "event.fileItemId: ${event.fileItemId}")
+                if (event.thisFileDriveId == null) {            // no file DriveId - we are going to upload a new file.
+                                                                // We will know the DriveId after successful send
                     foldersData.insertFolderItemView(
                             event.fileItemId,
                             event.folderLevel,
@@ -414,7 +412,7 @@ class HomeActivity : BaseActivity(),
                                     event.parentFileName,
                                     event.fileName +
                                             getString(R.string.home_app_file_encrypting, " "),
-                                    event.selectedFileDriveId,
+                                    event.thisFileDriveId,
                                     false,
                                     event.mimeType,
                                     event.createDt,
@@ -432,7 +430,7 @@ class HomeActivity : BaseActivity(),
                                     event.fileName +
                                             getString(R.string.home_app_file_uploading,
                                                     " "),
-                                    event.selectedFileDriveId,
+                                    event.thisFileDriveId,
                                     false,
                                     event.mimeType,
                                     event.createDt,
@@ -446,31 +444,42 @@ class HomeActivity : BaseActivity(),
                 removeTopFragment("onEventMainThread - $request", false)
             }
 
-            FilesEvents.Events.UPLOAD_PROBLEMS -> {
-                Log.v(TAG, "onMessageEvent.FilesEvents - request" +
-                        " $request msgContents: $msgContents")
+            FilesUploadEvents.Events.TEXT_UPLOADED -> {
+                Log.v(TAG, "onMessageEvent.FilesUploadEvents - " +
+                        "request $request " +
+                        "msgContents: $msgContents" +
+                        "event.fileItemId: ${event.fileItemId}")
+                showMessage(event.msgContents)
+
+                showMessage(msgContents)
+                foldersData.updateFolderItemView(
+                        event.fileItemId,
+                        event.folderLevel,
+                        event.currFolderDriveId,
+                        FileMetadataInfo(
+                                event.parentFileName,
+                                event.fileName,
+                                event.thisFileDriveId ,
+                                false,
+                                event.mimeType,
+                                event.createDt,
+                                event.updateDt,
+                                event.fileItemId,
+                                true,
+                                false
+                        )
+                )
+
+                updateFolderListAdapter()
             }
 
-            FilesEvents.Events.FILE_DOWNLOADING -> {
-                Log.v(TAG, "onMessageEvent.FilesEvents - request" +
-                        " $request msgContents: $msgContents")
-            }
-
-            FilesEvents.Events.FILE_DOWNLOADED -> {
-                fileFragment!!.showDownloadedTextNote(
-//                        event.createDt,
-                        event.fileName,
-                        event.selectedFileDriveId,
-                        event.textContents)
-            }
-
-            FilesEvents.Events.FILE_DOWNLOAD_PROBLEMS -> {
-                Log.v(TAG, "onMessageEvent.FilesEvents - request" +
+            FilesUploadEvents.Events.UPLOAD_PROBLEMS -> {
+                Log.v(TAG, "onMessageEvent.FilesUploadEvents - request" +
                         " $request msgContents: $msgContents")
             }
 
             else -> throw RuntimeException(
-                    "$TAG - onMessageEvent.FilesEvents - no code to handle request: $request")
+                    "$TAG - onMessageEvent.FilesUploadEvents - no code to handle request: $request")
         }
     }
 
@@ -916,7 +925,7 @@ class HomeActivity : BaseActivity(),
                 .context(applicationContext)
                 .eventBus(eventBus)
                 .driveResourceClient(mDriveResourceClient)
-                .selectedDriveId(folderMetadataInfo.fileDriveId)
+                .selectedDriveId(folderMetadataInfo.fileDriveId!!)
                 .fileName(fileTitle)
                 .mimeType(folderMetadataInfo.mimeType)
                 .build())

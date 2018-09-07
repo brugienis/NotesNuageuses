@@ -3,7 +3,8 @@ package au.com.kbrsolutions.notesnuageuses.features.tasks
 import android.content.Context
 import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.R
-import au.com.kbrsolutions.notesnuageuses.features.events.FilesEvents
+import au.com.kbrsolutions.notesnuageuses.features.events.DriveAccessEvents
+import au.com.kbrsolutions.notesnuageuses.features.events.FilesUploadEvents
 import com.google.android.gms.drive.*
 import com.google.android.gms.tasks.Tasks
 import org.greenrobot.eventbus.EventBus
@@ -23,13 +24,11 @@ data class SendFileToDriveTask(
         val mimeType: String,
         val fileContents: ByteArray,
         val parentFileName: String): Callable<String> {
-//        val foldersData: FoldersData): Callable<String> {
 
-//    val parentFileName: String? = foldersData.getFolderTitle(parentFolderLevel)
-    val createDt: Date = Date()
-    val fileItemId = createDt.time
+    private val createDt: Date = Date()
+    private val fileItemId = createDt.time
     var msg: String = ""
-    lateinit var thisFileDriveId: DriveId
+    private var thisFileDriveId: DriveId? = null
     var encryptMillis: Long = 0
 
     override fun call(): String {
@@ -44,7 +43,15 @@ data class SendFileToDriveTask(
 //        msg = null
 
         try {
-            sendUpdateEvent(FilesEvents.Events.TEXT_UPLOADING, msg, fileNameWithExtension)
+
+            // onMessageEvent.DriveAccessEvents - request: MESSAGE msgContents:
+            // BR 30kotlin.UninitializedPropertyAccessException: lateinit property thisFileDriveId
+            // has not been initialized
+            sendUpdateEvent(FilesUploadEvents.Events.TEXT_UPLOADING, msg, fileNameWithExtension)
+
+//            eventBus.post(DriveAccessEvents.Builder(DriveAccessEvents.Events.MESSAGE)
+//                    .msgContents(context.getString(R.string.file_upload_starts))
+//                    .build())
 
             var uploadSuccessful = false
 
@@ -80,6 +87,7 @@ data class SendFileToDriveTask(
                 val outputStream = contents.outputStream
 
                 outputStream.write(fileContents)
+
                 Log.v("SendFileToDriveTask", """call -
                     |fileContents: ${String(fileContents)}
                     | ; after write
@@ -104,9 +112,12 @@ data class SendFileToDriveTask(
 
                 Tasks.await(driveFileTask)
 
+                Log.v("SendFileToDriveTask", """call - driveFileTask.isSuccessful: ${driveFileTask.isSuccessful} """)
                 if (driveFileTask.isSuccessful) {
                     thisFileDriveId = driveFileTask.result.driveId
                     uploadSuccessful = true
+                } else {
+                    msg = "$fileName${driveFileTask.exception.toString()}"
                 }
             }
 
@@ -114,18 +125,19 @@ data class SendFileToDriveTask(
                 msg = context.resources.getString(R.string.base_handler_upload_time_details,
                         fileName, (System.currentTimeMillis() - startMillis) / 1000f,
                         encryptMillis / 1000f)
-                sendUpdateEvent(FilesEvents.Events.TEXT_UPLOADED, msg, fileNameWithExtension)
+                sendUpdateEvent(FilesUploadEvents.Events.TEXT_UPLOADED, msg, fileNameWithExtension)
             } else {
-                sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, true, fileName)
+                sendProblemEvent(msg)
             }
         } catch (e: IllegalStateException) {
-            sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, true, fileName + e)
+            sendProblemEvent(fileName + e)
         } catch (e: IOException) {
-            sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, false, fileName + e)
+            sendProblemEvent(fileName + e)
         } catch (e: Exception) {                                    // added to handle any exception
-            sendProblemEvent(FilesEvents.Events.UPLOAD_PROBLEMS, false, fileName + e)
+            sendProblemEvent(fileName + e)
         } finally {
-            Log.v("SendFileToDriveTask", """call - finally - outputStream: $outputStream """)
+            Log.v("SendFileToDriveTask", """call - finally -
+                |outputStream: $outputStream """.trimMargin())
             if (outputStream != null) {
                 try {
                     outputStream.close()
@@ -139,19 +151,16 @@ data class SendFileToDriveTask(
     }
 
     private fun sendProblemEvent(
-            event: FilesEvents.Events,
-            willTryAgain: Boolean, fileName: String) {
-        val msg = if (willTryAgain) {
-            context.resources.getString(R.string.base_handler_upload_problem_will_try_later,
-                    fileName)
-        } else {
-            context.resources.getString(R.string.base_handler_upload_problem, fileName)
-        }
-        sendUpdateEvent(event, msg, fileName)
+            fileNameAndException: String) {
+        eventBus.post(DriveAccessEvents.Builder(DriveAccessEvents.Events.MESSAGE)
+                .msgContents(fileNameAndException)
+                .isProblem(true)
+                .build())
     }
 
-    private fun sendUpdateEvent(event: FilesEvents.Events, msg: String, fileName: String) {
-        eventBus.post(FilesEvents.Builder(event)
+    private fun sendUpdateEvent(event: FilesUploadEvents.Events, msg: String, fileName: String) {
+        Log.v("SendFileToDriveTask", """sendUpdateEvent - before fileName: $fileName """)
+        eventBus.post(FilesUploadEvents.Builder(event)
                 .msgContents(msg)
                 .parentFileName(parentFileName)
                 .fileName(fileName)
@@ -159,7 +168,7 @@ data class SendFileToDriveTask(
                 .updateDate(Date())
                 .fileItemId(fileItemId)
                 .currFolderDriveId(parentFolderDriveId)
-                .selectedFileDriveId(thisFileDriveId)
+                .thisFileDriveId(thisFileDriveId)
                 .mimeType(mimeType)
                 .folderLevel(parentFolderLevel)
                 .build())

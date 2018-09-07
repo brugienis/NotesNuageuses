@@ -5,7 +5,6 @@ import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.events.DriveAccessEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FilesDownloadEvents
-import au.com.kbrsolutions.notesnuageuses.features.events.FilesEvents
 import com.google.android.gms.drive.DriveFile
 import com.google.android.gms.drive.DriveId
 import com.google.android.gms.drive.DriveResourceClient
@@ -50,12 +49,12 @@ data class GetFileFromDriveTask(
             val builder = StringBuilder()
 
             try {
-                Log.v("GetFileFromDriveTask", """call - eventBus.post(FilesEvents.Builder(FilesEvents.Events.FILE_DOWNLOADING): before """)
+                Log.v("GetFileFromDriveTask", """call - eventBus.post(FilesUploadEvents.Builder(FilesUploadEvents.Events.FILE_DOWNLOADING): before """)
 
                 eventBus.post(DriveAccessEvents.Builder(DriveAccessEvents.Events.MESSAGE)
                         .msgContents(context.getString(R.string.file_download_starts))
                         .build())
-                Log.v("GetFileFromDriveTask", """call - eventBus.post(FilesEvents.Builder(FilesEvents.Events.FILE_DOWNLOADING): after """)
+                Log.v("GetFileFromDriveTask", """call - eventBus.post(FilesUploadEvents.Builder(FilesUploadEvents.Events.FILE_DOWNLOADING): after """)
 
                 BufferedReader(
                         InputStreamReader(contents.inputStream)).use { reader ->
@@ -117,9 +116,8 @@ data class GetFileFromDriveTask(
     }
 
     private fun postDownloadProblemEvent(msg: String) {
-        eventBus.post(FilesEvents.Builder(FilesEvents.Events.FILE_DOWNLOAD_PROBLEMS)
+        eventBus.post(DriveAccessEvents.Builder(DriveAccessEvents.Events.MESSAGE)
                 .msgContents(msg)
-                .mimeType(mimeType)
                 .build())
     }
 

@@ -152,7 +152,7 @@ data class DownloadFolderInfoTask(
         fun driveResourceClient(driveResourceClient: DriveResourceClient) =
                 apply { this.driveResourceClient = driveResourceClient }
 
-        fun selectedFolderDriveId(selectedFolderDriveId: DriveId) =
+        fun selectedFolderDriveId(selectedFolderDriveId: DriveId?) =
                 apply { this.selectedFolderDriveId = selectedFolderDriveId }
 
         fun parentFolderLevel(parentFolderLevel: Int) =
