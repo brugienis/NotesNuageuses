@@ -9,7 +9,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:gravity="center_horizontal|center_vertical"
-		android:text="@string/retrieving_folder_folder"
+		android:text="@string/retrieving_folder_file"
 		android:textAlignment="gravity"
 		android:textColor="@android:color/black" />
 

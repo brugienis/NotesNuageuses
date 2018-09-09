@@ -1,7 +1,6 @@
 package au.com.kbrsolutions.notesnuageuses.features.tasks
 
 import android.content.Context
-import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.events.DriveAccessEvents
 import au.com.kbrsolutions.notesnuageuses.features.events.FilesDownloadEvents
@@ -16,7 +15,6 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.util.concurrent.Callable
 
-// fixLater: Sep 06, 2018 - remove folderLevel
 data class GetFileFromDriveTask(
         var context: Context,
         var eventBus: EventBus,
@@ -28,7 +26,6 @@ data class GetFileFromDriveTask(
     private var decryptMillis: Long = 0
 
     override fun call(): String? {
-        Log.v("GetFileFromDriveTask", """call start - fileName: $fileName """)
         val startMillis = System.currentTimeMillis()
         val fileContents: String
 
@@ -36,8 +33,6 @@ data class GetFileFromDriveTask(
                 selectedDriveId.asDriveFile(),
                 DriveFile.MODE_READ_ONLY)
         Tasks.await(openFileTask)
-
-        Log.v("GetFileFromDriveTask", """call - Tasks.await(openFileTask): after """)
 
         if (!openFileTask.isSuccessful) {
             postDownloadProblemEvent(
@@ -49,12 +44,10 @@ data class GetFileFromDriveTask(
             val builder = StringBuilder()
 
             try {
-                Log.v("GetFileFromDriveTask", """call - eventBus.post(FilesUploadEvents.Builder(FilesUploadEvents.Events.FILE_DOWNLOADING): before """)
 
                 eventBus.post(DriveAccessEvents.Builder(DriveAccessEvents.Events.MESSAGE)
                         .msgContents(context.getString(R.string.file_download_starts))
                         .build())
-                Log.v("GetFileFromDriveTask", """call - eventBus.post(FilesUploadEvents.Builder(FilesUploadEvents.Events.FILE_DOWNLOADING): after """)
 
                 BufferedReader(
                         InputStreamReader(contents.inputStream)).use { reader ->
@@ -66,23 +59,15 @@ data class GetFileFromDriveTask(
                 }
 
                 fileContents = builder.toString()
-                Log.v("GetFileFromDriveTask", """call -
-                |fileContents: ${fileContents} """.trimMargin())
 
                 val discardTask = driveResourceClient.discardContents(contents)
                 Tasks.await(discardTask)
-                Log.v("GetFileFromDriveTask", """call -
-                |discardTask isSuccessful: ${discardTask.isSuccessful}
-                | isCanceled: ${discardTask.isCanceled}
-                | isComplete: ${discardTask.isComplete}
-                |"""
-                        .trimMargin())
 
                 if (discardTask.isSuccessful) {
                     val msg = context.resources.
                             getString(
                                     R.string.base_handler_download_time_details, fileName, (System.currentTimeMillis() - startMillis) / 1000f, decryptMillis / 1000f)
-                    Log.v("GetFileFromDriveTask", """call success - msg: $msg """)
+
                     eventBus.post(FilesDownloadEvents.Builder(FilesDownloadEvents.Events.FILE_DOWNLOADED)
                             .msgContents(msg)
                             .fileName(fileName)
@@ -91,7 +76,6 @@ data class GetFileFromDriveTask(
                             .mimeType(mimeType)
                             .build())
                 } else {
-                    Log.v("GetFileFromDriveTask", """call problem - msg: ${discardTask.exception} """)
                     postDownloadProblemEvent(
                             context.resources.getString(
                                     R.string.base_handler_download_problem,

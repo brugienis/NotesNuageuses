@@ -79,6 +79,8 @@ class HomeActivity : BaseActivity(),
 
         const val RETRIEVING_FOLDER_TITLE_KEY = "retrieving_folder_title_key"
         const val FILE_NAME_KEY = "file_name_key"
+        const val THIS_FILE_DRIVE_ID_KEY = "this_file_drive_id_key"
+        const val FILE_CONTENTS_KEY = "file_contents_key"
     }
 
     private var fragmentsStack = FragmentsStack
@@ -254,23 +256,22 @@ class HomeActivity : BaseActivity(),
                     emptyFolderFragment!!.setTrashedFilesCnt(trashFilesCnt)
                 }
                 fragmentTransaction = fragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.fragments_frame, emptyFolderFragment, EMPTY_FOLDER_TAG)
+                fragmentTransaction.replace(R.id.fragments_frame, emptyFolderFragment,
+                        EMPTY_FOLDER_TAG)
                 fragmentTransaction.commit()
             }
 
             FragmentsEnum.FILE_VIEW_FRAGMENT -> {
                 val fileName = fragmentArgs!!.getString(FILE_NAME_KEY)
-//                if (textFragment == null) {
-//                    textFragment =
-//                            TextFragment.newInstance(fileName)
-//                } else {
-//                    textFragment!!.setFileName(fileName)
-//                }
+                val fileContents = fragmentArgs.getString(FILE_CONTENTS_KEY)
+                val thisFileDriveId = DriveId.decodeFromString(
+                        fragmentArgs.getString(THIS_FILE_DRIVE_ID_KEY))
                 if (fileFragment == null) {
                     fileFragment =
-                            FileFragment.newInstance(fileName)
+                            FileFragment.newInstance(fileName, fileContents, thisFileDriveId)
                 } else {
-                    fileFragment!!.setFileName(fileName)
+                    Log.v("HomeActivity", """setFragment - fileContents: ${fileContents} """)
+                    fileFragment!!.setFileName(fileName, fileContents, thisFileDriveId)
                 }
 
                 fragmentTransaction = fragmentManager.beginTransaction()
@@ -375,11 +376,28 @@ class HomeActivity : BaseActivity(),
         when (request) {
 
             FilesDownloadEvents.Events.FILE_DOWNLOADED -> {
-                fileFragment!!.showDownloadedTextNote(
-//                        event.createDt,
+
+                val args = Bundle()
+                val fileTitle = event.fileName
+                val fileContents = event.textContents
+                Log.v("HomeActivity", """onMessageEvent - fileContents: ${fileContents} """)
+                val thisFileDriveId = event.downloadedFileDriveId.encodeToString()
+                args.putString(FILE_NAME_KEY, fileTitle)
+                args.putString(FILE_CONTENTS_KEY, fileContents)
+                args.putString(THIS_FILE_DRIVE_ID_KEY, thisFileDriveId)
+
+                setFragment(
+                        FragmentsEnum.FILE_VIEW_FRAGMENT,
                         event.fileName,
-                        event.downloadedFileDriveId,
-                        event.textContents)
+                        true,
+                        FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
+                        null,
+                        args)
+//                fileFragment!!.showDownloadedTextNote(
+////                        event.createDt,
+//                        event.fileName,
+//                        event.downloadedFileDriveId,
+//                        event.textContents)
             }
 
             else -> throw RuntimeException(
@@ -876,7 +894,6 @@ class HomeActivity : BaseActivity(),
                 null,
                 args)
 
-
         setActionBarTitle(fileName)
 
 //        sendTextFileToDrive(null, fileName.toString(),
@@ -911,6 +928,10 @@ class HomeActivity : BaseActivity(),
         val args = Bundle()
         val fileTitle = folderMetadataInfo.fileTitle
         args.putString(FILE_NAME_KEY, fileTitle)
+        showDownloadFragment(fileTitle + getString(
+                R.string.retrieving_file_file))
+
+        /*
         setFragment(
                 FragmentsEnum.FILE_VIEW_FRAGMENT,
                 folderMetadataInfo.fileTitle,
@@ -918,9 +939,11 @@ class HomeActivity : BaseActivity(),
                 FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
                 null,
                 args)
+                */
         setActionBarTitle(fileTitle)
 
-        Log.v("HomeActivity", """startDownloadFileContents - handleCancellableFuturesCallable: ${handleCancellableFuturesCallable} """)
+        Log.v("HomeActivity", """startDownloadFileContents -
+            |handleCancellableFuturesCallable: ${handleCancellableFuturesCallable} """.trimMargin())
         handleCancellableFuturesCallable!!.submitCallable(GetFileFromDriveTask.Builder()
                 .context(applicationContext)
                 .eventBus(eventBus)
@@ -933,7 +956,6 @@ class HomeActivity : BaseActivity(),
 
     private fun startDownloadFolderInfo(folderMetadataInfo: FileMetadataInfo) {
         val currFolderLevel = foldersData.getCurrFolderLevel()
-        val folderMetadataArrayInfo = foldersData.getCurrFolderMetadataInfo()
         val currFolderParentDriveId = foldersData.getCurrFolderDriveId()
 
 //        val folderMetadataInfo: FileMetadataInfo = folderMetadataArrayInfo!![idx]
@@ -942,33 +964,51 @@ class HomeActivity : BaseActivity(),
 //            | folderMetadataInfo - fileDriveId: ${folderMetadataInfo.fileDriveId}
 //            | parentDriveId: ${foldersData.getCurrParentDriveId(currFolderLevel)}
 //            |""".trimMargin())
+
         val selectedDriveId = folderMetadataInfo.fileDriveId
         val selectedFileTitle = folderMetadataInfo.fileTitle
-        if (folderMetadataInfo.isFolder) {
-            val rootFolderName = folderMetadataInfo.fileTitle
-            val args = Bundle()
-            args.putString(RETRIEVING_FOLDER_TITLE_KEY, rootFolderName)
 
-            setFragment(
-                    FragmentsEnum.DOWNLOAD_FRAGMENT,
-                    getString(R.string.retrieving_folder_title),
-                    true,
-                    FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
-                    null,
-                    args)
+        val folderName = folderMetadataInfo.fileTitle
 
-            handleCancellableFuturesCallable!!.submitCallable(DownloadFolderInfoTask.Builder()
-                    .context(applicationContext)
-                    .eventBus(eventBus)
-                    .driveResourceClient(mDriveResourceClient)
-                    .selectedFolderTitle(selectedFileTitle)
-                    .parentFolderLevel(currFolderLevel)
-                    .selectedFolderDriveId(selectedDriveId)
-                    .parentFolderDriveId(currFolderParentDriveId!!)
-                    .foldersData(foldersData)
-                    .build())
-        }
+        showDownloadFragment(folderName + getString(
+                        R.string.retrieving_file_folder))
+        /*
+        val args = Bundle()
+        args.putString(RETRIEVING_FOLDER_TITLE_KEY, rootFolderName)
+
+        setFragment(
+                FragmentsEnum.DOWNLOAD_FRAGMENT,
+                getString(R.string.retrieving_folder_title),
+                true,
+                FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
+                null,
+                args)
+                */
+
+        handleCancellableFuturesCallable!!.submitCallable(DownloadFolderInfoTask.Builder()
+                .context(applicationContext)
+                .eventBus(eventBus)
+                .driveResourceClient(mDriveResourceClient)
+                .selectedFolderTitle(selectedFileTitle)
+                .parentFolderLevel(currFolderLevel)
+                .selectedFolderDriveId(selectedDriveId)
+                .parentFolderDriveId(currFolderParentDriveId!!)
+                .foldersData(foldersData)
+                .build())
     }
+
+    private fun showDownloadFragment(fileName: String) {
+        val args = Bundle()
+        args.putString(RETRIEVING_FOLDER_TITLE_KEY, fileName)
+        setFragment(
+                FragmentsEnum.DOWNLOAD_FRAGMENT,
+                getString(R.string.retrieving_folder_title),
+                true,
+                FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
+                null,
+                args)
+    }
+
     override fun onUpButtonPressedInFragment() {
         onBackPressed()
     }

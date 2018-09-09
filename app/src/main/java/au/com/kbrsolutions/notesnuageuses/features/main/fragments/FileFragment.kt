@@ -18,10 +18,11 @@ class FileFragment : Fragment() {
 
     private var mArgsProcessed = false
     private var mFileName: String = "Unknown"
+    private var mFileContents: String = "Unknown"
     private var imm: InputMethodManager? = null
-    private var textET: EditText? = null
-    private var textContents: String? = null
-    private var driveId: DriveId? = null
+    private lateinit var mTextET: EditText
+    private var mTextContents: String? = null
+    private lateinit var mThisFileDriveId: DriveId
 //    private var createDt: Date? = null
     private var fragmentActive: Boolean = false
 
@@ -43,6 +44,9 @@ class FileFragment : Fragment() {
         if (!mArgsProcessed) {
             arguments?.let {
                 mFileName = it.getString(ARG_FILE_NAME_KEY)
+                mFileContents = it.getString(ARG_FILE_CONTENTS_KEY)
+                mThisFileDriveId = DriveId.decodeFromString(
+                        it.getString(ARG_THIS_FILE_DRIVE_ID_KEY))
             }
             mArgsProcessed = true
         }
@@ -54,59 +58,70 @@ class FileFragment : Fragment() {
 
         val rootView = inflater.inflate(R.layout.fragment_text_viewer, container, false)
 
-        textET = rootView.textId
-        rootView.textId.setText("")
+        mTextET = rootView.textId
+        rootView.textId.setText(mFileContents)
         return rootView
     }
 
-    fun setFileName(fileName: String) {
+    fun setFileName(fileName: String, fileContents: String, thisFileDriveId: DriveId) {
+        Log.v("FileFragment before", """setFileName -
+            |fileName: $fileName
+            |fileContents: $fileContents
+            |""".trimMargin())
         mFileName = fileName
+        mFileContents = fileContents
+        mThisFileDriveId = thisFileDriveId
+        mTextET.setText(mFileContents)
+        Log.v("FileFragment after ", """setFileName -
+            |mTextET: ${mTextET.text}
+            |fileContents: $fileContents
+            |""".trimMargin())
     }
 
     private fun handleSaveMenuItemClicked() {
         Log.v("FileFragment", """handleSaveMenuItemClicked - handleSaveMenuItemClicked: start """)
         hideKeyboard()
         listener.sendTextFileToDrive(
-                driveId,
+                mThisFileDriveId,
                 mFileName,
-                textET!!.text.toString().toByteArray())
+                mTextET.text.toString().toByteArray())
         cleanup("quickSaveClicked")
     }
 
-    fun cleanup(source: String) {
-        textContents = null
-        textET!!.setText("")
+    private fun cleanup(source: String) {
+        mTextContents = null
+        mTextET.setText("")
         hideKeyboard()
     }
 
     fun setDownloadProgressText(msg: String) {
-        textET!!.setText(msg)
+        mTextET!!.setText(msg)
     }
 
-    fun showDownloadedTextNote(
-//            createDt: Date?,
-            fileName: String?,
-            driveId: DriveId?,
-            fileContents: String?) {
-
-        textContents = fileContents
-//        this.createDt = createDt
-        this.mFileName = fileName ?: "Got null"
-        this.driveId = driveId
-        Log.v("FileFragment", """showDownloadedTextNote - fileContents: $fileContents """)
-
-        if (!fragmentActive) {
-            return
-        }
-        textET!!.setText(fileContents)
-        textET?.let {
-            it.setText(fileContents)
-            it.isEnabled = true
-        }
-    }
+//    fun showDownloadedTextNote(
+////            createDt: Date?,
+//            fileName: String?,
+//            driveId: DriveId?,
+//            fileContents: String?) {
+//
+//        mTextContents = fileContents
+////        this.createDt = createDt
+//        this.mFileName = fileName ?: "Got null"
+//        this.mThisFileDriveId = driveId
+//        Log.v("FileFragment", """showDownloadedTextNote - fileContents: $fileContents """)
+//
+//        if (!fragmentActive) {
+//            return
+//        }
+//        mTextET!!.setText(fileContents)
+//        mTextET?.let {
+//            it.setText(fileContents)
+//            it.isEnabled = true
+//        }
+//    }
 
     fun handleDownloadProblems(msg: String) {
-        textET!!.setText(msg)
+        mTextET!!.setText(msg)
         hideKeyboard()
     }
 
@@ -149,8 +164,8 @@ class FileFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         fragmentActive = true
-        if (textContents != null) {
-            textET!!.setText(textContents)
+        if (mTextContents != null) {
+            mTextET!!.setText(mTextContents)
         }
     }
 
@@ -185,14 +200,18 @@ class FileFragment : Fragment() {
     companion object {
 
         private const val ARG_FILE_NAME_KEY = "arg_file_name_key"
+        private const val ARG_FILE_CONTENTS_KEY = "arg_file_contents_key"
+        private const val ARG_THIS_FILE_DRIVE_ID_KEY = "arg_this_file_drive_id_key"
 
         @JvmStatic
-        fun newInstance(fileName: String) =
+        fun newInstance(fileName: String, fileContents: String, thisFileDriveId: DriveId) =
                 FileFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_FILE_NAME_KEY, fileName)
+                        putString(ARG_FILE_CONTENTS_KEY, fileContents)
+                        putString(ARG_THIS_FILE_DRIVE_ID_KEY, thisFileDriveId.encodeToString())
                     }
-                    Log.v("FileFragment", "newInstance - arguments: $arguments ")
+//                    Log.v("FileFragment", "newInstance - arguments: $arguments ")
                 }
 
     }

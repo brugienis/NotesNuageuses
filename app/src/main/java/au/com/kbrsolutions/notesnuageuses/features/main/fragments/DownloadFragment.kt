@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.fragment_retrieving_folder_in_progress.vie
 class DownloadFragment : Fragment() {
 
     private var mContext: Context? = null
-    private var mRetrievingFolderName:String = "Folder name undefined"
+    private var mRetrievingFolderFileName:String = "Folder/file name undefined"
     private var mArgsProcessed = false
 
     override fun onAttach(activity: Context) {
@@ -29,7 +29,7 @@ class DownloadFragment : Fragment() {
 
         if (!mArgsProcessed) {
             arguments?.let {
-                mRetrievingFolderName = it.getString(ARG_RETRIEVING_FOLDER_TITLE_KEY)
+                mRetrievingFolderFileName = it.getString(ARG_RETRIEVING_FOLDER_FILE_NAME_KEY)
             }
             mArgsProcessed = true
         }
@@ -42,12 +42,12 @@ class DownloadFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_retrieving_folder_in_progress, container,
                 false)
         rootView.retrievingFolderTitleId.text =
-                resources.getString(R.string.retrieving_folder_folder, mRetrievingFolderName)
+                resources.getString(R.string.retrieving_folder_file, mRetrievingFolderFileName)
         return rootView
     }
 
     fun setRetrievingFolderName(retrievingFolderName: String) {
-        mRetrievingFolderName = retrievingFolderName
+        mRetrievingFolderFileName = retrievingFolderName
     }
 
     /**
@@ -69,13 +69,13 @@ class DownloadFragment : Fragment() {
 
         private val TAG = DownloadFragment::class.java.simpleName
 
-        const val ARG_RETRIEVING_FOLDER_TITLE_KEY = "retrieving_folder_title_key"
+        const val ARG_RETRIEVING_FOLDER_FILE_NAME_KEY = "arg_retrieving_folder_file_name_key"
 
         @JvmStatic
-        fun newInstance(retievingFolderName: String) =
+        fun newInstance(retrievingFolderFileName: String) =
                 DownloadFragment().apply {
                     arguments = Bundle().apply {
-                        putString(ARG_RETRIEVING_FOLDER_TITLE_KEY, retievingFolderName)
+                        putString(ARG_RETRIEVING_FOLDER_FILE_NAME_KEY, retrievingFolderFileName)
                     }
 //                    Log.v("DownloadFragment", "newInstance - arguments: $arguments ")
                 }

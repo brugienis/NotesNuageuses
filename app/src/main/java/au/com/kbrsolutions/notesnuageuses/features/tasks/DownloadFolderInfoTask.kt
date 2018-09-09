@@ -29,6 +29,8 @@ data class DownloadFolderInfoTask(
 
     override fun call(): String {
 
+        Thread.sleep(2000)
+
         try {
             val foldersAddData: FolderData = getFolderFilesList(
                     driveResourceClient, selectedFolderDriveId)

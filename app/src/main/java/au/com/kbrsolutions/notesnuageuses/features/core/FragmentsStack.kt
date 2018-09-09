@@ -112,7 +112,7 @@ object FragmentsStack {
         var updateFolderListAdapterRequired = false
         var viewFragmentsCleanupRequired = false
         var callFinishRequired = false
-        var prevTopFragment: HomeActivity.FragmentsEnum? = null
+        var startingTopFragmentRemoved: HomeActivity.FragmentsEnum? = null
 
 //        if (fragmentsArrayDeque.size == 0) {
         when (fragmentsArrayDeque.size) {
@@ -137,12 +137,12 @@ object FragmentsStack {
             }
 
             else -> {
-                prevTopFragment = removeLastFragment()
+                startingTopFragmentRemoved = removeLastFragment()
 //                Log.v(TAG, " - prevTopFragment: $prevTopFragment")
 
-                val currTopFragment = fragmentsArrayDeque.peekLast()            // peek at the element at tail
+                val currTopFragmentJustPeeked = fragmentsArrayDeque.peekLast()  // peek at the element at tail
 
-                when (prevTopFragment) {
+                when (startingTopFragmentRemoved) {
 
                     HomeActivity.FragmentsEnum.FOLDER_FRAGMENT -> {
                         folderFragmentsCnt--
@@ -159,10 +159,10 @@ object FragmentsStack {
                     HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
                         folderFragmentsCnt--
                         foldersData.removeMostRecentFolderData()
-                        if (currTopFragment === HomeActivity.FragmentsEnum.FOLDER_FRAGMENT) {    // impossible case
+                        if (currTopFragmentJustPeeked === HomeActivity.FragmentsEnum.FOLDER_FRAGMENT) {    // impossible case
                             fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT
                             updateFolderListAdapterRequired = true
-                        } else if (currTopFragment === HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT) {
+                        } else if (currTopFragmentJustPeeked === HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT) {
                             callFinishRequired = true
                         } else {
                             removeFragmentsFromStackUntilSpecificFragmentFound()
@@ -177,12 +177,12 @@ object FragmentsStack {
 
                     HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT ->
                         when {
-                            currTopFragment === HomeActivity.FragmentsEnum.FOLDER_FRAGMENT -> {
+                            currTopFragmentJustPeeked === HomeActivity.FragmentsEnum.FOLDER_FRAGMENT -> {
                                 updateFolderListAdapterRequired = true
                                 fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT
                             }
 
-                            currTopFragment === HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
+                            currTopFragmentJustPeeked === HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
                                 updateFolderListAdapterRequired = true
                                 fragmentToSet = HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT
                             }
@@ -202,7 +202,10 @@ object FragmentsStack {
 					 */
                     HomeActivity.FragmentsEnum.FILE_VIEW_FRAGMENT -> {
                         viewFragmentsCleanupRequired = true
-                        if (currTopFragment === HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
+                        if (currTopFragmentJustPeeked == HomeActivity.FragmentsEnum.DOWNLOAD_FRAGMENT) {
+                            removeLastFragment()            // remove placeholder DOWNLOAD_FRAGMENT
+                            fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT
+                        } else if (currTopFragmentJustPeeked == HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
                             if (actionCancelled) {
                                 updateFolderListAdapterRequired = true
                                 fragmentToSet = HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT
@@ -236,16 +239,16 @@ object FragmentsStack {
 
                     HomeActivity.FragmentsEnum.DOWNLOAD_FRAGMENT,
                     HomeActivity.FragmentsEnum.FILE_DETAILS_FRAGMENT,
-                    HomeActivity.FragmentsEnum.LEGAL_NOTICES -> fragmentToSet = currTopFragment
+                    HomeActivity.FragmentsEnum.LEGAL_NOTICES -> fragmentToSet = currTopFragmentJustPeeked
 
                     else -> {
                         if (mTestMode) {
-                            throw RuntimeException("$TAG-FragmentStack - we should never be here - prevTopFragment/currTopFragment: $prevTopFragment/$currTopFragment")
+                            throw RuntimeException("$TAG-FragmentStack - we should never be here - prevTopFragment/currTopFragment: $startingTopFragmentRemoved/$currTopFragmentJustPeeked")
                         }
-                        when (currTopFragment) {
-                            HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT, HomeActivity.FragmentsEnum.FOLDER_FRAGMENT -> fragmentToSet = currTopFragment            // HomeActivity.FragmentsEnum.FOLDER_FRAGMENT;
+                        when (currTopFragmentJustPeeked) {
+                            HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT, HomeActivity.FragmentsEnum.FOLDER_FRAGMENT -> fragmentToSet = currTopFragmentJustPeeked            // HomeActivity.FragmentsEnum.FOLDER_FRAGMENT;
 
-                            else -> if (currTopFragment === HomeActivity.FragmentsEnum.FOLDER_FRAGMENT) { // ??? it would be handled in the case above - probably remove it
+                            else -> if (currTopFragmentJustPeeked === HomeActivity.FragmentsEnum.FOLDER_FRAGMENT) { // ??? it would be handled in the case above - probably remove it
                                 updateFolderListAdapterRequired = true
                             } else {
                                 removeFragmentsFromStackUntilSpecificFragmentFound()
@@ -261,7 +264,7 @@ object FragmentsStack {
             }
         }
 
-        val menuOptionsChangeRequired = prevTopFragment !== fragmentToSet
+        val menuOptionsChangeRequired = startingTopFragmentRemoved !== fragmentToSet
 
         Log.v("FragmentsStack", """removeTopFragment -
             |fragmentsArrayDeque.size:       ${fragmentsArrayDeque.size}

@@ -348,6 +348,45 @@ class FragmentsStackTest {
     }
 
     /* Creating text note in non empty folder - after CREATE_FILE_FRAGMENT set, FILE_VIEW_FRAGMENT is set.
+	 * Either user clicked on the Back button or in 'file name and password' dialog clicked on the Cancel button.
+	 *      DOWNLOAD_FRAGMENT,
+	 *      FOLDER_FRAGMENT,
+	 *      DOWNLOAD_FRAGMENT,
+	 *      FILE_VIEW_FRAGMENT
+	 */
+    @Test
+    fun testRemoveTopFragment_topFragmentFolder_041_create_text_file_in_non_empty_folder_Cancel_clicked() {
+        val (fragmentStack, foldersData) = getEssentials()
+        var folderLevel = -1
+
+        val fileParentFolderDriveId = addTopFolderDetails()
+        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder", null)
+        var foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
+        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder", null)
+        fragmentStack.addFragment(FragmentsEnum.FILE_VIEW_FRAGMENT, "image", foldersAddData)
+        assertEquals("wrong fragmentStack size", 4, fragmentStack.getStackSize())
+
+        val actionCancelled = true
+        Log.i(TAG, "@#testRemoveTopFragment_topFragmentFolder_041_create_text_file_in_non_empty_folder_Cancel_clicked - before removeTopFragment")
+        val actualFragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
+        Log.i(TAG, "@#testRemoveTopFragment_topFragmentFolder_041_create_text_file_in_non_empty_folder_Cancel_clicked - after  removeTopFragment")
+
+        assertEquals("wrong fragmentStack size", 2, fragmentStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, fragmentStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 0, foldersData.getCurrFolderLevel())
+        val expectedFragmentsStackResponse = FragmentsStackResponse(
+                false,
+                FragmentsEnum.FOLDER_FRAGMENT,
+                "A",
+                false,
+                true,
+                true)
+        val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse, actualFragmentsStackResponse)
+        Assert.assertEquals("wrong fragmentsStackResponse", null, errMsg)
+    }
+
+    /* Creating text note in non empty folder - after CREATE_FILE_FRAGMENT set, FILE_VIEW_FRAGMENT is set.
 	 * In 'file name and password' dialog clicked on the Save button.
 	 *
 	 *		ACTIVITY_LOG_FRAGMENT, DOWNLOAD_FRAGMENT, FOLDER_FRAGMENT, DOWNLOAD_FRAGMENT, FOLDER_FRAGMENT, CREATE_FILE_FRAGMENT, FILE_VIEW_FRAGMENT
