@@ -47,17 +47,16 @@ class HomeActivity : BaseActivity(),
         EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
         FolderFragment.OnFolderFragmentInteractionListener,
         CreateFileDialog.OnCreateFileDialogInteractionListener,
-//        TextFragment.OnTextFragmentInteractionListener,
         FileFragment.OnFileFragmentInteractionListener {
 
     private lateinit var eventBus: EventBus
     private var mToolbar: Toolbar? = null
     private val mTestMode: Boolean = false
-    private var handleCancellableFuturesCallable: HandleCancellableFuturesCallable? = null
+    private lateinit var handleCancellableFuturesCallable: HandleCancellableFuturesCallable
     private var mCancellableFuture: Future<String>? = null
-    private var handleNonCancellableFuturesCallable: HandleNonCancellableFuturesCallable? = null
+    private lateinit var handleNonCancellableFuturesCallable: HandleNonCancellableFuturesCallable
     private var mNonCancellableFuture: Future<String>? = null
-    private var mExecutorService: ExecutorService? = null
+    private lateinit var mExecutorService: ExecutorService
     private var showTrashedFiles: Boolean = false
     private var newFragmentSet: Boolean = false
     private var currFragment: FragmentsEnum? = null
@@ -68,14 +67,12 @@ class HomeActivity : BaseActivity(),
     private var folderFragment: FolderFragment? = null
     private var downloadFragment: DownloadFragment? = null
     private var folderArrayAdapter: FolderArrayAdapter<FolderItem>? = null
-//    private var textFragment: TextFragment? = null
     private var fileFragment: FileFragment? = null
 
     companion object {
         private val TAG = HomeActivity::class.java.simpleName
 
         const val EMPTY_FOLDER_TAG = "empty_folder_tag"
-        const val TEXT_FRAGMENT_TAG = "text_fragment_tag"
         const val FILE_FRAGMENT_TAG = "file_fragment_tag"
         const val FOLDER_TAG = "folder_tag"
         const val RETRIEVE_FOLDER_PROGRESS_TAG = "retrieve_folder_progress_tag"
@@ -98,7 +95,7 @@ class HomeActivity : BaseActivity(),
         FOLDER_FRAGMENT,
         TRASH_FOLDER_FRAGMENT,
         //		SAVE_FILE_OPTIONS,
-        FILE_VIEW_FRAGMENT,
+        FILE_FRAGMENT,
         FILE_DETAILS_FRAGMENT,
         //		CREATE_FILE_FRAGMENT,
         IMAGE_VIEW_FRAGMENT,
@@ -111,14 +108,11 @@ class HomeActivity : BaseActivity(),
     }
 
     enum class FragmentsCallingSourceEnum {
-        NAVIGATION_DRAWER,
         REMOVE_TOP_FRAGMENT,
-
         UPDATE_FOLDER_LIST_ADAPTER,
         ON_ACTIVITY_RESULTS,
         ON_EVENT_MAIN_THREAD,
         LEGAL_NOTICES,
-
         ACTIVITY_NOT_FRAGMENT
     }
 
@@ -181,11 +175,10 @@ class HomeActivity : BaseActivity(),
                     FragmentsEnum.DOWNLOAD_FRAGMENT,
                     rootFolderName,
                     true,
-                    FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
                     null,
                     args)
 
-            handleCancellableFuturesCallable!!.submitCallable(DownloadFolderInfoTask.Builder()
+            handleCancellableFuturesCallable.submitCallable(DownloadFolderInfoTask.Builder()
                     .context(this)
                     .eventBus(eventBus)
                     .driveResourceClient(mDriveResourceClient)
@@ -224,7 +217,6 @@ class HomeActivity : BaseActivity(),
                     FragmentsEnum.EMPTY_FOLDER_FRAGMENT,
                     folderData.newFolderTitle,
                     true,
-                    FragmentsCallingSourceEnum.UPDATE_FOLDER_LIST_ADAPTER,
                     folderData,
                     null)
         } else {
@@ -232,7 +224,6 @@ class HomeActivity : BaseActivity(),
                     FragmentsEnum.FOLDER_FRAGMENT,
                     folderData.newFolderTitle,
                     true,
-                    FragmentsCallingSourceEnum.UPDATE_FOLDER_LIST_ADAPTER,
                     folderData,
                     null)
         }
@@ -242,13 +233,11 @@ class HomeActivity : BaseActivity(),
             fragmentId: FragmentsEnum,
             titleText: String,
             addFragmentToStack: Boolean,
-            callingSource: FragmentsCallingSourceEnum,
             foldersAddData: FolderData?,
             fragmentArgs: Bundle?) {
         val fragmentManager = fragmentManager
         val fragmentTransaction: FragmentTransaction
-//        Log.v(TAG, "setFragment - callingSource/titleText/foldersAddData: " + callingSource + "/" + titleText + "/" +
-//                (foldersAddData?.newFolderTitle ?: "null"))
+
         when (fragmentId) {
 
             FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
@@ -264,7 +253,7 @@ class HomeActivity : BaseActivity(),
                 fragmentTransaction.commit()
             }
 
-            FragmentsEnum.FILE_VIEW_FRAGMENT -> {
+            FragmentsEnum.FILE_FRAGMENT -> {
                 val fileName = fragmentArgs!!.getString(FILE_NAME_KEY)
                 val fileContents = fragmentArgs.getString(FILE_CONTENTS_KEY)
                 val thisFileDriveId = DriveId.decodeFromString(
@@ -386,10 +375,9 @@ class HomeActivity : BaseActivity(),
                 args.putString(THIS_FILE_DRIVE_ID_KEY, thisFileDriveId)
 
                 setFragment(
-                        FragmentsEnum.FILE_VIEW_FRAGMENT,
+                        FragmentsEnum.FILE_FRAGMENT,
                         event.fileName,
                         true,
-                        FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
                         null,
                         args)
             }
@@ -554,7 +542,6 @@ class HomeActivity : BaseActivity(),
                             FragmentsEnum.FOLDER_FRAGMENT,
                             folderName,
                             false,
-                            FragmentsCallingSourceEnum.ON_EVENT_MAIN_THREAD,
                             null,
                             null)
                 } else {
@@ -569,7 +556,7 @@ class HomeActivity : BaseActivity(),
 
     // fixLater: Aug 28, 2018 - move logic to the onSupportNavigateUp
     override fun onBackPressed() {
-        handleCancellableFuturesCallable!!.cancelCurrFuture()
+        handleCancellableFuturesCallable.cancelCurrFuture()
         val currTitle = supportActionBar!!.title
         val finishRequired = removeTopFragment("onBackPressed", true)
         if (finishRequired) {
@@ -579,7 +566,7 @@ class HomeActivity : BaseActivity(),
 
     @Synchronized
     fun removeTopFragment(source: String, actionCancelled: Boolean): Boolean {
-        Log.v("HomeActivity", """removeTopFragment - source: ${source} """)
+        Log.v("HomeActivity", """removeTopFragment - source: $source """)
         val fragmentsStackResponse = fragmentsStack.removeTopFragment(source, actionCancelled)
         if (fragmentsStackResponse == null) {
             isAppFinishing = true
@@ -596,7 +583,6 @@ class HomeActivity : BaseActivity(),
                     fragmentToSet,
                     fragmentsStackResponse.titleToSet!!,
                     false,
-                    FragmentsCallingSourceEnum.REMOVE_TOP_FRAGMENT,
                     null,
                     null
             )
@@ -649,12 +635,12 @@ class HomeActivity : BaseActivity(),
 
     private fun startFuturesHandlers() {
         if (mCancellableFuture == null) {
-            handleCancellableFuturesCallable = HandleCancellableFuturesCallable(mExecutorService!!)
-            mCancellableFuture = mExecutorService!!.submit(handleCancellableFuturesCallable)
+            handleCancellableFuturesCallable = HandleCancellableFuturesCallable(mExecutorService)
+            mCancellableFuture = mExecutorService.submit(handleCancellableFuturesCallable)
         }
         if (mNonCancellableFuture == null) {
-            handleNonCancellableFuturesCallable = HandleNonCancellableFuturesCallable(mExecutorService!!)
-            mNonCancellableFuture = mExecutorService!!.submit(handleNonCancellableFuturesCallable)
+            handleNonCancellableFuturesCallable = HandleNonCancellableFuturesCallable(mExecutorService)
+            mNonCancellableFuture = mExecutorService.submit(handleNonCancellableFuturesCallable)
         }
     }
 
@@ -825,7 +811,7 @@ class HomeActivity : BaseActivity(),
                 .parentFileName(foldersData.getFolderTitle(currFolderLevel)!!)
                 .build()
 
-        handleNonCancellableFuturesCallable!!.submitCallable(sendTextToGoogleDriveCallable)
+        handleNonCancellableFuturesCallable.submitCallable(sendTextToGoogleDriveCallable)
     }
 
     override fun showFileDialog() {
@@ -833,7 +819,7 @@ class HomeActivity : BaseActivity(),
         dialog.show(fragmentManager, "dialog")
     }
     override fun createFolder(fileName: CharSequence) {
-        handleNonCancellableFuturesCallable!!.submitCallable(
+        handleNonCancellableFuturesCallable.submitCallable(
                 CreateDriveFolderTask.Builder()
                         .activity(this)
                         .eventBus(eventBus)
@@ -854,10 +840,9 @@ class HomeActivity : BaseActivity(),
         args.putString(FILE_NAME_KEY, fileName.toString())
 
         setFragment(
-                FragmentsEnum.FILE_VIEW_FRAGMENT,
+                FragmentsEnum.FILE_FRAGMENT,
                 fileName.toString(),
                 true,
-                FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
                 null,
                 args)
 
@@ -893,7 +878,7 @@ class HomeActivity : BaseActivity(),
 
         setActionBarTitle(fileTitle)
 
-        handleCancellableFuturesCallable!!.submitCallable(GetFileFromDriveTask.Builder()
+        handleCancellableFuturesCallable.submitCallable(GetFileFromDriveTask.Builder()
                 .context(applicationContext)
                 .eventBus(eventBus)
                 .driveResourceClient(mDriveResourceClient)
@@ -915,7 +900,7 @@ class HomeActivity : BaseActivity(),
         showDownloadFragment(folderName + getString(
                         R.string.retrieving_file_folder))
 
-        handleCancellableFuturesCallable!!.submitCallable(DownloadFolderInfoTask.Builder()
+        handleCancellableFuturesCallable.submitCallable(DownloadFolderInfoTask.Builder()
                 .context(applicationContext)
                 .eventBus(eventBus)
                 .driveResourceClient(mDriveResourceClient)
@@ -934,7 +919,6 @@ class HomeActivity : BaseActivity(),
                 FragmentsEnum.DOWNLOAD_FRAGMENT,
                 getString(R.string.retrieving_folder_title),
                 true,
-                FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
                 null,
                 args)
     }

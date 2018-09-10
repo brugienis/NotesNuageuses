@@ -41,7 +41,7 @@ class FileFragment : Fragment() {
         super.onCreate(savedInstanceState)
         Log.v("FileFragment", """onCreate - start""")
         setHasOptionsMenu(true)
-//        retainInstance = true
+        retainInstance = false
 
         if (!mArgsProcessed) {
             Log.v("FileFragment", """onCreate - processing arguments""")
@@ -62,8 +62,9 @@ class FileFragment : Fragment() {
 
         val rootView = inflater.inflate(R.layout.fragment_text_viewer, container, false)
 
-        Log.v("FileFragment", """onCreateView - savedInstanceState: ${savedInstanceState} """)
+        Log.v("FileFragment", """onCreateView - savedInstanceState: $savedInstanceState """)
         mTextEt = rootView.fileFragmentTextId
+
         source = "1"
         mTextEt.afterTextChanged (source) {
             Log.v("FileFragment", """onCreateView.afterTextChanged -
@@ -73,10 +74,7 @@ class FileFragment : Fragment() {
 //            if (source == "4") {
 //                throw RuntimeException("BR afterTextChanged")
 //            }
-//            val content = it.toString()
-//            it.error = if (content.length >= 6) null else "message"
         }
-//        mTextEt.error = if (content.length >= 6) null else "message"
 
         source = "2"
 //        rootView.fileFragmentTextId.setText(mFileContents)
@@ -98,7 +96,13 @@ class FileFragment : Fragment() {
         mTextEt.setText(mFileContents)
     }
 
-    fun EditText.afterTextChanged(source: String, afterTextChanged: (String) -> Unit) {
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+    }
+
+
+
+    private fun EditText.afterTextChanged(source: String, afterTextChanged: (String) -> Unit) {
         this.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 afterTextChanged.invoke(s.toString())
