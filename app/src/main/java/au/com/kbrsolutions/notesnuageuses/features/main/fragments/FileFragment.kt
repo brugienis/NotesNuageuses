@@ -3,14 +3,11 @@ package au.com.kbrsolutions.notesnuageuses.features.main.fragments
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import au.com.kbrsolutions.notesnuageuses.R
-import au.com.kbrsolutions.notesnuageuses.features.Utilities
 import com.google.android.gms.drive.DriveId
 import kotlinx.android.synthetic.main.fragment_text_viewer.view.*
 
@@ -25,7 +22,6 @@ class FileFragment : Fragment() {
     private lateinit var mTextEt: EditText
     private var mTextContents: String? = null
     private lateinit var mThisFileDriveId: DriveId
-    private var source = "0"
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -39,12 +35,10 @@ class FileFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.v("FileFragment", """onCreate - start""")
         setHasOptionsMenu(true)
         retainInstance = false
 
         if (!mArgsProcessed) {
-            Log.v("FileFragment", """onCreate - processing arguments""")
             arguments?.let {
                 mFileName = it.getString(ARG_FILE_NAME_KEY)
                 mFileContents = it.getString(ARG_FILE_CONTENTS_KEY)
@@ -62,37 +56,13 @@ class FileFragment : Fragment() {
 
         val rootView = inflater.inflate(R.layout.fragment_text_viewer, container, false)
 
-        Log.v("FileFragment", """onCreateView - savedInstanceState: $savedInstanceState """)
         mTextEt = rootView.fileFragmentTextId
 
-        source = "1"
-        mTextEt.afterTextChanged (source) {
-            Log.v("FileFragment", """onCreateView.afterTextChanged -
-                |source: $source
-                |mTextEt: $it
-                |""".trimMargin())
-//            if (source == "4") {
-//                throw RuntimeException("BR afterTextChanged")
-//            }
-        }
-
-        source = "2"
-//        rootView.fileFragmentTextId.setText(mFileContents)
-        mTextEt.setText(mFileContents)
-        source = "3"
-
-        val hash = this.hashCode()
-        val hexHash = Utilities.getClassHashCode(hash)
-        Log.v("FileFragment", """onCreateView - hexHash: $hexHash mTextEt: ${mTextEt.text} """)
-        Log.v("FileFragment", """onCreateView - hexHash: $hexHash rootView.fileFragmentTextId: ${rootView.fileFragmentTextId.text} """)
-        source = "4"
         return rootView
     }
 
     override fun onResume() {
         super.onResume()
-        Log.v("FileFragment", """onResume - mFileContents: ${mFileContents} """)
-        source = "8"
         mTextEt.setText(mFileContents)
     }
 
@@ -100,41 +70,13 @@ class FileFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
-
-
-    private fun EditText.afterTextChanged(source: String, afterTextChanged: (String) -> Unit) {
-        this.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                afterTextChanged.invoke(s.toString())
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { }
-        })
-    }
-
     fun setFileDetails(fileName: String, fileContents: String, thisFileDriveId: DriveId) {
-        source = "5"
-        Log.v("FileFragment before", """setFileDetails -
-            |fileName: $fileName
-            |mFileContents: $mFileContents
-            |fileContents: $fileContents
-            |""".trimMargin())
         mFileName = fileName
         mFileContents = fileContents
         mThisFileDriveId = thisFileDriveId
-        mTextEt.setText(mFileContents)
-        source = "6"
-        Log.v("FileFragment after ", """setFileDetails -
-            |mTextEt: ${mTextEt.text}
-            |mFileContents: $mFileContents
-            |fileContents: $fileContents
-            |""".trimMargin())
     }
 
     private fun handleSaveMenuItemClicked() {
-        Log.v("FileFragment", """handleSaveMenuItemClicked - handleSaveMenuItemClicked: start """)
         hideKeyboard()
         listener.sendTextFileToDrive(
                 mThisFileDriveId,
@@ -144,7 +86,6 @@ class FileFragment : Fragment() {
     }
 
     private fun cleanup() {
-        source = "7"
         mTextContents = null
         mTextEt.setText("")
         hideKeyboard()
