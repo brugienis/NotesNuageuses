@@ -20,7 +20,10 @@ import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import au.com.kbrsolutions.notesnuageuses.features.main.dialogs.CreateFileDialog
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.*
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.DownloadFragment
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.EmptyFolderFragment
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FileFragment
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FolderFragment
 import au.com.kbrsolutions.notesnuageuses.features.tasks.CreateDriveFolderTask
 import au.com.kbrsolutions.notesnuageuses.features.tasks.DownloadFolderInfoTask
 import au.com.kbrsolutions.notesnuageuses.features.tasks.GetFileFromDriveTask
@@ -44,7 +47,7 @@ class HomeActivity : BaseActivity(),
         EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
         FolderFragment.OnFolderFragmentInteractionListener,
         CreateFileDialog.OnCreateFileDialogInteractionListener,
-        TextFragment.OnTextFragmentInteractionListener,
+//        TextFragment.OnTextFragmentInteractionListener,
         FileFragment.OnFileFragmentInteractionListener {
 
     private lateinit var eventBus: EventBus
@@ -65,7 +68,7 @@ class HomeActivity : BaseActivity(),
     private var folderFragment: FolderFragment? = null
     private var downloadFragment: DownloadFragment? = null
     private var folderArrayAdapter: FolderArrayAdapter<FolderItem>? = null
-    private var textFragment: TextFragment? = null
+//    private var textFragment: TextFragment? = null
     private var fileFragment: FileFragment? = null
 
     companion object {
@@ -270,8 +273,7 @@ class HomeActivity : BaseActivity(),
                     fileFragment =
                             FileFragment.newInstance(fileName, fileContents, thisFileDriveId)
                 } else {
-                    Log.v("HomeActivity", """setFragment - fileContents: ${fileContents} """)
-                    fileFragment!!.setFileName(fileName, fileContents, thisFileDriveId)
+                    fileFragment!!.setFileDetails(fileName, fileContents, thisFileDriveId)
                 }
 
                 fragmentTransaction = fragmentManager.beginTransaction()
@@ -342,7 +344,7 @@ class HomeActivity : BaseActivity(),
             // fixLater: Aug 21, 2018 - show error message in release version
             else -> throw RuntimeException("$TAG - setFragment - no code to handle fragmentId: $fragmentId")
         }
-        //		currFragment = fragmentId;
+
         if (addFragmentToStack) {
             addFragment(fragmentId, titleText, foldersAddData)
         }
@@ -354,9 +356,7 @@ class HomeActivity : BaseActivity(),
     fun onMessageEvent(event: DriveAccessEvents) {
         val request = event.request
         val msgContents = event.msgContents
-        val isProblem = event.isProblem
-        Log.v(TAG, "onMessageEvent.DriveAccessEvents - request: $request " +
-                "msgContents: $msgContents")
+//        val isProblem = event.isProblem
 
         when (request) {
 
@@ -377,11 +377,10 @@ class HomeActivity : BaseActivity(),
 
             FilesDownloadEvents.Events.FILE_DOWNLOADED -> {
 
-                val args = Bundle()
                 val fileTitle = event.fileName
                 val fileContents = event.textContents
-                Log.v("HomeActivity", """onMessageEvent - fileContents: ${fileContents} """)
                 val thisFileDriveId = event.downloadedFileDriveId.encodeToString()
+                val args = Bundle()
                 args.putString(FILE_NAME_KEY, fileTitle)
                 args.putString(FILE_CONTENTS_KEY, fileContents)
                 args.putString(THIS_FILE_DRIVE_ID_KEY, thisFileDriveId)
@@ -393,11 +392,6 @@ class HomeActivity : BaseActivity(),
                         FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
                         null,
                         args)
-//                fileFragment!!.showDownloadedTextNote(
-////                        event.createDt,
-//                        event.fileName,
-//                        event.downloadedFileDriveId,
-//                        event.textContents)
             }
 
             else -> throw RuntimeException(
@@ -415,10 +409,7 @@ class HomeActivity : BaseActivity(),
         when (request) {
 
             FilesUploadEvents.Events.TEXT_UPLOADING -> {
-                Log.v(TAG, "onMessageEvent.FilesUploadEvents - " +
-                        "request $request " +
-                        "msgContents: $msgContents" +
-                        "event.fileItemId: ${event.fileItemId}")
+
                 if (event.thisFileDriveId == null) {            // no file DriveId - we are going to upload a new file.
                                                                 // We will know the DriveId after successful send
                     foldersData.insertFolderItemView(
@@ -458,15 +449,11 @@ class HomeActivity : BaseActivity(),
                                     false)
                     )
                 }
-//                fragmentsEnum = fragmentsStack.getCurrFragment()
                 removeTopFragment("onEventMainThread - $request", false)
             }
 
             FilesUploadEvents.Events.TEXT_UPLOADED -> {
-                Log.v(TAG, "onMessageEvent.FilesUploadEvents - " +
-                        "request $request " +
-                        "msgContents: $msgContents" +
-                        "event.fileItemId: ${event.fileItemId}")
+
                 showMessage(event.msgContents)
 
                 showMessage(msgContents)
@@ -509,6 +496,7 @@ class HomeActivity : BaseActivity(),
 
         when (request) {
 
+            // fixLater: Sep 09, 2018 - below not tested
             FoldersEvents.Events.CREATE_FILE_DIALOG_CANCELLED -> {
                 removeTopFragment(
                         "onMessageEvent.FoldersEvents-CREATE_FILE_DIALOG_CANCELLED",
@@ -598,16 +586,7 @@ class HomeActivity : BaseActivity(),
             finish()
             return true
         }
-//        if (fragmentsStackResponse.viewFragmentsCleanupRequired) {
-//            if (textFragment != null) {
-//                textFragment.cleanup("removeTopFragment")
-//                //	A_MUST:		is it still a PROBLEM? : if keyboard was visible in text fragment, it is still visible after Cancel or Back button press
-//                window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-//            }
-//            if (imageContentsFragment != null) {
-//                imageContentsFragment.cleanup()
-//            }
-//        }
+
         if (fragmentsStackResponse.updateFolderListAdapterRequired) {
             updateFolderListAdapter()
         }
@@ -623,7 +602,7 @@ class HomeActivity : BaseActivity(),
             )
         }
         if (fragmentsStackResponse.menuOptionsChangeRequired) {
-            invalidateOptionsMenu() // creates call to onPrepareOptionsMenu()
+            invalidateOptionsMenu() // forces call to onPrepareOptionsMenu()
         }
         if (!fragmentsStackResponse.finishRequired) {
             mTitle = fragmentsStackResponse.titleToSet
@@ -637,13 +616,11 @@ class HomeActivity : BaseActivity(),
     }
 
     private fun setActionBarTitle(title: CharSequence, source: String = "undefined") {
-//        Log.v("HomeActivity", "setActionBarTitle - source: $source ")
         mTitle = title
         supportActionBar!!.title = title
     }
 
     private fun retrievingAppFolderDriveInfoTaskDone(folderData: FolderData?) {
-        //        Log.v(TAG, "retrievingAppFolderDriveInfoTaskDone - folderData: " + folderData);
         if (folderData != null && folderData.newFolderData) {   // folder info not in FoldersData
             setFolderFragment(folderData)
         } else {
@@ -866,16 +843,6 @@ class HomeActivity : BaseActivity(),
                         .parentFolderDriveId(foldersData.getCurrFolderDriveId())
                         .foldersData(foldersData)
                         .build())
-        /*
-
-    public void processFolderName(String fileName) {
-        eventBus.post(new ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents.CREATE_FOLDER)
-                .setFileName(fileName)
-                .setCurrFolderLevel(foldersData.getCurrFolderLevel())
-                .setCurrFolderDriveId(foldersData.getCurrFolderDriveId())
-                .build());
-    }
-         */
     }
 
     override fun createPhotoNote() {
@@ -895,9 +862,6 @@ class HomeActivity : BaseActivity(),
                 args)
 
         setActionBarTitle(fileName)
-
-//        sendTextFileToDrive(null, fileName.toString(),
-//                "Hello Drive".toByteArray(Charsets.UTF_8))
     }
 
     /*
@@ -916,34 +880,19 @@ class HomeActivity : BaseActivity(),
         if (folderMetadataInfo.isFolder) {
             startDownloadFolderInfo(folderMetadataInfo)
         } else {
-            Log.v("HomeActivity", """handleOnFolderOrFileClick - position: $position """)
             startDownloadFileContents(folderMetadataInfo)
         }
     }
 
     private fun startDownloadFileContents(folderMetadataInfo: FileMetadataInfo) {
-        Log.v("HomeActivity", """startDownloadFileContents -
-            |folderMetadataInfo: ${folderMetadataInfo.fileTitle} """.trimMargin())
-
         val args = Bundle()
         val fileTitle = folderMetadataInfo.fileTitle
         args.putString(FILE_NAME_KEY, fileTitle)
         showDownloadFragment(fileTitle + getString(
                 R.string.retrieving_file_file))
 
-        /*
-        setFragment(
-                FragmentsEnum.FILE_VIEW_FRAGMENT,
-                folderMetadataInfo.fileTitle,
-                true,
-                FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
-                null,
-                args)
-                */
         setActionBarTitle(fileTitle)
 
-        Log.v("HomeActivity", """startDownloadFileContents -
-            |handleCancellableFuturesCallable: ${handleCancellableFuturesCallable} """.trimMargin())
         handleCancellableFuturesCallable!!.submitCallable(GetFileFromDriveTask.Builder()
                 .context(applicationContext)
                 .eventBus(eventBus)
@@ -958,13 +907,6 @@ class HomeActivity : BaseActivity(),
         val currFolderLevel = foldersData.getCurrFolderLevel()
         val currFolderParentDriveId = foldersData.getCurrFolderDriveId()
 
-//        val folderMetadataInfo: FileMetadataInfo = folderMetadataArrayInfo!![idx]
-//        Log.v("HomeActivity", """
-//            | startDownloadFolderInfo -
-//            | folderMetadataInfo - fileDriveId: ${folderMetadataInfo.fileDriveId}
-//            | parentDriveId: ${foldersData.getCurrParentDriveId(currFolderLevel)}
-//            |""".trimMargin())
-
         val selectedDriveId = folderMetadataInfo.fileDriveId
         val selectedFileTitle = folderMetadataInfo.fileTitle
 
@@ -972,18 +914,6 @@ class HomeActivity : BaseActivity(),
 
         showDownloadFragment(folderName + getString(
                         R.string.retrieving_file_folder))
-        /*
-        val args = Bundle()
-        args.putString(RETRIEVING_FOLDER_TITLE_KEY, rootFolderName)
-
-        setFragment(
-                FragmentsEnum.DOWNLOAD_FRAGMENT,
-                getString(R.string.retrieving_folder_title),
-                true,
-                FragmentsCallingSourceEnum.ACTIVITY_NOT_FRAGMENT,
-                null,
-                args)
-                */
 
         handleCancellableFuturesCallable!!.submitCallable(DownloadFolderInfoTask.Builder()
                 .context(applicationContext)
@@ -1010,6 +940,8 @@ class HomeActivity : BaseActivity(),
     }
 
     override fun onUpButtonPressedInFragment() {
+        val text = fileFragment!!.getText()
+        Log.v("HomeActivity", """onUpButtonPressedInFragment - text: $text """)
         onBackPressed()
     }
 

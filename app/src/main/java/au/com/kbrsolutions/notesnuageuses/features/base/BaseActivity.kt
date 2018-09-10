@@ -117,7 +117,7 @@ abstract class BaseActivity: AppCompatActivity() {
         val requiredScopes = mutableSetOf<Scope>()
         requiredScopes.add(Drive.SCOPE_FILE)
         requiredScopes.add(Drive.SCOPE_APPFOLDER)
-        Log.v("BaseActivity", "signIn - requiredScopes: ${requiredScopes} ")
+//        Log.v("BaseActivity", "signIn - requiredScopes: ${requiredScopes} ")
         val signInAccount = GoogleSignIn.getLastSignedInAccount(this)
         if (signInAccount != null && signInAccount.grantedScopes.containsAll(requiredScopes)) {
             initializeDriveClient(signInAccount)

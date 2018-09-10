@@ -79,8 +79,6 @@ N
 Zapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/SendFileToDriveTask.kt,8/1/813c530bf8704436233dc390c0f9498e0d7545da
 ‹
 [app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/GetFileFromDriveTask.kt,a/e/aea7ce23b8914a8c67a292d226d673f0a7835854
-Œ
-\app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/TextFragment.kt,c/d/cd89f2531488e0c7a323523d59b55960bef1ecf1
 \
 ,app/src/main/res/menu/text_fragment_menu.xml,7/7/778e27ed9bbb15f6350b9ae77fdc86897bfd6607
 `
