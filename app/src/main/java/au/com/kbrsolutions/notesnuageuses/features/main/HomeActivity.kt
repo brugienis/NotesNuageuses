@@ -107,15 +107,6 @@ class HomeActivity : BaseActivity(),
         SETTINGS_FRAGMENT
     }
 
-    enum class FragmentsCallingSourceEnum {
-        REMOVE_TOP_FRAGMENT,
-        UPDATE_FOLDER_LIST_ADAPTER,
-        ON_ACTIVITY_RESULTS,
-        ON_EVENT_MAIN_THREAD,
-        LEGAL_NOTICES,
-        ACTIVITY_NOT_FRAGMENT
-    }
-
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
 
         Log.v("HomeActivity", "onCreate - item.itemId: ${item.itemId} ")
@@ -392,7 +383,8 @@ class HomeActivity : BaseActivity(),
     fun onMessageEvent(event: FilesUploadEvents) {
         val request = event.request
         val msgContents = event.msgContents
-        Log.v(TAG, "onMessageEvent.FilesUploadEvents - request: $request msgContents: $msgContents")
+        Log.v(TAG, "onMessageEvent.FilesUploadEvents - request: $request " +
+                "msgContents: $msgContents")
 
         when (request) {
 
