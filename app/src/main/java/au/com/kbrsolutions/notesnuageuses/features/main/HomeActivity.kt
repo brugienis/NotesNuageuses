@@ -584,7 +584,7 @@ class HomeActivity : BaseActivity(),
         }
         if (!fragmentsStackResponse.finishRequired) {
             mTitle = fragmentsStackResponse.titleToSet
-            setActionBarTitle(mTitle!!, "removeTopFragment")
+            setActionBarTitle(mTitle!!)
         }
         if (fragmentsStackResponse.finishRequired) {
             isAppFinishing = true
@@ -593,7 +593,7 @@ class HomeActivity : BaseActivity(),
         return fragmentsStackResponse.finishRequired
     }
 
-    private fun setActionBarTitle(title: CharSequence, source: String = "undefined") {
+    private fun setActionBarTitle(title: CharSequence) {
         mTitle = title
         supportActionBar!!.title = title
     }
