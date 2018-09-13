@@ -189,7 +189,7 @@ abstract class BaseActivity: AppCompatActivity() {
     /**
      * Shows a toast message.
      */
-    protected fun showMessage(message: String) {
+    fun showMessage(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 

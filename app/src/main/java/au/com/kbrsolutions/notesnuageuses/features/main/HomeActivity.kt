@@ -13,10 +13,7 @@ import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.addFragment
-import au.com.kbrsolutions.notesnuageuses.features.events.DriveAccessEvents
-import au.com.kbrsolutions.notesnuageuses.features.events.FilesDownloadEvents
-import au.com.kbrsolutions.notesnuageuses.features.events.FilesUploadEvents
-import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
+import au.com.kbrsolutions.notesnuageuses.features.events.*
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import au.com.kbrsolutions.notesnuageuses.features.main.dialogs.CreateFileDialog
@@ -47,7 +44,8 @@ class HomeActivity : BaseActivity(),
         EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
         FolderFragment.OnFolderFragmentInteractionListener,
         CreateFileDialog.OnCreateFileDialogInteractionListener,
-        FileFragment.OnFileFragmentInteractionListener {
+        FileFragment.OnFileFragmentInteractionListener,
+        EventBusEventsHandler.OnEventBusEventsHandlerInteractionListener {
 
     private lateinit var eventBus: EventBus
     private var mToolbar: Toolbar? = null
@@ -84,6 +82,8 @@ class HomeActivity : BaseActivity(),
     }
 
     private var fragmentsStack = FragmentsStack
+    private val eventBusListenable: EventBusListenable =
+            EventBusEventsHandler(this, foldersData, fragmentsStack)
 
     init {
         fragmentsStack.initialize(mTestMode)
@@ -202,7 +202,7 @@ class HomeActivity : BaseActivity(),
      * Empty Folder.
      *
      */
-    private fun setFolderFragment(folderData: FolderData) {
+    override fun setFolderFragment(folderData: FolderData) {
         if (folderData.isEmptyOrAllFilesTrashed && !showTrashedFiles) {
             setFragment(
                     FragmentsEnum.EMPTY_FOLDER_FRAGMENT,
@@ -220,7 +220,7 @@ class HomeActivity : BaseActivity(),
         }
     }
 
-    private fun setFragment(
+    override fun setFragment(
             fragmentId: FragmentsEnum,
             titleText: String,
             addFragmentToStack: Boolean,
@@ -247,8 +247,12 @@ class HomeActivity : BaseActivity(),
             FragmentsEnum.FILE_FRAGMENT -> {
                 val fileName = fragmentArgs!!.getString(FILE_NAME_KEY)
                 val fileContents = fragmentArgs.getString(FILE_CONTENTS_KEY)
-                val thisFileDriveId = DriveId.decodeFromString(
-                        fragmentArgs.getString(THIS_FILE_DRIVE_ID_KEY))
+                val thisFileDriveId = if (fragmentArgs.containsKey(THIS_FILE_DRIVE_ID_KEY)) {
+                    DriveId.decodeFromString(
+                            fragmentArgs.getString(THIS_FILE_DRIVE_ID_KEY))
+                } else {
+                    null
+                }
                 if (fileFragment == null) {
                     fileFragment =
                             FileFragment.newInstance(fileName, fileContents, thisFileDriveId)
@@ -334,6 +338,8 @@ class HomeActivity : BaseActivity(),
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: DriveAccessEvents) {
+        eventBusListenable.onMessageEvent(event)
+        /*
         val request = event.request
         val msgContents = event.msgContents
 //        val isProblem = event.isProblem
@@ -344,10 +350,13 @@ class HomeActivity : BaseActivity(),
                 showMessage(msgContents)
             }
         }
+        */
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FilesDownloadEvents) {
+        eventBusListenable.onMessageEvent(event)
+        /*
         val request = event.request
         val msgContents = event.msgContents
         Log.v(TAG, "onMessageEvent.FilesDownloadEvents - request: $request " +
@@ -377,10 +386,14 @@ class HomeActivity : BaseActivity(),
                     "$TAG - onMessageEvent.FilesDownloadEvents - no code to handle " +
                             "request: $request")
         }
+        */
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FilesUploadEvents) {
+        eventBusListenable.onMessageEvent(event)
+
+        /*
         val request = event.request
         val msgContents = event.msgContents
         Log.v(TAG, "onMessageEvent.FilesUploadEvents - request: $request " +
@@ -466,10 +479,14 @@ class HomeActivity : BaseActivity(),
             else -> throw RuntimeException(
                     "$TAG - onMessageEvent.FilesUploadEvents - no code to handle request: $request")
         }
+        */
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FoldersEvents) {
+        eventBusListenable.onMessageEvent(event)
+
+        /*
         val request = event.request
         val msgContents = event.msgContents
         Log.v(TAG, "onMessageEvent.FoldersEvents - request: $request")
@@ -544,6 +561,7 @@ class HomeActivity : BaseActivity(),
             else -> throw RuntimeException(
                     "$TAG - onMessageEvent.FoldersEvents - no code to handle request: $request")
         }
+        */
     }
 
     // fixLater: Aug 28, 2018 - move logic to the onSupportNavigateUp
@@ -557,7 +575,7 @@ class HomeActivity : BaseActivity(),
     }
 
     @Synchronized
-    fun removeTopFragment(source: String, actionCancelled: Boolean): Boolean {
+    override fun removeTopFragment(source: String, actionCancelled: Boolean): Boolean {
         Log.v("HomeActivity", """removeTopFragment - source: $source """)
         val fragmentsStackResponse = fragmentsStack.removeTopFragment(source, actionCancelled)
         if (fragmentsStackResponse == null) {
@@ -593,7 +611,7 @@ class HomeActivity : BaseActivity(),
         return fragmentsStackResponse.finishRequired
     }
 
-    private fun setActionBarTitle(title: CharSequence) {
+    override fun setActionBarTitle(title: CharSequence) {
         mTitle = title
         supportActionBar!!.title = title
     }
@@ -606,7 +624,7 @@ class HomeActivity : BaseActivity(),
         }
     }
 
-    private fun updateFolderListAdapter() {
+    override fun updateFolderListAdapter() {
         val currFolderMetadataInfo = foldersData.getCurrFolderMetadataInfo()
         val folderItemsList = ArrayList<FolderItem>()
         for ((itemIdxInList, folderMetadataInfo) in currFolderMetadataInfo!!.withIndex()) {
@@ -830,6 +848,7 @@ class HomeActivity : BaseActivity(),
     override fun createTextNote(fileName: CharSequence) {
         val args = Bundle()
         args.putString(FILE_NAME_KEY, fileName.toString())
+        args.putString(FILE_CONTENTS_KEY, "")
 
         setFragment(
                 FragmentsEnum.FILE_FRAGMENT,

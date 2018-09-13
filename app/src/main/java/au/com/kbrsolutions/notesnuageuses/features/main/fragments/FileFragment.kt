@@ -21,7 +21,7 @@ class FileFragment : Fragment() {
     private var imm: InputMethodManager? = null
     private lateinit var mTextEt: EditText
     private var mTextContents: String? = null
-    private lateinit var mThisFileDriveId: DriveId
+    private var mThisFileDriveId: DriveId? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -42,8 +42,10 @@ class FileFragment : Fragment() {
             arguments?.let {
                 mFileName = it.getString(ARG_FILE_NAME_KEY)
                 mFileContents = it.getString(ARG_FILE_CONTENTS_KEY)
-                mThisFileDriveId = DriveId.decodeFromString(
-                        it.getString(ARG_THIS_FILE_DRIVE_ID_KEY))
+                if (it.containsKey(ARG_THIS_FILE_DRIVE_ID_KEY)) {
+                    mThisFileDriveId = DriveId.decodeFromString(
+                            it.getString(ARG_THIS_FILE_DRIVE_ID_KEY))
+                }
             }
             mArgsProcessed = true
         }
@@ -70,7 +72,7 @@ class FileFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
-    fun setFileDetails(fileName: String, fileContents: String, thisFileDriveId: DriveId) {
+    fun setFileDetails(fileName: String, fileContents: String, thisFileDriveId: DriveId?) {
         mFileName = fileName
         mFileContents = fileContents
         mThisFileDriveId = thisFileDriveId
@@ -152,12 +154,14 @@ class FileFragment : Fragment() {
         private const val ARG_THIS_FILE_DRIVE_ID_KEY = "arg_this_file_drive_id_key"
 
         @JvmStatic
-        fun newInstance(fileName: String, fileContents: String, thisFileDriveId: DriveId) =
+        fun newInstance(fileName: String, fileContents: String, thisFileDriveId: DriveId?) =
                 FileFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_FILE_NAME_KEY, fileName)
                         putString(ARG_FILE_CONTENTS_KEY, fileContents)
-                        putString(ARG_THIS_FILE_DRIVE_ID_KEY, thisFileDriveId.encodeToString())
+                        if (thisFileDriveId != null) {
+                            putString(ARG_THIS_FILE_DRIVE_ID_KEY, thisFileDriveId.encodeToString())
+                        }
                     }
                 }
     }
