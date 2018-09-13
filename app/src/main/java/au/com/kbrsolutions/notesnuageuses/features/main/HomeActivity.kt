@@ -40,6 +40,8 @@ import java.util.concurrent.Future
 //          https://developers.google.com/drive/android/intro
 //          https://developers.google.com/drive/android/examples/
 
+//       - remove references to the passed 'foldersData' - access required members using 'FoldersData.' notation. FoldersData is a singleton.
+
 class HomeActivity : BaseActivity(),
         EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
         FolderFragment.OnFolderFragmentInteractionListener,
@@ -628,7 +630,6 @@ class HomeActivity : BaseActivity(),
                         .newFolderName(fileName.toString())
                         .parentFolderLevel(foldersData.getCurrFolderLevel())
                         .parentFolderDriveId(foldersData.getCurrFolderDriveId())
-                        .foldersData(foldersData)
                         .build())
     }
 

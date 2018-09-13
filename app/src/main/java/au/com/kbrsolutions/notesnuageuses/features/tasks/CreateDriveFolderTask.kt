@@ -21,8 +21,7 @@ data class CreateDriveFolderTask(
         var driveResourceClient: DriveResourceClient?,
         var parentFolderLevel: Int,
         var parentFolderDriveId: DriveId?,
-        val newFolderName: String?,
-        var foldersData: FoldersData?) : Callable<String> {
+        val newFolderName: String?) : Callable<String> {
 
     override fun call(): String {
         Log.v(TAG, "call - parentFolderLevel/parentFolderDriveId: $parentFolderLevel/$parentFolderDriveId")
@@ -45,7 +44,7 @@ data class CreateDriveFolderTask(
             val newDriveFolder = Tasks.await(newDriverFolderTask)
 
             val fileItemId = System.currentTimeMillis()
-            foldersData!!.insertFolderItemView(
+            FoldersData.insertFolderItemView(
                     fileItemId,
                     parentFolderLevel,
                     parentFolderDriveId,
@@ -95,7 +94,6 @@ data class CreateDriveFolderTask(
         private var newFolderName: String? = null
         private var parentFolderLevel: Int = 0
         private var parentFolderDriveId: DriveId? = null
-        private var foldersData: FoldersData? = null
 
         fun activity(mActivity: Activity) = apply { this.activity = mActivity }
 
@@ -112,16 +110,13 @@ data class CreateDriveFolderTask(
 
         fun newFolderName(newFolderName: String) = apply { this.newFolderName = newFolderName }
 
-        fun foldersData(foldersData: FoldersData) = apply { this.foldersData = foldersData }
-
         fun build() = CreateDriveFolderTask (
                 activity,
                 eventBus,
                 driveResourceClient,
                 parentFolderLevel,
                 parentFolderDriveId,
-                newFolderName,
-                foldersData
+                newFolderName
         )
 
     }
