@@ -24,12 +24,9 @@ data class DownloadFolderInfoTask(
         var selectedFolderTitle: String,
         var selectedFolderDriveId: DriveId?,
         var parentFolderLevel: Int,
-        var parentFolderDriveId: DriveId?,
-        var foldersData: FoldersData): Callable<String> {
+        var parentFolderDriveId: DriveId?): Callable<String> {
 
     override fun call(): String {
-
-        Thread.sleep(2000)
 
         try {
             val foldersAddData: FolderData = getFolderFilesList(
@@ -118,7 +115,7 @@ data class DownloadFolderInfoTask(
                         trashedFilesCnt,
                         folderMetadataArrayInfo)
 
-                else -> foldersData.refreshFolderData(
+                else -> FoldersData.refreshFolderData(
                         parentFolderLevel,
                         selectedDriveFolder.driveId,
                         trashedFilesCnt,
@@ -142,7 +139,6 @@ data class DownloadFolderInfoTask(
         private var selectedFolderDriveId: DriveId? = null
         private var parentFolderLevel: Int = -1
         private var parentFolderDriveId: DriveId? = null
-        private lateinit var foldersData: FoldersData
 
         fun context(context: Context) = apply { this.context = context }
 
@@ -163,8 +159,6 @@ data class DownloadFolderInfoTask(
         fun parentFolderDriveId(parentFolderDriveId: DriveId) =
                 apply { this.parentFolderDriveId = parentFolderDriveId }
 
-        fun foldersData(foldersData: FoldersData) = apply { this.foldersData = foldersData }
-
         fun build() = DownloadFolderInfoTask (
                 context,
                 eventBus,
@@ -172,8 +166,7 @@ data class DownloadFolderInfoTask(
                 selectedFolderTitle,
                 selectedFolderDriveId,
                 parentFolderLevel,
-                parentFolderDriveId,
-                foldersData)
+                parentFolderDriveId)
     }
 
 }

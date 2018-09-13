@@ -83,7 +83,7 @@ class HomeActivity : BaseActivity(),
 
     private var fragmentsStack = FragmentsStack
     private val eventBusListenable: EventBusListenable =
-            EventBusEventsHandler(this, foldersData, fragmentsStack)
+            EventBusEventsHandler(this)
 
     init {
         fragmentsStack.initialize(mTestMode)
@@ -175,7 +175,6 @@ class HomeActivity : BaseActivity(),
                     .driveResourceClient(mDriveResourceClient)
                     .selectedFolderTitle(rootFolderName)
                     .parentFolderLevel(-1)
-                    .foldersData(foldersData)
                     .build())
         }
     }
@@ -711,7 +710,6 @@ class HomeActivity : BaseActivity(),
                 .parentFolderLevel(currFolderLevel)
                 .selectedFolderDriveId(selectedDriveId)
                 .parentFolderDriveId(currFolderParentDriveId!!)
-                .foldersData(foldersData)
                 .build())
     }
 

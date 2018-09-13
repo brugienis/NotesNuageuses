@@ -12,9 +12,8 @@ import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.removeTop
 import au.com.kbrsolutions.notesnuageuses.features.main.EventBusListenable
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
 
-class EventBusEventsHandler(private val listener: OnEventBusEventsHandlerInteractionListener,
-                            val foldersData: FoldersData,
-                            val fragmentsStack: FragmentsStack): EventBusListenable {
+class EventBusEventsHandler(private val listener: OnEventBusEventsHandlerInteractionListener)
+    : EventBusListenable {
 
     override fun onMessageEvent(event: DriveAccessEvents) {
         val request = event.request
@@ -208,7 +207,8 @@ class EventBusEventsHandler(private val listener: OnEventBusEventsHandlerInterac
 
                 if (folderData != null && folderData.isEmptyOrAllFilesTrashed) {
                     listener.setFolderFragment(folderData) // empty folder
-                    Log.v("HomeActivity", "EventBusEventsHandler - fragmentsStack: $fragmentsStack ")
+                    Log.v("HomeActivity", "EventBusEventsHandler - " +
+                            "fragmentsStack: $FragmentsStack ")
                 } else {
                     retrievingAppFolderDriveInfoTaskDone(folderData)
                 }
@@ -230,13 +230,13 @@ class EventBusEventsHandler(private val listener: OnEventBusEventsHandlerInterac
 //				addMsgToActivityLogShowOnScreen("Folder created");
                 val folderName = event.newFileName ?: "undefined"
                 listener.setActionBarTitle(folderName)
-                val stackFragmentsAfterAdd = fragmentsStack.getFragmentsList()
+                val stackFragmentsAfterAdd = FragmentsStack.getFragmentsList()
                 Log.v("${EventBusEventsHandler::class.simpleName}", " - " +
                         "actualStackFragmentsAfterAdd: " +
                         "${printCollection("after fragments added", stackFragmentsAfterAdd)}")
-                val currFolder = fragmentsStack . getCurrFragment ()
+                val currFolder = FragmentsStack . getCurrFragment ()
                 if (currFolder == HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {    // folder is no longer empty
-                    fragmentsStack.replaceCurrFragment (
+                    FragmentsStack.replaceCurrFragment (
                             "onMessageEvent FoldersEvents FOLDER_CREATED" +
                                     event.request,
                             currFolder, HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)
@@ -266,7 +266,7 @@ class EventBusEventsHandler(private val listener: OnEventBusEventsHandlerInterac
     }
 
     private fun insertFolderItemView(event: FilesUploadEvents, context: Context) {
-        foldersData.insertFolderItemView(
+        FoldersData.insertFolderItemView(
                 event.fileItemId,
                 event.folderLevel,
                 event.currFolderDriveId,
@@ -288,7 +288,7 @@ class EventBusEventsHandler(private val listener: OnEventBusEventsHandlerInterac
     }
 
     private fun updateFolderItem(event: FilesUploadEvents, context: Context) {
-        foldersData.updateFolderItemView(
+        FoldersData.updateFolderItemView(
                 event.fileItemId,
                 event.folderLevel,
                 event.currFolderDriveId,
