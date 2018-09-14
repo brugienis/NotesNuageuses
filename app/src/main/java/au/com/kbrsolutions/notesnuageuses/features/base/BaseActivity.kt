@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
 import au.com.kbrsolutions.notesnuageuses.R
-import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
 import au.com.kbrsolutions.notesnuageuses.features.events.ActivitiesEvents
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -30,18 +29,6 @@ import java.util.concurrent.atomic.AtomicInteger
 
 abstract class BaseActivity: AppCompatActivity() {
 
-    private val TAG = "BaseActivity"
-
-    /**
-     * Request code for Google Sign-in
-     */
-    protected val REQUEST_CODE_SIGN_IN = 0
-
-    /**
-     * Request code for the Drive picker
-     */
-    protected val REQUEST_CODE_OPEN_ITEM = 1
-
     /**
      * Handles high-level drive functions like sync
      */
@@ -57,11 +44,22 @@ abstract class BaseActivity: AppCompatActivity() {
      */
     private var mOpenItemTaskSource: TaskCompletionSource<DriveId>? = null
 
-    var foldersData = FoldersData
     private var eventBus: EventBus? = null
 
-
     companion object {
+
+        private const val TAG = "BaseActivity"
+
+        /**
+         * Request code for Google Sign-in
+         */
+        protected const val REQUEST_CODE_SIGN_IN = 0
+
+        /**
+         * Request code for the Drive picker
+         */
+        protected const val REQUEST_CODE_OPEN_ITEM = 1
+
         const val MIME_TYPE_PNG_FILE = "image/png"   // MIME_TYPE_PNG_FILE
         const val MIME_TYPE_TEXT_FILE = "text/plain"
         const val MIME_TYPE_JPEG_FILE = "image/jpeg"

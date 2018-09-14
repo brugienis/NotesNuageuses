@@ -11,6 +11,7 @@ import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.base.BaseActivity
 import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
+import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.addFragment
 import au.com.kbrsolutions.notesnuageuses.features.events.*
@@ -83,12 +84,11 @@ class HomeActivity : BaseActivity(),
         const val FILE_CONTENTS_KEY = "file_contents_key"
     }
 
-    private var fragmentsStack = FragmentsStack
     private val eventBusListenable: EventBusListenable =
             EventBusEventsHandler(this)
 
     init {
-        fragmentsStack.initialize(mTestMode)
+        FragmentsStack.initialize(mTestMode)
     }
 
     enum class FragmentsEnum {
@@ -96,10 +96,8 @@ class HomeActivity : BaseActivity(),
         ACTIVITY_LOG_FRAGMENT,
         FOLDER_FRAGMENT,
         TRASH_FOLDER_FRAGMENT,
-        //		SAVE_FILE_OPTIONS,
         FILE_FRAGMENT,
         FILE_DETAILS_FRAGMENT,
-        //		CREATE_FILE_FRAGMENT,
         IMAGE_VIEW_FRAGMENT,
         NONE,
         EMPTY_FOLDER_FRAGMENT,
@@ -157,9 +155,9 @@ class HomeActivity : BaseActivity(),
 
     override fun onDriveClientReady() {
         startFuturesHandlers()
-        val folderFragmentsCnt = fragmentsStack.getFolderFragmentCount()
-        if (folderFragmentsCnt == 0 || foldersData.getCurrFolderLevel() != folderFragmentsCnt - 1) {
-            fragmentsStack.initialize(mTestMode)
+        val folderFragmentsCnt = FragmentsStack.getFolderFragmentCount()
+        if (folderFragmentsCnt == 0 || FoldersData.getCurrFolderLevel() != folderFragmentsCnt - 1) {
+            FragmentsStack.initialize(mTestMode)
             val rootFolderName = getString(R.string.app_root_folder_name)
             val args = Bundle()
             args.putString(RETRIEVING_FOLDER_TITLE_KEY, rootFolderName)
@@ -192,9 +190,9 @@ class HomeActivity : BaseActivity(),
      * The fileContents of the 'folderData' will be added to the FoldersData and FragmentsStack at the
      * end of the setFolder() method.
      *
-     * For example, if the 'foldersData' contains details of the root folder, there are no folders
+     * For example, if the 'FoldersData' contains details of the root folder, there are no folders
      * details in both the FoldersData and FragmentsStack.
-     * The call to foldersData.getCurrFolderLevel() would return -1.
+     * The call to FoldersData.getCurrFolderLevel() would return -1.
      *
      * It means, you have to inspect the details of the 'folderData' to figure out which folder to
      * show - Folder or Empty Folder.
@@ -289,7 +287,7 @@ class HomeActivity : BaseActivity(),
                 val folderItemsList = ArrayList<FolderItem>()
 
                 val list: ArrayList<FileMetadataInfo>? = foldersAddData?.filesMetadatasInfo
-                        ?: foldersData.getCurrFolderMetadataInfo()
+                        ?: FoldersData.getCurrFolderMetadataInfo()
 
                 for ((itemIdxInList, folderMetadataInfo) in list!!.withIndex()) {
                     if (!folderMetadataInfo.isTrashed || folderMetadataInfo.isTrashed && showTrashedFiles) {
@@ -370,7 +368,7 @@ class HomeActivity : BaseActivity(),
     @Synchronized
     override fun removeTopFragment(source: String, actionCancelled: Boolean): Boolean {
         Log.v("HomeActivity", """removeTopFragment - source: $source """)
-        val fragmentsStackResponse = fragmentsStack.removeTopFragment(source, actionCancelled)
+        val fragmentsStackResponse = FragmentsStack.removeTopFragment(source, actionCancelled)
         if (fragmentsStackResponse == null) {
             isAppFinishing = true
             finish()
@@ -418,7 +416,7 @@ class HomeActivity : BaseActivity(),
     }
 
     override fun updateFolderListAdapter() {
-        val currFolderMetadataInfo = foldersData.getCurrFolderMetadataInfo()
+        val currFolderMetadataInfo = FoldersData.getCurrFolderMetadataInfo()
         val folderItemsList = ArrayList<FolderItem>()
         for ((itemIdxInList, folderMetadataInfo) in currFolderMetadataInfo!!.withIndex()) {
             if (!folderMetadataInfo.isTrashed || folderMetadataInfo.isTrashed && showTrashedFiles) {
@@ -521,7 +519,7 @@ class HomeActivity : BaseActivity(),
             menuItem = menu.findItem(R.id.action_show_root_folder)
             menuItem.isVisible = false
             menuItem.isEnabled = false
-        } else if (fragmentsStack.getCurrFragment() !== FragmentsEnum.FOLDER_FRAGMENT && fragmentsStack.getCurrFragment() !== FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
+        } else if (FragmentsStack.getCurrFragment() !== FragmentsEnum.FOLDER_FRAGMENT && FragmentsStack.getCurrFragment() !== FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
             menuItem = menu.findItem(R.id.menuShowTrashed)
             menuItem.isVisible = false
             menuItem.isEnabled = false
@@ -532,10 +530,10 @@ class HomeActivity : BaseActivity(),
             menuItem = menu.findItem(R.id.menuHideTrashed)
             menuItem.isVisible = true
             menuItem.isEnabled = true
-            //            menuItem.setTitle("show trashed files - " + foldersData.getCurrentFolderTrashedFilesCnt());
+            //            menuItem.setTitle("show trashed files - " + FoldersData.getCurrentFolderTrashedFilesCnt());
             menuItem.title = resources.getString(
                     R.string.menu_hide_trashed_files,
-                    foldersData.getCurrentFolderTrashedFilesCnt())
+                    FoldersData.getCurrentFolderTrashedFilesCnt())
             menuItem = menu.findItem(R.id.menuShowTrashed)
             menuItem.isVisible = false
             menuItem.isEnabled = false
@@ -546,11 +544,11 @@ class HomeActivity : BaseActivity(),
             menuItem = menu.findItem(R.id.menuShowTrashed)
             menuItem.isVisible = true
             menuItem.isEnabled = true
-            //            menuItem.setTitle("hide trashed files - " + foldersData.getCurrentFolderTrashedFilesCnt());
+            //            menuItem.setTitle("hide trashed files - " + FoldersData.getCurrentFolderTrashedFilesCnt());
             //				menuItem.setTitle("show trashed files - " + trashedFilesCnt);
             menuItem.title = resources.getString(
                     R.string.menu_show_trashed_files,
-                    foldersData.getCurrentFolderTrashedFilesCnt())
+                    FoldersData.getCurrentFolderTrashedFilesCnt())
         }
         menuItem = menu.findItem(R.id.action_show_root_folder)
         menuItem.isVisible = true
@@ -585,7 +583,7 @@ class HomeActivity : BaseActivity(),
             }
             R.id.menuHideTrashed -> {
                 showTrashedFiles = false
-                //                if (filesMetadataInfo.size() != foldersData.getCurrentFolderTrashedFilesCnt()) {
+                //                if (filesMetadataInfo.size() != FoldersData.getCurrentFolderTrashedFilesCnt()) {
                 handleMenuHideTrashed()
                 invalidateOptionsMenu()
             }
@@ -599,19 +597,19 @@ class HomeActivity : BaseActivity(),
             existingFileDriveId: DriveId?,
             fileName: String,
             fileContents: ByteArray) {
-        val currFolderLevel = foldersData.getCurrFolderLevel()
+        val currFolderLevel = FoldersData.getCurrFolderLevel()
 
         val sendTextToGoogleDriveCallable = SendFileToDriveTask.Builder()
                 .context(applicationContext)
                 .eventBus(eventBus)
                 .driveResourceClient(mDriveResourceClient)
                 .parentFolderLevel(currFolderLevel)
-                .parentFolderDriveId(foldersData.getCurrFolderDriveId()!!)
+                .parentFolderDriveId(FoldersData.getCurrFolderDriveId()!!)
                 .existingFileDriveId(existingFileDriveId)
                 .fileName(fileName)
                 .mimeType(MIME_TYPE_TEXT_FILE)
                 .contents(fileContents)
-                .parentFileName(foldersData.getFolderTitle(currFolderLevel)!!)
+                .parentFileName(FoldersData.getFolderTitle(currFolderLevel)!!)
                 .build()
 
         handleNonCancellableFuturesCallable.submitCallable(sendTextToGoogleDriveCallable)
@@ -628,8 +626,8 @@ class HomeActivity : BaseActivity(),
                         .eventBus(eventBus)
                         .driveResourceClient(mDriveResourceClient)
                         .newFolderName(fileName.toString())
-                        .parentFolderLevel(foldersData.getCurrFolderLevel())
-                        .parentFolderDriveId(foldersData.getCurrFolderDriveId())
+                        .parentFolderLevel(FoldersData.getCurrFolderLevel())
+                        .parentFolderDriveId(FoldersData.getCurrFolderDriveId())
                         .build())
     }
 
@@ -657,13 +655,13 @@ class HomeActivity : BaseActivity(),
      */
     // fixLater: Aug 26, 2018 - remove when not needed
     private fun handleShowRootFolder() {
-        fragmentsStack.initialize(mTestMode)
+        FragmentsStack.initialize(mTestMode)
         onDriveClientReady()
     }
 
     override fun handleOnFolderOrFileClick(position: Int) {
         val idx = getIdxOfClickedFolderItem(position)
-        val folderMetadataArrayInfo = foldersData.getCurrFolderMetadataInfo()
+        val folderMetadataArrayInfo = FoldersData.getCurrFolderMetadataInfo()
         val folderMetadataInfo: FileMetadataInfo = folderMetadataArrayInfo!![idx]
         if (folderMetadataInfo.isFolder) {
             startDownloadFolderInfo(folderMetadataInfo)
@@ -692,8 +690,8 @@ class HomeActivity : BaseActivity(),
     }
 
     private fun startDownloadFolderInfo(folderMetadataInfo: FileMetadataInfo) {
-        val currFolderLevel = foldersData.getCurrFolderLevel()
-        val currFolderParentDriveId = foldersData.getCurrFolderDriveId()
+        val currFolderLevel = FoldersData.getCurrFolderLevel()
+        val currFolderParentDriveId = FoldersData.getCurrFolderDriveId()
 
         val selectedDriveId = folderMetadataInfo.fileDriveId
         val selectedFileTitle = folderMetadataInfo.fileTitle

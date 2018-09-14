@@ -27,9 +27,9 @@ data class SendFileToDriveTask(
 
     private val createDt: Date = Date()
     private val fileItemId = createDt.time
-    var msg: String = ""
+    private var msg: String = ""
     private var thisFileDriveId: DriveId? = null
-    var encryptMillis: Long = 0
+    private var encryptMillis: Long = 0
 
     override fun call(): String {
 //        Log.v("SendFileToDriveTask", """call -
