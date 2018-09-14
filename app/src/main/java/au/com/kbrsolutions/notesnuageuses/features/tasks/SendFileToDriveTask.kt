@@ -44,14 +44,7 @@ data class SendFileToDriveTask(
 
         try {
 
-            // onMessageEvent.DriveAccessEvents - request: MESSAGE msgContents:
-            // BR 30kotlin.UninitializedPropertyAccessException: lateinit property thisFileDriveId
-            // has not been initialized
             sendUpdateEvent(FilesUploadEvents.Events.TEXT_UPLOADING, msg, fileNameWithExtension)
-
-//            eventBus.post(DriveAccessEvents.Builder(DriveAccessEvents.Events.MESSAGE)
-//                    .msgContents(context.getString(R.string.file_upload_starts))
-//                    .build())
 
             var uploadSuccessful = false
 
@@ -63,11 +56,16 @@ data class SendFileToDriveTask(
 
                 val driveContents: DriveContents = openTask.result
 
-                val out: OutputStream = driveContents.outputStream
+                outputStream = driveContents.outputStream
 
                 // fixLater: Sep 01, 2018 - test finally
-                out.write(fileContents)
-//                    throw RuntimeException("BR - after write")
+                outputStream.write(fileContents)
+                Log.v("SendFileToDriveTask", """call before - fileContents: $fileContents """)
+                // groovyScript("_1 ?: '<top>'", kotlinClassName())
+                // groovyScript("_1.take(Math.min(23, _1.length()));", className())
+                if (true) throw RuntimeException("BR - after write")
+
+                Log.v("SendFileToDriveTask", """call after  - fileContents: $fileContents """)
 
                 val commitTask =
                         driveResourceClient.commitContents(driveContents, null)
@@ -84,7 +82,7 @@ data class SendFileToDriveTask(
                 Tasks.await(createContentsTask)
 
                 val contents = createContentsTask.result
-                val outputStream = contents.outputStream
+                outputStream = contents.outputStream
 
                 outputStream.write(fileContents)
 

@@ -73,4 +73,10 @@
     <string name="retrieving_file_folder">" folder"</string>
     <string name="retrieving_file_file">" file"</string>
 
+
+    <string name="base_handler_rename_connection_problem">Could not rename file: %1$s - no connection to Google Drive. Try again later.</string>
+    <string name="file_delete_connection_problem">Could not delete file: %1$s - no connection to Google Drive. Try again later.</string>
+    <string name="base_handler_rename_problem">Could not rename file: %1$s. Try again later.</string>
+    <string name="file_delete_problem">Could not delete file: %1$s. Try again later.</string>
+
 </resources>

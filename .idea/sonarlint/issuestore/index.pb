@@ -105,3 +105,7 @@ Yapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/events/FilesUploa
 Xapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/EventBusListenable.kt,9/e/9ef96b12285c4e2c07d5d5acd6216818428fb0e6
 ç
 ]app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/events/EventBusEventsHandler.kt,9/6/96fade95b1d97899864f0e9f6fc548ddde263bb0
+à
+Xapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/events/FileDeleteEvents.kt,9/5/95fddcfbaa99d90199be16026b6dfc93a51c4b25
+é
+^app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/DeleteFileFromDriveTask.kt,a/8/a8b3da3c7a70a5b73c03e0be1f11c123c3a7a055
