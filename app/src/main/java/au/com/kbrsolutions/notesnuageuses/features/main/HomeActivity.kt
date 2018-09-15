@@ -517,18 +517,20 @@ class HomeActivity : BaseActivity(),
             menuItem = menu.findItem(R.id.action_show_root_folder)
             menuItem.isVisible = false
             menuItem.isEnabled = false
-        } else if (FragmentsStack.getCurrFragment() !== FragmentsEnum.FOLDER_FRAGMENT && FragmentsStack.getCurrFragment() !== FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
+        } else if (
+                FragmentsStack.getCurrFragment() !== FragmentsEnum.FOLDER_FRAGMENT &&
+                FragmentsStack.getCurrFragment() !== FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
             menuItem = menu.findItem(R.id.menuShowTrashed)
             menuItem.isVisible = false
             menuItem.isEnabled = false
             menuItem = menu.findItem(R.id.menuHideTrashed)
             menuItem.isVisible = false
             menuItem.isEnabled = false
-        } else if (showTrashedFiles) {
+        }
+        if (showTrashedFiles) {
             menuItem = menu.findItem(R.id.menuHideTrashed)
             menuItem.isVisible = true
             menuItem.isEnabled = true
-            //            menuItem.setTitle("show trashed files - " + FoldersData.getCurrentFolderTrashedFilesCnt());
             menuItem.title = resources.getString(
                     R.string.menu_hide_trashed_files,
                     FoldersData.getCurrentFolderTrashedFilesCnt())
@@ -542,12 +544,11 @@ class HomeActivity : BaseActivity(),
             menuItem = menu.findItem(R.id.menuShowTrashed)
             menuItem.isVisible = true
             menuItem.isEnabled = true
-            //            menuItem.setTitle("hide trashed files - " + FoldersData.getCurrentFolderTrashedFilesCnt());
-            //				menuItem.setTitle("show trashed files - " + trashedFilesCnt);
             menuItem.title = resources.getString(
                     R.string.menu_show_trashed_files,
                     FoldersData.getCurrentFolderTrashedFilesCnt())
         }
+        Log.v("HomeActivity", """onPrepareOptionsMenu - menuItem.title: ${menuItem.title} """)
         menuItem = menu.findItem(R.id.action_show_root_folder)
         menuItem.isVisible = true
         menuItem.isEnabled = true
@@ -742,12 +743,35 @@ class HomeActivity : BaseActivity(),
     }
 
     private fun handleMenuHideTrashed() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (FoldersData.allCurrFolderFilesTrashedOrThereAreNoFiles()) {
+            val currFragment = FragmentsStack.getCurrFragment()
+            val success = FragmentsStack.replaceCurrFragment(
+                    "handleMenuHideTrashed", currFragment, FragmentsEnum.EMPTY_FOLDER_FRAGMENT)
+            setFragment(
+                    FragmentsEnum.EMPTY_FOLDER_FRAGMENT,
+                    mTitle.toString(),
+                    false,
+                    null,
+                    null)
+        } else {
+            updateFolderListAdapter()
+        }
     }
 
     private fun handleMenuShowTrashed() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        return
+        val currFragment = FragmentsStack.getCurrFragment()
+        if (currFragment == FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
+            val success = FragmentsStack.replaceCurrFragment(
+                    "handleMenuShowTrashed", currFragment, FragmentsEnum.FOLDER_FRAGMENT)
+            setFragment(
+                    FragmentsEnum.FOLDER_FRAGMENT,
+                    mTitle.toString(),
+                    false,
+                    null,
+                    null)
+        } else {
+            updateFolderListAdapter()
+        }
     }
 
 //    private fun ResendFileToGoogleDriveCallable(): Callable<String> {
