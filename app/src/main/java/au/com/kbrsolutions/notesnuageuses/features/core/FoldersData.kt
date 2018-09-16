@@ -175,8 +175,18 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
     }
 
     @Synchronized
-    fun updateFolderItemView(fileItemId: Long?, folderLevel: Int, fileParentFolderDriveId: DriveId, fileMetadataInfo: FileMetadataInfo) {
-        // TODO: check if folderLevel and position have correct value. ALSO add folder DriverId in case folder was removed and another opened on the same level
+    fun updateFolderItemView(
+            fileItemId: Long?,
+            folderLevel: Int,
+            fileParentFolderDriveId: DriveId,
+            fileMetadataInfo: FileMetadataInfo) {
+        // TODO: check if folderLevel and position have correct value. ALSO add folder
+        // DriverId in case folder was removed and another opened on the same level
+        Log.v("FoldersData", """updateFolderItemView -
+            |fileParentFolderDriveId: ${fileParentFolderDriveId}
+            |fileMetadataInfo.fileTitle: ${fileMetadataInfo.fileTitle}
+            |fileMetadataInfo.isTrashed: ${fileMetadataInfo.isTrashed}
+            |""".trimMargin())
         if (currFolderLevel < folderLevel) {
             verifyDataStructure()
             return
@@ -214,9 +224,10 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
 
         val folderData = foldersData[folderLevel]
         val filesMetadataInfo = foldersData[folderLevel].filesMetadatasInfo
-        // TODO: 1/07/2015 something wrong with the logic below - before file is deleted, there is a call to this method to update file name - indicate that delete is going to start
+        // TODO: 1/07/2015 something wrong with the logic below - before file is deleted,
+        // there is a call to this method to update file name - indicate that delete is going to start
         //                 it is decreasing trashed file count - and it SHOULDN'T
-        val isTrashedCurr = filesMetadataInfo.get(fileItemIdIdx).isTrashed
+        val isTrashedCurr = filesMetadataInfo[fileItemIdIdx].isTrashed
         val isTrashedNewValue = fileMetadataInfo.isTrashed
         //		Log.v(LOG_TAG, "updateFolderItemView - before - " + allCurrFolderFilesTrashedOrThereAreNoFiles() + "/" + getCurrentFolderTrashedFilesCnt());
         //		Log.v(LOG_TAG, "updateFolderItemView - before - isTrashedCurr/isTrashedNewValue: " + isTrashedCurr + "/" + isTrashedNewValue);
@@ -230,11 +241,12 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
             val newFolderData = FolderData(folderData.newFolderDriveId, folderData.newFolderTitle, folderData.folderLevel, folderData.fileParentFolderDriveId, folderData.newFolderData, trashedFilesCnt, folderData.filesMetadatasInfo)
             foldersData[folderLevel] = newFolderData
         }
-        foldersData[folderLevel].filesMetadatasInfo.set(fileItemIdIdx, fileMetadataInfo)
+        foldersData[folderLevel].filesMetadatasInfo[fileItemIdIdx] = fileMetadataInfo
         //		Log.v(LOG_TAG, "updateFolderItemView - after - " + allCurrFolderFilesTrashedOrThereAreNoFiles() + "/" + getCurrentFolderTrashedFilesCnt());
 
 
         folderMetadatasInfoListAtLevel[fileItemIdIdx] = fileMetadataInfo
+        Log.v("FoldersData", """updateFolderItemView - fileMetadataInfo: ${fileMetadataInfo} """)
         verifyDataStructure()
     }
 

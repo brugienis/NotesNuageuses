@@ -174,6 +174,48 @@ class EventBusEventsHandler(private val listener: OnEventBusEventsHandlerInterac
         }
     }
 
+    override fun onMessageEvent(event: FileDeleteEvents) {
+        val request = event.request
+        val msgContents = event.msgContents
+        Log.v("EventBusEventsHandler", """  onMessageEvent.FileDeleteEvents -
+                    |request: $request
+                    |msgContents: $msgContents
+                    |""".trimMargin())
+
+        when (request) {
+
+            FileDeleteEvents.Events.TRASH_FILE_FINISHED -> {
+
+                FoldersData.updateFolderItemView(
+                        event.fileItemId,
+                        event.thisFileFolderLevel,
+                        event.parentFolderDriveId,
+                        FileMetadataInfo(
+                                event.parentFileName,
+                                event.fileName,
+                                event.thisFileDriveId,
+                                event.isFolder,
+                                event.mimeType,
+                                event.createDt,
+                                event.updateDt,
+                                event.fileItemId,
+                                true,
+                                event.isTrashed)
+                )
+                // fixme: do we need updateFolderListAdapter()
+                val folderData = FoldersData.getCurrFolderData()
+                if (FoldersData.allCurrFolderFilesTrashedOrThereAreNoFiles()) {
+                    removeTopFragment("onEventMainThread-TRASH_FILE_FINISHED",
+                            false)
+                    listener.setFolderFragment(folderData)
+                } else {
+                    listener.updateFolderListAdapter()
+                }
+
+            }
+        }
+    }
+
     override fun onMessageEvent(event: FoldersEvents) {
         val request = event.request
         val msgContents = event.msgContents

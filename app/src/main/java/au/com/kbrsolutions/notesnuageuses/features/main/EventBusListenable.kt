@@ -1,9 +1,6 @@
 package au.com.kbrsolutions.notesnuageuses.features.main
 
-import au.com.kbrsolutions.notesnuageuses.features.events.DriveAccessEvents
-import au.com.kbrsolutions.notesnuageuses.features.events.FilesDownloadEvents
-import au.com.kbrsolutions.notesnuageuses.features.events.FilesUploadEvents
-import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
+import au.com.kbrsolutions.notesnuageuses.features.events.*
 
 interface EventBusListenable {
 
@@ -14,4 +11,6 @@ interface EventBusListenable {
     fun onMessageEvent(event: FilesUploadEvents)
 
     fun onMessageEvent(event: FoldersEvents)
+
+    fun onMessageEvent(event: FileDeleteEvents)
 }

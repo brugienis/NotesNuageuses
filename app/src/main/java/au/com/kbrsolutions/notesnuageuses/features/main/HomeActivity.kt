@@ -18,14 +18,8 @@ import au.com.kbrsolutions.notesnuageuses.features.events.*
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import au.com.kbrsolutions.notesnuageuses.features.main.dialogs.CreateFileDialog
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.DownloadFragment
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.EmptyFolderFragment
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FileFragment
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FolderFragment
-import au.com.kbrsolutions.notesnuageuses.features.tasks.CreateDriveFolderTask
-import au.com.kbrsolutions.notesnuageuses.features.tasks.DownloadFolderInfoTask
-import au.com.kbrsolutions.notesnuageuses.features.tasks.GetFileFromDriveTask
-import au.com.kbrsolutions.notesnuageuses.features.tasks.SendFileToDriveTask
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.*
+import au.com.kbrsolutions.notesnuageuses.features.tasks.*
 import com.google.android.gms.drive.DriveId
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
@@ -46,7 +40,8 @@ class HomeActivity : BaseActivity(),
         FolderFragment.OnFolderFragmentInteractionListener,
         CreateFileDialog.OnCreateFileDialogInteractionListener,
         FileFragment.OnFileFragmentInteractionListener,
-        EventBusEventsHandler.OnEventBusEventsHandlerInteractionListener {
+        EventBusEventsHandler.OnEventBusEventsHandlerInteractionListener,
+        FileDetailsFragment.OnFileDetailsFragmentInteractionListener {
 
     private lateinit var eventBus: EventBus
     private var mToolbar: Toolbar? = null
@@ -64,6 +59,7 @@ class HomeActivity : BaseActivity(),
 
     private var emptyFolderFragment: EmptyFolderFragment? = null
     private var folderFragment: FolderFragment? = null
+    private var fileDetailsFragment: FileDetailsFragment? = null
     private var downloadFragment: DownloadFragment? = null
     private var folderArrayAdapter: FolderArrayAdapter<FolderItem>? = null
     private var fileFragment: FileFragment? = null
@@ -107,7 +103,6 @@ class HomeActivity : BaseActivity(),
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
 
-        Log.v("HomeActivity", "onCreate - item.itemId: ${item.itemId} ")
 
         when (item.itemId) {
 
@@ -146,7 +141,6 @@ class HomeActivity : BaseActivity(),
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        Log.v("HomeActivity", "onSupportNavigateUp - onCreate start ")
         onBackPressed()
         return true
     }
@@ -287,7 +281,8 @@ class HomeActivity : BaseActivity(),
                 val list: ArrayList<FileMetadataInfo>? = foldersAddData?.filesMetadatasInfo
                         ?: FoldersData.getCurrFolderMetadataInfo()
 
-                for ((itemIdxInList, folderMetadataInfo) in list!!.withIndex()) {
+                list!!.withIndex()
+                        .forEach { (itemIdxInList, folderMetadataInfo) ->
                     if (!folderMetadataInfo.isTrashed || folderMetadataInfo.isTrashed && showTrashedFiles) {
                         folderItemsList.add(FolderItem(
                                 folderMetadataInfo.fileTitle,
@@ -318,7 +313,10 @@ class HomeActivity : BaseActivity(),
                 fragmentTransaction.commit()
             }
 
-//            HomeActivity.FragmentsEnum.FILE_DETAILS_FRAGMENT -> fragmentManager.beginTransaction().replace(R.id.fragments_frame, fileDetailFragment).commit()
+            HomeActivity.FragmentsEnum.FILE_DETAILS_FRAGMENT ->
+                fragmentManager.beginTransaction().replace(
+                        R.id.fragments_frame,
+                        fileDetailsFragment).commit()
 
 //            HomeActivity.FragmentsEnum.LEGAL_NOTICES -> fragmentManager.beginTransaction().replace(R.id.fragments_frame, legalNoticesFragment).commit()
 
@@ -353,6 +351,11 @@ class HomeActivity : BaseActivity(),
         eventBusListenable.onMessageEvent(event)
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: FileDeleteEvents) {
+        eventBusListenable.onMessageEvent(event)
+    }
+
     // fixLater: Aug 28, 2018 - move logic to the onSupportNavigateUp
     override fun onBackPressed() {
         handleCancellableFuturesCallable.cancelCurrFuture()
@@ -365,7 +368,6 @@ class HomeActivity : BaseActivity(),
 
     @Synchronized
     override fun removeTopFragment(source: String, actionCancelled: Boolean): Boolean {
-        Log.v("HomeActivity", """removeTopFragment - source: $source """)
         val fragmentsStackResponse = FragmentsStack.removeTopFragment(source, actionCancelled)
         if (fragmentsStackResponse == null) {
             isAppFinishing = true
@@ -396,7 +398,7 @@ class HomeActivity : BaseActivity(),
         if (fragmentsStackResponse.finishRequired) {
             isAppFinishing = true
         }
-        //		Log.i(TAG, "removeTopFragment end");
+
         return fragmentsStackResponse.finishRequired
     }
 
@@ -405,6 +407,7 @@ class HomeActivity : BaseActivity(),
         supportActionBar!!.title = title
     }
 
+    // fixLater: Sep 16, 2018 - do I need it?
     private fun retrievingAppFolderDriveInfoTaskDone(folderData: FolderData?) {
         if (folderData != null && folderData.newFolderData) {   // folder info not in FoldersData
             setFolderFragment(folderData)
@@ -413,10 +416,36 @@ class HomeActivity : BaseActivity(),
         }
     }
 
+    override fun trashOrDeleteFile(
+            selectedFileDriveId: DriveId,
+            position: Int,
+            currFolderLevel: Int,
+            currFolderDriveId: DriveId,
+            deleteFile: Boolean) {
+
+        handleNonCancellableFuturesCallable.submitCallable(
+                RemoveFileFromDriveTask.Builder()
+                        .context(applicationContext)
+                        .eventBus(eventBus)
+                        .driveResourceClient(mDriveResourceClient)
+                        .thisFileDriveId(selectedFileDriveId)
+                        .idxInTheFolderFilesList(position)
+                        .thisFileFolderLevel(currFolderLevel)
+                        .parentFolderDriveId(FoldersData.getCurrFolderDriveId()!!)
+                        .deleteThisFile(deleteFile)
+                        .build())
+
+        removeTopFragment("onEventMainThread-TRASH_FILE", false)
+    }
+
     override fun updateFolderListAdapter() {
         val currFolderMetadataInfo = FoldersData.getCurrFolderMetadataInfo()
         val folderItemsList = ArrayList<FolderItem>()
-        for ((itemIdxInList, folderMetadataInfo) in currFolderMetadataInfo!!.withIndex()) {
+        var cntAll = 0
+        var trashedCnt = 0
+        currFolderMetadataInfo!!.withIndex().forEach { (itemIdxInList, folderMetadataInfo) ->
+            cntAll++
+            if (folderMetadataInfo.isTrashed) trashedCnt++
             if (!folderMetadataInfo.isTrashed || folderMetadataInfo.isTrashed && showTrashedFiles) {
                 folderItemsList.add(FolderItem(
                         folderMetadataInfo.fileTitle,
@@ -428,6 +457,11 @@ class HomeActivity : BaseActivity(),
             }
         }
 
+        Log.v("HomeActivity", """updateFolderListAdapter -
+            |cntAll:          ${cntAll}
+            |trashedCnt:      ${trashedCnt}
+            |folderItemsList: ${folderItemsList.size}
+            |""".trimMargin())
         folderArrayAdapter!!.clear()
         folderArrayAdapter!!.addAll(folderItemsList)
     }
@@ -548,7 +582,7 @@ class HomeActivity : BaseActivity(),
                     R.string.menu_show_trashed_files,
                     FoldersData.getCurrentFolderTrashedFilesCnt())
         }
-        Log.v("HomeActivity", """onPrepareOptionsMenu - menuItem.title: ${menuItem.title} """)
+
         menuItem = menu.findItem(R.id.action_show_root_folder)
         menuItem.isVisible = true
         menuItem.isEnabled = true
@@ -658,6 +692,26 @@ class HomeActivity : BaseActivity(),
         onDriveClientReady()
     }
 
+    override fun showSelectedFileDetails(position: Int) {
+        if (fileDetailsFragment == null) {
+            fileDetailsFragment = FileDetailsFragment()
+        }
+        val folderMetadatasInfo = FoldersData.getCurrFolderMetadataInfo()
+        val idxOfClickedFolderItem = getIdxOfClickedFolderItem(position)
+        val folderMetadataInfo = folderMetadatasInfo!!.get(idxOfClickedFolderItem)
+        fileDetailsFragment!!.setSelectedFileInfo(
+                idxOfClickedFolderItem,
+                folderMetadataInfo,
+                FoldersData.getCurrFolderLevel(),
+                FoldersData.getCurrFolderDriveId()!!)
+        setFragment(
+                FragmentsEnum.FILE_DETAILS_FRAGMENT,
+                folderMetadataInfo.fileTitle,
+                true,
+                null,
+                null)
+    }
+
     override fun handleOnFolderOrFileClick(position: Int) {
         val idx = getIdxOfClickedFolderItem(position)
         val folderMetadataArrayInfo = FoldersData.getCurrFolderMetadataInfo()
@@ -724,7 +778,6 @@ class HomeActivity : BaseActivity(),
 
     override fun onUpButtonPressedInFragment() {
         val text = fileFragment!!.getText()
-        Log.v("HomeActivity", """onUpButtonPressedInFragment - text: $text """)
         onBackPressed()
     }
 
@@ -745,7 +798,7 @@ class HomeActivity : BaseActivity(),
     private fun handleMenuHideTrashed() {
         if (FoldersData.allCurrFolderFilesTrashedOrThereAreNoFiles()) {
             val currFragment = FragmentsStack.getCurrFragment()
-            val success = FragmentsStack.replaceCurrFragment(
+            FragmentsStack.replaceCurrFragment(
                     "handleMenuHideTrashed", currFragment, FragmentsEnum.EMPTY_FOLDER_FRAGMENT)
             setFragment(
                     FragmentsEnum.EMPTY_FOLDER_FRAGMENT,
@@ -761,7 +814,7 @@ class HomeActivity : BaseActivity(),
     private fun handleMenuShowTrashed() {
         val currFragment = FragmentsStack.getCurrFragment()
         if (currFragment == FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
-            val success = FragmentsStack.replaceCurrFragment(
+            FragmentsStack.replaceCurrFragment(
                     "handleMenuShowTrashed", currFragment, FragmentsEnum.FOLDER_FRAGMENT)
             setFragment(
                     FragmentsEnum.FOLDER_FRAGMENT,

@@ -8,26 +8,30 @@ import au.com.kbrsolutions.notesnuageuses.features.events.FileDeleteEvents
 import com.google.android.gms.drive.DriveId
 import com.google.android.gms.drive.DriveResource
 import com.google.android.gms.drive.DriveResourceClient
+import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import org.greenrobot.eventbus.EventBus
 import java.util.*
 import java.util.concurrent.Callable
 
+/*
+        https://developers.google.com/drive/android/trash
+ */
 
-data class DeleteFileFromDriveTask(
+data class RemoveFileFromDriveTask(
         var context: Context,
         var eventBus: EventBus,
         var driveResourceClient: DriveResourceClient,
-        val selectedDriveId: DriveId,
+        val thisFileDriveId: DriveId,
+        val parentFolderDriveId: DriveId,
         val idxInTheFolderFilesList: Int,
         val thisFileFolderLevel: Int,
-        val thisFileFolderDriveId: DriveId,
         val deleteThisFile: Boolean) : Callable<String> {
 
-    private val folderMetadatasInfo = FoldersData.getCurrFolderMetadataInfo()
-    private val folderMetadataInfo = folderMetadatasInfo!![idxInTheFolderFilesList]
+    private val folderMetadataArrayInfo = FoldersData.getCurrFolderMetadataInfo()
+    private val folderMetadataInfo = folderMetadataArrayInfo!![idxInTheFolderFilesList]
 
-    private val selectedFileDriveId = folderMetadataInfo.fileDriveId
+//    private val thisFileDriveId = folderMetadataInfo.fileDriveId
     private val fileItemId = folderMetadataInfo.fileItemId
     private val parentFileName = FoldersData.getFolderTitle(thisFileFolderLevel)
     private val currName = folderMetadataInfo.fileTitle
@@ -35,21 +39,19 @@ data class DeleteFileFromDriveTask(
     private val mimeType = folderMetadataInfo.mimeType
     private val createDate = folderMetadataInfo.createDt
     private val updateDateBeforeRename = folderMetadataInfo.updateDt
-    private val isTrashable = folderMetadataInfo.isTrashable
-    private val isTrashed = folderMetadataInfo.isTrashed
-
-    private var successfullyTrashedOrUntrashed = false
+    private var isTrashed: Boolean = false
 
     override fun call(): String {
 
         try {
             var success = false
             if (deleteThisFile) {
-                val deleteFileTask = driveResourceClient.delete(selectedDriveId as DriveResource)
+                val deleteFileTask = driveResourceClient.delete(thisFileDriveId.asDriveResource())
                 Tasks.await(deleteFileTask)
                 success = deleteFileTask.isSuccessful
             } else {
-                val getMetadataTask = driveResourceClient.getMetadata(selectedDriveId as DriveResource)
+                val getMetadataTask = driveResourceClient.getMetadata(
+                        thisFileDriveId.asDriveResource())
                 Tasks.await(getMetadataTask)
 
                 if (getMetadataTask.isSuccessful) {
@@ -57,11 +59,16 @@ data class DeleteFileFromDriveTask(
 
                     val driveResource: DriveResource = metadata.driveId.asDriveResource()
 
-                    val toggleTrashTask = if (metadata.isTrashed()) {
-                        driveResourceClient.untrash(driveResource)
+                    lateinit var toggleTrashTask: Task<Void>
+
+                    if (metadata.isTrashed()) {
+                        toggleTrashTask = driveResourceClient.untrash(driveResource)
+                        isTrashed = false
                     } else {
-                        driveResourceClient.trash(driveResource)
+                        toggleTrashTask = driveResourceClient.trash(driveResource)
+                        isTrashed = true
                     }
+                    Tasks.await(toggleTrashTask)
                     success = toggleTrashTask.isSuccessful
                 }
             }
@@ -72,17 +79,21 @@ data class DeleteFileFromDriveTask(
                                 getString(
                                         R.string.file_delete_problem, currName))
             }
-            postProgressEvent(FileDeleteEvents.Events.TRASH_FILE_FINISHED, null, Date())
+            postProgressEvent(
+                    FileDeleteEvents.Events.TRASH_FILE_FINISHED,
+                    "File is trashed: $isTrashed",
+                    Date())
+
             // TODO: 29/06/2015 not tested yet
         } catch (e: IllegalStateException) {
             postProgressEvent(FileDeleteEvents.Events.TRASH_FILE_PROBLEMS,
                     context.resources.
-                    getString(R.string.file_delete_connection_problem, currName),
+                    getString(R.string.file_delete_connection_problem, currName + "; " + e),
                     updateDateBeforeRename)
         } catch (e: Exception) {            // added to test if any exception is handled properly
             postProgressEvent(FileDeleteEvents.Events.TRASH_FILE_PROBLEMS,
                     context.resources.
-                    getString(R.string.file_delete_problem, currName),
+                    getString(R.string.file_delete_problem, currName + "; " + e),
                     updateDateBeforeRename)
         }
 
@@ -104,9 +115,9 @@ data class DeleteFileFromDriveTask(
                 .createDate(createDate)
                 .updateDate(updateDate)
                 .thisFileFolderLevel(thisFileFolderLevel)
-                .currFolderDriveId(thisFileFolderDriveId)
-                .selectedFileDriveId(selectedFileDriveId!!)
-                .isTrashed(if (successfullyTrashedOrUntrashed) !isTrashed else isTrashed)
+                .thisFileDriveId(thisFileDriveId)
+                .parentFolderDriveId(parentFolderDriveId)
+                .isTrashed(isTrashed)
                 .build())
     }
 
@@ -116,5 +127,49 @@ data class DeleteFileFromDriveTask(
                 .msgContents(fileNameAndException)
                 .isProblem(true)
                 .build())
+    }
+
+    class Builder {
+
+        private lateinit var context: Context
+        private lateinit var eventBus: EventBus
+        private lateinit var driveResourceClient: DriveResourceClient
+        private lateinit var thisFileDriveId: DriveId
+        private lateinit var parentFolderDriveId: DriveId
+        private var idxInTheFolderFilesList: Int = 0
+        private var thisFileFolderLevel: Int = 0
+        private var deleteThisFile: Boolean = false
+
+        fun context(context: Context) = apply { this.context = context }
+
+        fun eventBus(eventBus: EventBus) = apply { this.eventBus = eventBus }
+
+        fun driveResourceClient(driveResourceClient: DriveResourceClient) =
+                apply { this.driveResourceClient = driveResourceClient }
+
+        fun parentFolderDriveId(parentFolderDriveId: DriveId) =
+                apply { this.parentFolderDriveId = parentFolderDriveId }
+
+        fun thisFileDriveId(thisFileDriveId: DriveId) =
+                apply { this.thisFileDriveId = thisFileDriveId }
+
+        fun idxInTheFolderFilesList(idxInTheFolderFilesList: Int) =
+                apply { this.idxInTheFolderFilesList = idxInTheFolderFilesList }
+
+        fun thisFileFolderLevel(thisFileFolderLevel: Int) =
+                apply { this.thisFileFolderLevel = thisFileFolderLevel }
+
+        fun deleteThisFile(deleteThisFile: Boolean) =
+                apply { this.deleteThisFile = deleteThisFile }
+
+        fun build() = RemoveFileFromDriveTask (
+                context,
+                eventBus,
+                driveResourceClient,
+                thisFileDriveId,
+                parentFolderDriveId,
+                idxInTheFolderFilesList,
+                thisFileFolderLevel,
+                deleteThisFile)
     }
 }

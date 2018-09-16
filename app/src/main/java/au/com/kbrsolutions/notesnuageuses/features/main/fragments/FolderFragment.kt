@@ -82,12 +82,14 @@ class FolderFragment : ListFragment(), OnClickListener {
     }
 
     /**
-     * When 'showTrashed' files is false, the List<FolderItem> passed to the FolderArrayAdapter can be shorter then the list of all files in the folder
-     * if there are some trashed files. This method translates the index of the file item touched to its index of all files in the folder.
+     * When 'showTrashed' files is false, the List<FolderItem> passed to the FolderArrayAdapter can
+     * be shorter then the list of all files in the folder if there are some trashed files.
+     * This method translates the index of the file item touched to its index of all files in the
+     * folder.
      *
      * @param position - index of the file item touched on the folder screen
-     * @return - index of the item in the folder's items list
-    </FolderItem> */
+     * @return - index of the item in the folder's items list </FolderItem>
+     */
     private fun getIdxOfClickedFolderItem(position: Int): Int {
         val folderArrayAdapter = listAdapter as FolderArrayAdapter<*>
         return folderArrayAdapter.getFolderItem(position).itemIdxInList
@@ -111,16 +113,12 @@ class FolderFragment : ListFragment(), OnClickListener {
     }
 
     override fun onClick(v: View) {
-//        if (mContext!!.isNotConnectedToGoogleDrive(LOG_TAG + "onClick")) {
-//            //			mContext.showMessage(getString(R.string.waiting_for_google_drive_connection));
-//            return
-//        } else {
-//            val position = listView.getPositionForView(v)
-//            if (position != ListView.INVALID_POSITION) {
-//                v.setBackgroundColor(resources.getColor(R.color.action_view_clicked))
-//                mContext!!.showSelectedFileDetails(position)
-//            }
-//        }
+        Log.v("FolderFragment", """onClick -view: $view """)
+        val position = listView.getPositionForView(v)
+        if (position != ListView.INVALID_POSITION) {
+            v.setBackgroundColor(resources.getColor(R.color.action_view_clicked))
+            listener!!.showSelectedFileDetails(position)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -205,6 +203,7 @@ class FolderFragment : ListFragment(), OnClickListener {
 
     private var mPrevRefreshTouchTimeNonos: Long = 0
 
+    // fixLater: Sep 15, 2018 - move to util
     private fun delaysExpired(touchedObject:TouchedObject): Boolean {
         var delaysExpired = false
         val currTimeNonos = System.nanoTime()
@@ -271,6 +270,7 @@ class FolderFragment : ListFragment(), OnClickListener {
     interface OnFolderFragmentInteractionListener {
         fun showFileDialog()
         fun handleOnFolderOrFileClick(position: Int)
+        fun showSelectedFileDetails(position: Int)
     }
 
     companion object {

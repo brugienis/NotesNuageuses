@@ -73,10 +73,31 @@
     <string name="retrieving_file_folder">" folder"</string>
     <string name="retrieving_file_file">" file"</string>
 
+    <!-- fragment_file_detail -->
+    <string name="file_detail_header">File details</string>
+    <string name="file_detail_open">Open</string>
+    <string name="file_detail_rename">Rename</string>
+    <string name="file_detail_trash">Remove</string>
+    <string name="file_detail_delete">Delete</string>
+    <string name="file_detail_untrash">Restore</string>
+    <string name="file_detail_kind">Kind</string>
+    <string name="file_detail_location">Location</string>
+    <string name="file_detail_created">Created</string>
+    <string name="file_detail_updated">Updated</string>
+    <string name="file_detail_trashed_files_cnt">Trashed files</string>
+    <string name="title_activity_text_note">TextNoteActivity</string>
+    <!-- test only -->
+    <string name="file_detail_kind_tst_text">Text</string>
+    <string name="file_detail_location_tst_text">Folder</string>
+    <string name="file_detail_created_tst_text">Oct. 1, 2014</string>
+    <string name="file_detail_updated_tst_text">Oct. 10, 2014</string>
+    <string name="file_detail_trash_info">Trashed files</string>
 
     <string name="base_handler_rename_connection_problem">Could not rename file: %1$s - no connection to Google Drive. Try again later.</string>
     <string name="file_delete_connection_problem">Could not delete file: %1$s - no connection to Google Drive. Try again later.</string>
     <string name="base_handler_rename_problem">Could not rename file: %1$s. Try again later.</string>
     <string name="file_delete_problem">Could not delete file: %1$s. Try again later.</string>
+    <string name="file_type_folder">Folder</string>
+    <string name="file_type_file">Text</string>
 
 </resources>

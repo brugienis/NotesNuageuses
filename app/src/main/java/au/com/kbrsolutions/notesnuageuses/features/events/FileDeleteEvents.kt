@@ -6,52 +6,52 @@ import java.util.*
 class FileDeleteEvents(
         var request: Events,
         var msgContents: String?,
-        var fileItemId: Long?,
-        var selectedFileDriveId: DriveId?,
-        var isFolder: Boolean?,
-        var mimeType: String?,
-        var isTrashed: Boolean?,
+        var fileItemId: Long,
+        var thisFileDriveId: DriveId,
+        var isFolder: Boolean,
+        var mimeType: String,
+        var isTrashed: Boolean,
         var thisFileFolderLevel: Int,
         var idxInTheFolderFilesList: Int?,
-        var parentFileName: String?,
-        var fileName: String?,
+        var parentFileName: String,
+        var fileName: String,
         var currFolderDriveId: DriveId?,
-        var createDt: Date?,
-        var updateDt: Date?) {
+        var parentFolderDriveId: DriveId,
+        var createDt: Date,
+        var updateDt: Date) {
 
     enum class Events {
         TRASH_FILE,
-        TRASH_FILE_FINISHED, TRASH_FILE_PROBLEMS, DELETE_FILE_PROBLEMS, DELETE_FILE_FINISHED, DELETE_FILE, DELETE_FILE_START
+        TRASH_FILE_FINISHED,
+        TRASH_FILE_PROBLEMS,
+        DELETE_FILE_PROBLEMS,
+        DELETE_FILE_FINISHED,
+        DELETE_FILE,
+        DELETE_FILE_START
     }
 
     class Builder(private var request: FileDeleteEvents.Events) {
         private var msgContents: String? = null
         private var thisFileFolderLevel: Int = 0
         private var fileItemId: Long = 0
-        private var selectedFileDriveId: DriveId? = null
+        private lateinit var thisFileDriveId: DriveId
         private var isFolder: Boolean = false
-        private var mimeType: String? = null
+        private lateinit var mimeType: String
         private var isTrashed: Boolean = false
-        private var passwords: Array<String>? = null
-        var showLockTime: Boolean = false
-        private var encryptPassword: String? = null
         private var idxInTheFolderFilesList: Int = 0
-        private var parentFileName: String? = null
-        private var fileName: String? = null
-        private var newFileName: String? = null
+        private lateinit var parentFileName: String
+        private lateinit var fileName: String
         private var currFolderDriveId: DriveId? = null
-        private var createDate: Date? = null
-        private var updateDate: Date? = null
-        private var maxContinuesIncorrectPassword: Int = 0
-        private var lockMillis: Int = 0
-//        private var foldersAddData: FolderData? = null
+        private lateinit var parentFolderDriveId: DriveId
+        private lateinit var createDate: Date
+        private lateinit var updateDate: Date
 
         fun msgContents(msgContents: String?) = apply { this.msgContents = msgContents }
 
         fun fileItemId(fileItemId: Long) = apply { this.fileItemId = fileItemId }
 
-        fun selectedFileDriveId(selectedFileDriveId: DriveId) =
-                apply { this.selectedFileDriveId = selectedFileDriveId }
+        fun thisFileDriveId(thisFileDriveId: DriveId) =
+                apply { this.thisFileDriveId = thisFileDriveId }
 
         fun mimeType(mimeType: String) = apply { this.mimeType = mimeType }
 
@@ -72,25 +72,29 @@ class FileDeleteEvents(
         fun currFolderDriveId(currFolderDriveId: DriveId) =
                 apply { this.currFolderDriveId = currFolderDriveId }
 
+        fun parentFolderDriveId(parentFolderDriveId: DriveId) =
+                apply { this.parentFolderDriveId = parentFolderDriveId }
+
         fun createDate(createDate: Date) = apply { this.createDate = createDate }
 
         fun updateDate(updateDate: Date) = apply { this.updateDate = updateDate }
 
         fun build() = FileDeleteEvents(
-                    request,
-                    msgContents,
-                    fileItemId,
-                    selectedFileDriveId,
-                    isFolder,
-                    mimeType,
-                    isTrashed,
-                    thisFileFolderLevel,
-                    idxInTheFolderFilesList,
-                    parentFileName,
-                    fileName,
-                    currFolderDriveId,
-                    createDate,
-                    updateDate)
+                request,
+                msgContents,
+                fileItemId,
+                thisFileDriveId,
+                isFolder,
+                mimeType,
+                isTrashed,
+                thisFileFolderLevel,
+                idxInTheFolderFilesList,
+                parentFileName,
+                fileName,
+                currFolderDriveId,
+                parentFolderDriveId,
+                createDate,
+                updateDate)
         }
     }
 
