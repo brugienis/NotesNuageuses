@@ -16,6 +16,7 @@ import au.com.kbrsolutions.notesnuageuses.features.base.BaseActivity
 import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
 import com.google.android.gms.drive.DriveId
+import kotlinx.android.synthetic.main.fragment_file_details.view.*
 import java.text.DateFormat
 
 class FileDetailsFragment : Fragment() {
@@ -64,8 +65,8 @@ class FileDetailsFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_file_details, container,
                 false)
 
-        openLayout = rootView.findViewById(R.id.fileDetailOpenLayoutId)
-        openLayout!!.setOnClickListener {
+//        openLayout = rootView.findViewById(R.id.fileDetailOpenLayoutId)
+        rootView.fileDetailOpenLayoutId.setOnClickListener {
             openTv!!.setBackgroundColor(resources.getColor(R.color.action_view_clicked))
             openFile()
         }

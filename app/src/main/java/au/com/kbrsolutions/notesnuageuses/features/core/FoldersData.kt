@@ -81,19 +81,6 @@ object FoldersData {
 //        Log.v("FoldersData", "addFolderData - folderData.filesMetadatasInfo: ${folderData.filesMetadatasInfo} ")
 //        Log.v(TAG, "addFolderData -  end   - currFolderLevel: $currFolderLevel array foldersDriveIdsList: ${foldersDriveIdsList[currFolderLevel]} newFolderTitle: ${folderData.newFolderTitle}")
     }
-    /*
-
-folderData.filesMetadatasInfo: [FileMetadataInfo(
-        parentTitle=App folder,
-        fileTitle=Sopot new,
-        fileDriveId=DriveId:CAESITFFQ3RtRjBXT0pYZHo1YkQzLVJHbHRBNEF6SjJBaTJTaRh-IKTY8qOtWSgB,
-        isFolder=true,
-        mimeType=application/vnd.google-apps.folder,
-        createDt=Fri Aug 24 14:54:21 GMT+10:00 2018,
-        updateDt=Fri Aug 24 14:54:21 GMT+10:00 2018,
-        fileItemId=1535086461484, isTrashable=true, isTrashed=false)]
-end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2PKjrVkoAQ== newFolderTitle: App folder
-     */
 
     fun getCurrParentDriveId(level: Int): DriveId {
         return foldersDriveIdsList[level]
@@ -182,55 +169,43 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
             fileMetadataInfo: FileMetadataInfo) {
         // TODO: check if folderLevel and position have correct value. ALSO add folder
         // DriverId in case folder was removed and another opened on the same level
-        Log.v("FoldersData", """updateFolderItemView -
-            |fileParentFolderDriveId: ${fileParentFolderDriveId}
-            |fileMetadataInfo.fileTitle: ${fileMetadataInfo.fileTitle}
-            |fileMetadataInfo.isTrashed: ${fileMetadataInfo.isTrashed}
-            |""".trimMargin())
+
+        /* Update coming for the folder level that was already removed - ignore it */
         if (currFolderLevel < folderLevel) {
             verifyDataStructure()
             return
+            /* Ignore update request because the folder on the 'folderLevel' has changed */
         } else if (foldersDriveIdsList[folderLevel] != fileParentFolderDriveId) {
             verifyDataStructure()
             return
         }
-        val folderMetadatasInfoListAtLevel = foldersMetadataArrayInfoList[folderLevel]
-        var fileItemIdIdx = -1
-        var oneFolderMetadataInfo: FileMetadataInfo
-        var i = 0
-        val cnt = folderMetadatasInfoListAtLevel.size
-        Log.v("FoldersData", """updateFolderItemView -
-            |folderLevel: $folderLevel
-            |cnt: $cnt
-            |""".trimMargin())
-        while (i < cnt) {
-            oneFolderMetadataInfo = folderMetadatasInfoListAtLevel[i]
-            Log.v("FoldersData", """updateFolderItemView -
-                |oneFolderMetadataInfo.fileItemId: fileItemId: ${oneFolderMetadataInfo.fileItemId}
-                | fileItemId: $fileItemId """.trimMargin())
-            if (oneFolderMetadataInfo.fileItemId == fileItemId) {
-                fileItemIdIdx = i
-                break
+        val folderMetadataArrayInfoListAtLevel = foldersMetadataArrayInfoList[folderLevel]
+
+        var fileItemIdPos = -1
+        folderMetadataArrayInfoListAtLevel.withIndex().forEach {
+            if (it.value.fileItemId == fileItemId) {
+                fileItemIdPos = it.index
+                return@forEach
             }
-            i++
         }
+        Log.v("FoldersData", """updateFolderItemView - index - fileItemIdPos: ${fileItemIdPos} """)
+
         // fixme: throw exception in test only
-        if (fileItemIdIdx == -1) {
+        if (fileItemIdPos == -1) {
             throw RuntimeException("updateFolderItemView - fileItemId not found")
         }
 
+        Log.v("FoldersData", """updateFolderItemView - index - fileItemIdIdx: $fileItemIdPos """)
+
         val folderFilesTitles = foldersFilesTitlesList[folderLevel]
-        folderFilesTitles[fileItemIdIdx] = fileMetadataInfo.fileTitle
+        folderFilesTitles[fileItemIdPos] = fileMetadataInfo.fileTitle
 
         val folderData = foldersData[folderLevel]
         val filesMetadataInfo = foldersData[folderLevel].filesMetadatasInfo
-        // TODO: 1/07/2015 something wrong with the logic below - before file is deleted,
-        // there is a call to this method to update file name - indicate that delete is going to start
-        //                 it is decreasing trashed file count - and it SHOULDN'T
-        val isTrashedCurr = filesMetadataInfo[fileItemIdIdx].isTrashed
+
+        val isTrashedCurr = filesMetadataInfo[fileItemIdPos].isTrashed
         val isTrashedNewValue = fileMetadataInfo.isTrashed
-        //		Log.v(LOG_TAG, "updateFolderItemView - before - " + allCurrFolderFilesTrashedOrThereAreNoFiles() + "/" + getCurrentFolderTrashedFilesCnt());
-        //		Log.v(LOG_TAG, "updateFolderItemView - before - isTrashedCurr/isTrashedNewValue: " + isTrashedCurr + "/" + isTrashedNewValue);
+
         if (isTrashedCurr != isTrashedNewValue) {
             var trashedFilesCnt = getCurrentFolderTrashedFilesCnt()
             if (isTrashedNewValue) {
@@ -238,15 +213,16 @@ end   - currFolderLevel: 0 array foldersDriveIdsList: DriveId:CAESBHJvb3QYBCCk2P
             } else {
                 foldersTrashedFilesCnt[folderLevel] = --trashedFilesCnt
             }
-            val newFolderData = FolderData(folderData.newFolderDriveId, folderData.newFolderTitle, folderData.folderLevel, folderData.fileParentFolderDriveId, folderData.newFolderData, trashedFilesCnt, folderData.filesMetadatasInfo)
-            foldersData[folderLevel] = newFolderData
+            foldersData[folderLevel] = FolderData(
+                    folderData.newFolderDriveId,
+                    folderData.newFolderTitle,
+                    folderData.folderLevel,
+                    folderData.fileParentFolderDriveId,
+                    folderData.newFolderData,
+                    trashedFilesCnt,
+                    folderData.filesMetadatasInfo)
         }
-        foldersData[folderLevel].filesMetadatasInfo[fileItemIdIdx] = fileMetadataInfo
-        //		Log.v(LOG_TAG, "updateFolderItemView - after - " + allCurrFolderFilesTrashedOrThereAreNoFiles() + "/" + getCurrentFolderTrashedFilesCnt());
-
-
-        folderMetadatasInfoListAtLevel[fileItemIdIdx] = fileMetadataInfo
-        Log.v("FoldersData", """updateFolderItemView - fileMetadataInfo: ${fileMetadataInfo} """)
+        foldersData[folderLevel].filesMetadatasInfo[fileItemIdPos] = fileMetadataInfo
         verifyDataStructure()
     }
 

@@ -44,9 +44,9 @@ class FragmentsStackTest {
         val fragmentStack: FragmentsStack = testFragmentStack ?:
         throw RuntimeException("testFragmentStack cant be null")
 
-        val lfoldersData: FoldersData = testFoldersData ?:
+        val foldersData: FoldersData = testFoldersData ?:
         throw RuntimeException("testFoldersData cant be null")
-        return fragmentStack to lfoldersData
+        return fragmentStack to foldersData
     }
 
     @Test

@@ -278,6 +278,7 @@ class HomeActivity : BaseActivity(),
                 val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: -1
                 val folderItemsList = ArrayList<FolderItem>()
 
+                // fixLater: Sep 17, 2018 - why not the same logis as in updateFolderListAdapter()?
                 val list: ArrayList<FileMetadataInfo>? = foldersAddData?.filesMetadatasInfo
                         ?: FoldersData.getCurrFolderMetadataInfo()
 
@@ -441,27 +442,20 @@ class HomeActivity : BaseActivity(),
     override fun updateFolderListAdapter() {
         val currFolderMetadataInfo = FoldersData.getCurrFolderMetadataInfo()
         val folderItemsList = ArrayList<FolderItem>()
-        var cntAll = 0
-        var trashedCnt = 0
-        currFolderMetadataInfo!!.withIndex().forEach { (itemIdxInList, folderMetadataInfo) ->
-            cntAll++
-            if (folderMetadataInfo.isTrashed) trashedCnt++
-            if (!folderMetadataInfo.isTrashed || folderMetadataInfo.isTrashed && showTrashedFiles) {
-                folderItemsList.add(FolderItem(
-                        folderMetadataInfo.fileTitle,
-                        folderMetadataInfo.updateDt,
-                        folderMetadataInfo.mimeType,
-                        folderMetadataInfo.isTrashed,
-                        itemIdxInList
-                ))
-            }
-        }
+        currFolderMetadataInfo!!
+                .withIndex()
+                .forEach { (itemIdxInList, folderMetadataInfo) ->
+                    if (!folderMetadataInfo.isTrashed || folderMetadataInfo.isTrashed && showTrashedFiles) {
+                        folderItemsList.add(FolderItem(
+                                folderMetadataInfo.fileTitle,
+                                folderMetadataInfo.updateDt,
+                                folderMetadataInfo.mimeType,
+                                folderMetadataInfo.isTrashed,
+                                itemIdxInList
+                        ))
+                    }
+                }
 
-        Log.v("HomeActivity", """updateFolderListAdapter -
-            |cntAll:          ${cntAll}
-            |trashedCnt:      ${trashedCnt}
-            |folderItemsList: ${folderItemsList.size}
-            |""".trimMargin())
         folderArrayAdapter!!.clear()
         folderArrayAdapter!!.addAll(folderItemsList)
     }

@@ -3,13 +3,11 @@ package au.com.kbrsolutions.notesnuageuses.features.main.fragments
 import android.app.ListFragment
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.view.View.OnClickListener
 import android.widget.AdapterView.OnItemLongClickListener
 import android.widget.ListView
 import au.com.kbrsolutions.notesnuageuses.R
-import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 
 class FolderFragment : ListFragment(), OnClickListener {
 
@@ -81,23 +79,8 @@ class FolderFragment : ListFragment(), OnClickListener {
         }
     }
 
-    /**
-     * When 'showTrashed' files is false, the List<FolderItem> passed to the FolderArrayAdapter can
-     * be shorter then the list of all files in the folder if there are some trashed files.
-     * This method translates the index of the file item touched to its index of all files in the
-     * folder.
-     *
-     * @param position - index of the file item touched on the folder screen
-     * @return - index of the item in the folder's items list </FolderItem>
-     */
-    private fun getIdxOfClickedFolderItem(position: Int): Int {
-        val folderArrayAdapter = listAdapter as FolderArrayAdapter<*>
-        return folderArrayAdapter.getFolderItem(position).itemIdxInList
-    }
-
     override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
         super.onListItemClick(l, v, position, id)
-        Log.v("FolderFragment", """onListItemClick - id: ${id} """)
         // fixLater: Aug 24, 2018 - uncomment below - isAppFinishing is set up in removeTopFragment(...)
 //        if (isAppFinishing) {
 //            return
@@ -113,7 +96,6 @@ class FolderFragment : ListFragment(), OnClickListener {
     }
 
     override fun onClick(v: View) {
-        Log.v("FolderFragment", """onClick -view: $view """)
         val position = listView.getPositionForView(v)
         if (position != ListView.INVALID_POSITION) {
             v.setBackgroundColor(resources.getColor(R.color.action_view_clicked))
@@ -283,7 +265,7 @@ class FolderFragment : ListFragment(), OnClickListener {
                     arguments = Bundle().apply {
                         putInt(ARG_TRASH_FILES_CNT_KEY, trashFilesCnt)
                     }
-                    Log.v("FolderFragment", "newInstance - arguments: $arguments ")
+//                    Log.v("FolderFragment", "newInstance - arguments: $arguments ")
                 }
 
     }

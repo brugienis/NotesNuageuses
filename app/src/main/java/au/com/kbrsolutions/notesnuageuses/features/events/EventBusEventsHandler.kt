@@ -186,6 +186,9 @@ class EventBusEventsHandler(private val listener: OnEventBusEventsHandlerInterac
 
             FileDeleteEvents.Events.TRASH_FILE_FINISHED -> {
 
+                val idxInTheFolderFilesList = event.idxInTheFolderFilesList
+                Log.v("EventBusEventsHandler", """onMessageEvent - index
+                    |idxInTheFolderFilesList: ${idxInTheFolderFilesList} """.trimMargin())
                 FoldersData.updateFolderItemView(
                         event.fileItemId,
                         event.thisFileFolderLevel,
