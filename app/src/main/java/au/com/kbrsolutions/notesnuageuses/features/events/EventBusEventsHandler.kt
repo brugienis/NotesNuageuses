@@ -56,6 +56,7 @@ class EventBusEventsHandler(private val listener: OnEventBusEventsHandlerInterac
                 args.putInt(HomeActivity.IDX_IN_THE_FOLDER_FILES_LIST_KEY, idxInTheFolderFilesList)
                 idxInTheFolderFilesList
 
+                listener.setActionBarTitle(fileTitle)
                 listener.setFragment(
                         HomeActivity.FragmentsEnum.FILE_FRAGMENT,
                         event.fileName,

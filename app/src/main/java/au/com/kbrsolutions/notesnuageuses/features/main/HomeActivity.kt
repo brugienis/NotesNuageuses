@@ -328,7 +328,7 @@ class HomeActivity : BaseActivity(),
                 fragmentTransaction.commit()
             }
 
-            HomeActivity.FragmentsEnum.FILE_DETAILS_FRAGMENT ->
+            FragmentsEnum.FILE_DETAILS_FRAGMENT ->
                 fragmentManager.beginTransaction().replace(
                         R.id.fragments_frame,
                         fileDetailsFragment).commit()
@@ -540,7 +540,7 @@ class HomeActivity : BaseActivity(),
 //            folderFragment.setListAdapter(null)
 //        }
         stopFuturesHandlers()
-        mExecutorService!!.shutdown()
+        mExecutorService.shutdown()
         super.onDestroy()
     }
 
@@ -712,11 +712,15 @@ class HomeActivity : BaseActivity(),
         val folderMetadatasInfo = FoldersData.getCurrFolderMetadataInfo()
         val idxOfClickedFolderItem = getIdxOfClickedFolderItem(position)
         val folderMetadataInfo = folderMetadatasInfo!!.get(idxOfClickedFolderItem)
+
         fileDetailsFragment!!.setSelectedFileInfo(
                 idxOfClickedFolderItem,
                 folderMetadataInfo,
                 FoldersData.getCurrFolderLevel(),
                 FoldersData.getCurrFolderDriveId()!!)
+
+        setActionBarTitle(folderMetadataInfo.fileTitle)
+
         setFragment(
                 FragmentsEnum.FILE_DETAILS_FRAGMENT,
                 folderMetadataInfo.fileTitle,

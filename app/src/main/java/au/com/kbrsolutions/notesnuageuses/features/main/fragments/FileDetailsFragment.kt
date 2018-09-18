@@ -65,19 +65,19 @@ class FileDetailsFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_file_details, container,
                 false)
 
-//        openLayout = rootView.findViewById(R.id.fileDetailOpenLayoutId)
+        openLayout = rootView.fileDetailOpenLayoutId
         rootView.fileDetailOpenLayoutId.setOnClickListener {
-            openTv!!.setBackgroundColor(resources.getColor(R.color.action_view_clicked))
+            openTv!!.setBackgroundColor(resources. getColor(R.color.action_view_clicked))
             openFile()
         }
 
-        openTv = rootView.findViewById(R.id.fileDetailOpenId)
+        openTv = rootView.fileDetailOpenId
 
-        val isFileTrashed = FoldersData.getCurrFolderMetadataInfo()!!.get(position).isTrashed
+        val isFileTrashed = FoldersData.getCurrFolderMetadataInfo()!![position].isTrashed
 
-        renameUntrashLayout = rootView.findViewById(R.id.fileDetailRenameUntrashLayoutId)
+        renameUntrashLayout = rootView.fileDetailRenameUntrashLayoutId
 
-        fileDetailRenameUntrashImageId = rootView.findViewById(R.id.fileDetailRenameUntrashImageId)
+        fileDetailRenameUntrashImageId = rootView.fileDetailRenameUntrashImageId
 
         renameUntrashLayout!!.setOnClickListener {
             if (isFileTrashed) {
@@ -87,7 +87,7 @@ class FileDetailsFragment : Fragment() {
             }
         }
 
-        renameUntrashTv = rootView.findViewById(R.id.fileDetailRenameUntrashId)
+        renameUntrashTv = rootView.fileDetailRenameUntrashId
 
         if (isFileTrashed) {
             renameUntrashTv!!.text = resources.getText(R.string.file_detail_untrash)
@@ -97,7 +97,7 @@ class FileDetailsFragment : Fragment() {
             fileDetailRenameUntrashImageId!!.setImageResource(R.mipmap.ic_edit_black_48dp)
         }
 
-        trashDeleteLayout = rootView.findViewById(R.id.fileDetailTrashDeleteLayoutId)
+        trashDeleteLayout = rootView.fileDetailTrashDeleteLayoutId
 
         trashDeleteLayout!!.setOnClickListener {
             if (isFileTrashed) {
@@ -107,7 +107,7 @@ class FileDetailsFragment : Fragment() {
             }
         }
 
-        trashDeleteTv = rootView.findViewById(R.id.fileDetailTrashDeleteId)
+        trashDeleteTv = rootView.fileDetailTrashDeleteId
 
         if (isFileTrashed) {
             trashDeleteTv!!.text = resources.getText(R.string.file_detail_delete)
@@ -115,18 +115,18 @@ class FileDetailsFragment : Fragment() {
             trashDeleteTv!!.text = resources.getText(R.string.file_detail_trash)
         }
 
-        kindTv = rootView.findViewById(R.id.fileDetailKindDataId)
-        //		Log.i(LOC_CAT_TAG, "onCreateView - folderMetadataInfo/mime: " + folderMetadataInfo + "/" + folderMetadataInfo.mimeType);
-        // fixme: move test to string
+        kindTv = rootView.fileDetailKindDataId
+
         val fileKind = when {
             folderMetadataInfo!!.isFolder -> getString(R.string.file_type_folder)
             folderMetadataInfo!!.mimeType == BaseActivity.MIME_TYPE_TEXT_FILE -> getString(R.string.file_type_file)
             else -> "Image"
         }
-        Log.i(LOC_CAT_TAG, "onCreateView - fileKind: $fileKind")
+
         kindTv!!.text = fileKind
 
-        locationTv = rootView.findViewById(R.id.fileDetailLocationDataId)
+        locationTv = rootView.fileDetailLocationDataId
+
         val fileLocation = if (folderMetadataInfo!!.parentTitle == null) {
             getString(R.string.app_root_folder_name)
         } else {
@@ -135,17 +135,13 @@ class FileDetailsFragment : Fragment() {
 
         locationTv!!.text = fileLocation
 
-        createdTv = rootView.findViewById(R.id.fileDetailCreatedDataId)
+        createdTv = rootView.fileDetailCreatedDataId
+
         createdTv!!.text = defaultDataFormat.format(folderMetadataInfo!!.createDt)
 
-        modifiedTv = rootView.findViewById(R.id.fileDetailUpdatedDataId)
+        modifiedTv = rootView.fileDetailUpdatedDataId
+
         modifiedTv!!.text = defaultDataFormat.format(folderMetadataInfo!!.updateDt)
-
-        //		trashInfoHeaderTv = (TextView) rootView.findViewById(R.id.fileDetailTrashInfoHeaderId);
-        //		trashInfoHeaderTv.setText(getResources().getString(R.string.file_detail_trash_info));
-
-        //		trashInfoTv = (TextView) rootView.findViewById(R.id.fileDetailTrashInfoId);
-        //		trashInfoTv.setText(String.valueOf(trashedFilesCnt));
 
         return rootView
     }
@@ -175,7 +171,6 @@ class FileDetailsFragment : Fragment() {
 //        newFragment.show(mActivity!!.getFragmentManager(), "dialog")
     }
 
-    // fixLater: Sep 15, 2018 - call listener.trashOrDeleteFile(...)
     private fun trashFile() {
         Log.i(LOC_CAT_TAG, "trashOrDeleteFile - start")
         trashDeleteTv!!.setBackgroundColor(resources.getColor(R.color.action_view_clicked))

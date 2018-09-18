@@ -3,7 +3,6 @@ package au.com.kbrsolutions.notesnuageuses.features.main.fragments
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -53,7 +52,6 @@ class FileFragment : Fragment() {
             }
             mArgsProcessed = true
         }
-        Log.v("FileFragment", """onCreate - end""")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

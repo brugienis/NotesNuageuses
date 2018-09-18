@@ -11,7 +11,6 @@ import com.google.android.gms.tasks.Tasks
 import org.greenrobot.eventbus.EventBus
 import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStream
 import java.io.InputStreamReader
 import java.util.concurrent.Callable
 
@@ -107,19 +106,6 @@ data class GetFileFromDriveTask(
         eventBus.post(DriveAccessEvents.Builder(DriveAccessEvents.Events.MESSAGE)
                 .msgContents(msg)
                 .build())
-    }
-
-    private fun getDecryptedBytes(inputStream: InputStream?): String {
-        val reader = BufferedReader(InputStreamReader(inputStream!!))
-        val builder = StringBuilder()
-        val downloadedContents: String
-        var line = reader.readLine()
-        while (line != null) {
-            builder.append(line)
-            line = reader.readLine()
-        }
-        downloadedContents = builder.toString()
-        return downloadedContents
     }
 
     class Builder {
