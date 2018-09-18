@@ -14,7 +14,8 @@ class FilesUploadEvents(
         var fileName: String,
         var currFolderDriveId: DriveId,
         var createDt: Date,
-        var updateDt: Date) {
+        var updateDt: Date,
+        var idxInTheFolderFilesList: Int) {
 
     enum class Events {
         TEXT_UPLOADING,
@@ -39,6 +40,7 @@ class FilesUploadEvents(
         private lateinit var currFolderDriveId: DriveId
         private lateinit var createDate: Date
         private lateinit var updateDate: Date
+        private var idxInTheFolderFilesList: Int = -1
 
         fun msgContents(msgContents: String) = apply { this.msgContents = msgContents }
 
@@ -62,6 +64,9 @@ class FilesUploadEvents(
 
         fun updateDate(updateDate: Date) = apply { this.updateDate = updateDate }
 
+        fun idxInTheFolderFilesList(idxInTheFolderFilesList: Int) =
+                apply { this.idxInTheFolderFilesList = idxInTheFolderFilesList }
+
         fun build() = FilesUploadEvents(
                 request,
                 msgContents,
@@ -73,7 +78,8 @@ class FilesUploadEvents(
                 fileName,
                 currFolderDriveId,
                 createDate,
-                updateDate)
+                updateDate,
+                idxInTheFolderFilesList)
     }
 
 }

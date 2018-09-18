@@ -12,7 +12,7 @@ class FileDeleteEvents(
         var mimeType: String,
         var isTrashed: Boolean,
         var thisFileFolderLevel: Int,
-        var idxInTheFolderFilesList: Int?,
+        var idxInTheFolderFilesList: Int,
         var parentFileName: String,
         var fileName: String,
         var currFolderDriveId: DriveId?,

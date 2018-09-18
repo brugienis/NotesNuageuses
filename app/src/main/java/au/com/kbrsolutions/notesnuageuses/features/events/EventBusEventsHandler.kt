@@ -46,10 +46,15 @@ class EventBusEventsHandler(private val listener: OnEventBusEventsHandlerInterac
                 val fileTitle = event.fileName
                 val fileContents = event.textContents
                 val thisFileDriveId = event.downloadedFileDriveId.encodeToString()
+                val fileItemId = event.fileItemId
+                val idxInTheFolderFilesList = event.idxInTheFolderFilesList
                 val args = Bundle()
                 args.putString(HomeActivity.FILE_NAME_KEY, fileTitle)
                 args.putString(HomeActivity.FILE_CONTENTS_KEY, fileContents)
                 args.putString(HomeActivity.THIS_FILE_DRIVE_ID_KEY, thisFileDriveId)
+                args.putLong(HomeActivity.FILE_ITEM_ID_KEY, fileItemId)
+                args.putInt(HomeActivity.IDX_IN_THE_FOLDER_FILES_LIST_KEY, idxInTheFolderFilesList)
+                idxInTheFolderFilesList
 
                 listener.setFragment(
                         HomeActivity.FragmentsEnum.FILE_FRAGMENT,
@@ -188,11 +193,12 @@ class EventBusEventsHandler(private val listener: OnEventBusEventsHandlerInterac
 
                 val idxInTheFolderFilesList = event.idxInTheFolderFilesList
                 Log.v("EventBusEventsHandler", """onMessageEvent - index
-                    |idxInTheFolderFilesList: ${idxInTheFolderFilesList} """.trimMargin())
+                    |idxInTheFolderFilesList: $idxInTheFolderFilesList """.trimMargin())
                 FoldersData.updateFolderItemView(
                         event.fileItemId,
                         event.thisFileFolderLevel,
                         event.parentFolderDriveId,
+                        idxInTheFolderFilesList,
                         FileMetadataInfo(
                                 event.parentFileName,
                                 event.fileName,
@@ -333,10 +339,12 @@ class EventBusEventsHandler(private val listener: OnEventBusEventsHandlerInterac
     }
 
     private fun updateFolderItem(event: FilesUploadEvents, context: Context) {
+        // fixLater: Sep 17, 2018 - pass around idxInTheFolderFilesList - changes done. TEST it.
         FoldersData.updateFolderItemView(
                 event.fileItemId,
                 event.folderLevel,
                 event.currFolderDriveId,
+                event.idxInTheFolderFilesList,
                 FileMetadataInfo(
                         event.parentFileName,
                         event.fileName,

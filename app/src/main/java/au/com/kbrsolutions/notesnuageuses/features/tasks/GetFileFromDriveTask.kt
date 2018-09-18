@@ -21,7 +21,9 @@ data class GetFileFromDriveTask(
         var driveResourceClient: DriveResourceClient,
         val selectedDriveId: DriveId,
         val fileName: String,
-        val mimeType: String): Callable<String> {
+        val mimeType: String,
+        val fileItemId: Long,
+        var idxInTheFolderFilesList: Int): Callable<String> {
 
     private var decryptMillis: Long = 0
 
@@ -74,6 +76,8 @@ data class GetFileFromDriveTask(
                             .downloadedFileDriveId(selectedDriveId)
                             .textContents(fileContents)
                             .mimeType(mimeType)
+                            .fileItemId(fileItemId)
+                            .idxInTheFolderFilesList(idxInTheFolderFilesList)
                             .build())
                 } else {
                     postDownloadProblemEvent(
@@ -126,6 +130,8 @@ data class GetFileFromDriveTask(
         private lateinit var selectedDriveId: DriveId
         private lateinit var fileName: String
         private lateinit var mimeType: String
+        private var fileItemId: Long = -1
+        private var idxInTheFolderFilesList: Int = -1
 
         fun context(context: Context) = apply { this.context = context }
 
@@ -141,13 +147,21 @@ data class GetFileFromDriveTask(
 
         fun mimeType(mimeType: String) = apply { this.mimeType = mimeType }
 
+        fun fileItemId(fileItemId: Long) =
+                apply { this.fileItemId = fileItemId }
+
+        fun idxInTheFolderFilesList(idxInTheFolderFilesList: Int) =
+                apply { this.idxInTheFolderFilesList = idxInTheFolderFilesList }
+
         fun build() = GetFileFromDriveTask(
                 context,
                 eventBus,
                 driveResourceClient,
                 selectedDriveId,
                 fileName,
-                mimeType)
+                mimeType,
+                fileItemId,
+                idxInTheFolderFilesList)
     }
 
 }

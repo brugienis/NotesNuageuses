@@ -76,6 +76,8 @@ class HomeActivity : BaseActivity(),
         const val FILE_NAME_KEY = "file_name_key"
         const val THIS_FILE_DRIVE_ID_KEY = "this_file_drive_id_key"
         const val FILE_CONTENTS_KEY = "file_contents_key"
+        const val FILE_ITEM_ID_KEY = "file_item_id_key"
+        const val IDX_IN_THE_FOLDER_FILES_LIST_KEY = "idx_in_the_folder_files_list_key"
     }
 
     private val eventBusListenable: EventBusListenable =
@@ -244,11 +246,23 @@ class HomeActivity : BaseActivity(),
                 } else {
                     null
                 }
+                val fileItemId = fragmentArgs.getLong(FILE_ITEM_ID_KEY)
+                val idxInTheFolderFilesList = fragmentArgs.getInt(IDX_IN_THE_FOLDER_FILES_LIST_KEY)
                 if (fileFragment == null) {
                     fileFragment =
-                            FileFragment.newInstance(fileName, fileContents, thisFileDriveId)
+                            FileFragment.newInstance(
+                                    fileName,
+                                    fileContents,
+                                    thisFileDriveId,
+                                    fileItemId,
+                                    idxInTheFolderFilesList)
                 } else {
-                    fileFragment!!.setFileDetails(fileName, fileContents, thisFileDriveId)
+                    fileFragment!!.setFileDetails(
+                            fileName,
+                            fileContents,
+                            thisFileDriveId,
+                            fileItemId,
+                            idxInTheFolderFilesList)
                 }
 
                 fragmentTransaction = fragmentManager.beginTransaction()
@@ -588,9 +602,9 @@ class HomeActivity : BaseActivity(),
         // true, then it has handled the app icon touch event
 
         when (item.itemId) {
-            R.id.action_connect_to_google_drive ->
-                sendTextFileToDrive(null,"test1.txt",
-                        "Hello Drive".toByteArray(Charsets.UTF_8))
+//            R.id.action_connect_to_google_drive ->
+//                sendTextFileToDrive(null,"test1.txt",
+//                        "Hello Drive".toByteArray(Charsets.UTF_8), -1)
             R.id.menuQuickPhoto -> handleCameraOptionSelected()
             R.id.menuRefresh -> handleRefreshOptionSelected()
 //            R.id.menuCreateFile -> handleCreateFileOptionSelected()
@@ -623,7 +637,9 @@ class HomeActivity : BaseActivity(),
     override fun sendTextFileToDrive(
             existingFileDriveId: DriveId?,
             fileName: String,
-            fileContents: ByteArray) {
+            fileContents: ByteArray,
+            fileItemId:Long,
+            idxInTheFolderFilesList: Int) {
         val currFolderLevel = FoldersData.getCurrFolderLevel()
 
         val sendTextToGoogleDriveCallable = SendFileToDriveTask.Builder()
@@ -637,6 +653,8 @@ class HomeActivity : BaseActivity(),
                 .mimeType(MIME_TYPE_TEXT_FILE)
                 .contents(fileContents)
                 .parentFileName(FoldersData.getFolderTitle(currFolderLevel)!!)
+                .fileItemId(fileItemId)
+                .idxInTheFolderFilesList(idxInTheFolderFilesList)
                 .build()
 
         handleNonCancellableFuturesCallable.submitCallable(sendTextToGoogleDriveCallable)
@@ -666,6 +684,7 @@ class HomeActivity : BaseActivity(),
         val args = Bundle()
         args.putString(FILE_NAME_KEY, fileName.toString())
         args.putString(FILE_CONTENTS_KEY, "")
+        args.putLong(FILE_ITEM_ID_KEY, System.currentTimeMillis())
 
         setFragment(
                 FragmentsEnum.FILE_FRAGMENT,
@@ -707,19 +726,21 @@ class HomeActivity : BaseActivity(),
     }
 
     override fun handleOnFolderOrFileClick(position: Int) {
-        val idx = getIdxOfClickedFolderItem(position)
+        val idxInTheFolderFilesList = getIdxOfClickedFolderItem(position)
         val folderMetadataArrayInfo = FoldersData.getCurrFolderMetadataInfo()
-        val folderMetadataInfo: FileMetadataInfo = folderMetadataArrayInfo!![idx]
-        if (folderMetadataInfo.isFolder) {
-            startDownloadFolderInfo(folderMetadataInfo)
+        val fileMetadataInfo: FileMetadataInfo = folderMetadataArrayInfo!![idxInTheFolderFilesList]
+        if (fileMetadataInfo.isFolder) {
+            startDownloadFolderInfo(fileMetadataInfo)
         } else {
-            startDownloadFileContents(folderMetadataInfo)
+            startDownloadFileContents(idxInTheFolderFilesList, fileMetadataInfo)
         }
     }
 
-    private fun startDownloadFileContents(folderMetadataInfo: FileMetadataInfo) {
+    private fun startDownloadFileContents(
+            idxInTheFolderFilesList: Int,
+            fileMetadataInfo: FileMetadataInfo) {
         val args = Bundle()
-        val fileTitle = folderMetadataInfo.fileTitle
+        val fileTitle = fileMetadataInfo.fileTitle
         args.putString(FILE_NAME_KEY, fileTitle)
         showDownloadFragment(fileTitle + getString(
                 R.string.retrieving_file_file))
@@ -730,9 +751,11 @@ class HomeActivity : BaseActivity(),
                 .context(applicationContext)
                 .eventBus(eventBus)
                 .driveResourceClient(mDriveResourceClient)
-                .selectedDriveId(folderMetadataInfo.fileDriveId!!)
+                .selectedDriveId(fileMetadataInfo.fileDriveId!!)
                 .fileName(fileTitle)
-                .mimeType(folderMetadataInfo.mimeType)
+                .mimeType(fileMetadataInfo.mimeType)
+                .fileItemId(fileMetadataInfo.fileItemId)
+                .idxInTheFolderFilesList(idxInTheFolderFilesList)
                 .build())
     }
 

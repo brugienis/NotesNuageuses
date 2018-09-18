@@ -8,7 +8,9 @@ class FilesDownloadEvents(
         var textContents: String,
         var mimeType: String,
         var fileName: String,
-        var downloadedFileDriveId: DriveId) {
+        var downloadedFileDriveId: DriveId,
+        var fileItemId: Long,
+        var idxInTheFolderFilesList: Int) {
 
     enum class Events {
         FILE_DOWNLOADING,
@@ -27,6 +29,8 @@ class FilesDownloadEvents(
         private lateinit var downloadedFileDriveId: DriveId
         private lateinit var mimeType: String
         private lateinit var fileName: String
+        private var fileItemId: Long = -1
+        private var idxInTheFolderFilesList: Int = -1
 
         fun msgContents(msgContents: String) = apply { this.msgContents = msgContents }
 
@@ -39,13 +43,21 @@ class FilesDownloadEvents(
 
         fun fileName(fileName: String) = apply { this.fileName = fileName }
 
+        fun idxInTheFolderFilesList(idxInTheFolderFilesList: Int) =
+                apply { this.idxInTheFolderFilesList = idxInTheFolderFilesList }
+
+        fun fileItemId(fileItemId: Long) =
+                apply { this.fileItemId = fileItemId }
+
         fun build() = FilesDownloadEvents(
                 request,
                 msgContents,
                 textContents,
                 mimeType,
                 fileName,
-                downloadedFileDriveId)
+                downloadedFileDriveId,
+                fileItemId,
+                idxInTheFolderFilesList)
     }
 
 }

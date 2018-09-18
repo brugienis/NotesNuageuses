@@ -23,10 +23,12 @@ data class SendFileToDriveTask(
         val fileName: String,
         val mimeType: String,
         val fileContents: ByteArray,
-        val parentFileName: String): Callable<String> {
+        val parentFileName: String,
+        val fileItemId: Long,
+        val idxInTheFolderFilesList: Int): Callable<String> {
 
     private val createDt: Date = Date()
-    private val fileItemId = createDt.time
+//    private val fileItemId = createDt.time
     private var msg: String = ""
     private var thisFileDriveId: DriveId? = null
     private var encryptMillis: Long = 0
@@ -44,11 +46,11 @@ data class SendFileToDriveTask(
 
         try {
 
-            sendUpdateEvent(FilesUploadEvents.Events.TEXT_UPLOADING, msg, fileNameWithExtension)
-
             var uploadSuccessful = false
 
             if (existingFileDriveId != null) {
+                thisFileDriveId = existingFileDriveId
+                sendUpdateEvent(FilesUploadEvents.Events.TEXT_UPLOADING, msg, fileNameWithExtension)
 
                 val openTask = driveResourceClient.openFile(
                         existingFileDriveId.asDriveFile(), DriveFile.MODE_WRITE_ONLY)
@@ -63,20 +65,20 @@ data class SendFileToDriveTask(
                 Log.v("SendFileToDriveTask", """call before - fileContents: $fileContents """)
                 // groovyScript("_1 ?: '<top>'", kotlinClassName())
                 // groovyScript("_1.take(Math.min(23, _1.length()));", className())
-                if (true) throw RuntimeException("BR - after write")
+//                if (true) throw RuntimeException("BR test - after write")
 
                 Log.v("SendFileToDriveTask", """call after  - fileContents: $fileContents """)
 
-                val commitTask =
-                        driveResourceClient.commitContents(driveContents, null)
+                val commitTask = driveResourceClient.commitContents(driveContents, null)
                 Tasks.await(commitTask)
 
                 if (commitTask.isSuccessful) {
-                    thisFileDriveId = existingFileDriveId
                     uploadSuccessful = true
                 }
 
             } else {
+                sendUpdateEvent(FilesUploadEvents.Events.TEXT_UPLOADING, msg, fileNameWithExtension)
+
                 val createContentsTask = driveResourceClient.createContents()
 
                 Tasks.await(createContentsTask)
@@ -157,7 +159,10 @@ data class SendFileToDriveTask(
     }
 
     private fun sendUpdateEvent(event: FilesUploadEvents.Events, msg: String, fileName: String) {
-        Log.v("SendFileToDriveTask", """sendUpdateEvent - before fileName: $fileName """)
+        Log.v("SendFileToDriveTask", """sendUpdateEvent - before
+            |fileName: $fileName
+            |thisFileDriveId: $thisFileDriveId
+            |""".trimMargin())
         eventBus.post(FilesUploadEvents.Builder(event)
                 .msgContents(msg)
                 .parentFileName(parentFileName)
@@ -169,6 +174,7 @@ data class SendFileToDriveTask(
                 .thisFileDriveId(thisFileDriveId)
                 .mimeType(mimeType)
                 .folderLevel(parentFolderLevel)
+                .idxInTheFolderFilesList(idxInTheFolderFilesList)
                 .build())
     }
 
@@ -184,6 +190,8 @@ data class SendFileToDriveTask(
         private lateinit var mimeType: String
         private lateinit var contents: ByteArray
         private lateinit var parentFileName: String
+        private var fileItemId: Long = -1
+        private var idxInTheFolderFilesList: Int = -1
 
         fun context(context: Context) = apply { this.context = context }
 
@@ -209,6 +217,12 @@ data class SendFileToDriveTask(
 
         fun parentFileName(parentFileName: String) = apply { this.parentFileName = parentFileName }
 
+        fun idxInTheFolderFilesList(idxInTheFolderFilesList: Int) =
+                apply { this.idxInTheFolderFilesList = idxInTheFolderFilesList }
+
+        fun fileItemId(fileItemId: Long) =
+                apply { this.fileItemId = fileItemId }
+
         fun build() = SendFileToDriveTask (
                 context,
                 eventBus,
@@ -219,7 +233,9 @@ data class SendFileToDriveTask(
                 fileName,
                 mimeType,
                 contents,
-                parentFileName)
+                parentFileName,
+                fileItemId,
+                idxInTheFolderFilesList)
     }
 
 }

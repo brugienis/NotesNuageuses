@@ -166,6 +166,7 @@ object FoldersData {
             fileItemId: Long?,
             folderLevel: Int,
             fileParentFolderDriveId: DriveId,
+            idxInTheFolderFilesList: Int,
             fileMetadataInfo: FileMetadataInfo) {
         // TODO: check if folderLevel and position have correct value. ALSO add folder
         // DriverId in case folder was removed and another opened on the same level
@@ -182,10 +183,22 @@ object FoldersData {
         val folderMetadataArrayInfoListAtLevel = foldersMetadataArrayInfoList[folderLevel]
 
         var fileItemIdPos = -1
-        folderMetadataArrayInfoListAtLevel.withIndex().forEach {
-            if (it.value.fileItemId == fileItemId) {
-                fileItemIdPos = it.index
-                return@forEach
+        if (folderMetadataArrayInfoListAtLevel[idxInTheFolderFilesList].fileItemId == fileItemId) {
+            fileItemIdPos = idxInTheFolderFilesList
+            Log.v("FoldersData", """updateFolderItemView - OK
+                |idxInTheFolderFilesList: $idxInTheFolderFilesList """.trimMargin())
+        } else {
+            Log.v("FoldersData", """updateFolderItemView - Searching
+                |idxInTheFolderFilesList: $idxInTheFolderFilesList """.trimMargin())
+            folderMetadataArrayInfoListAtLevel.withIndex().forEach {
+                Log.v("FoldersData", """updateFolderItemView -
+                    |it.value.fileItemId: ${it.value.fileItemId}
+                    |fileItemId:          $fileItemId
+                    |""".trimMargin())
+                if (it.value.fileItemId == fileItemId) {
+                    fileItemIdPos = it.index
+                    return@forEach
+                }
             }
         }
         Log.v("FoldersData", """updateFolderItemView - index - fileItemIdPos: ${fileItemIdPos} """)

@@ -18,6 +18,8 @@ class FileFragment : Fragment() {
     private var mArgsProcessed = false
     private var mFileName: String = "Unknown"
     private var mFileContents: String = "Unknown"
+    private var mFileItemId: Long = -1
+    private var mIdxInTheFolderFilesList: Int = -1
     private var imm: InputMethodManager? = null
     private lateinit var mTextEt: EditText
     private var mTextContents: String? = null
@@ -46,6 +48,8 @@ class FileFragment : Fragment() {
                     mThisFileDriveId = DriveId.decodeFromString(
                             it.getString(ARG_THIS_FILE_DRIVE_ID_KEY))
                 }
+                mFileItemId = it.getLong(ARG_FILE_ITEM_ID_KEY)
+                mIdxInTheFolderFilesList = it.getInt(ARG_IDX_IN_THE_FOLDER_FILES_LIST_KEY)
             }
             mArgsProcessed = true
         }
@@ -68,14 +72,17 @@ class FileFragment : Fragment() {
         mTextEt.setText(mFileContents)
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        super.onSaveInstanceState(outState)
-    }
+//    override fun onSaveInstanceState(outState: Bundle?) {
+//        super.onSaveInstanceState(outState)
+//    }
 
-    fun setFileDetails(fileName: String, fileContents: String, thisFileDriveId: DriveId?) {
+    fun setFileDetails(fileName: String, fileContents: String, thisFileDriveId: DriveId?,
+                       fileItemId: Long, idxInTheFolderFilesList: Int) {
         mFileName = fileName
         mFileContents = fileContents
         mThisFileDriveId = thisFileDriveId
+        mFileItemId = fileItemId
+        mIdxInTheFolderFilesList = idxInTheFolderFilesList
     }
 
     private fun handleSaveMenuItemClicked() {
@@ -83,7 +90,9 @@ class FileFragment : Fragment() {
         listener.sendTextFileToDrive(
                 mThisFileDriveId,
                 mFileName,
-                mTextEt.text.toString().toByteArray())
+                mTextEt.text.toString().toByteArray(),
+                mFileItemId,
+                mIdxInTheFolderFilesList)
         cleanup()
     }
 
@@ -143,7 +152,9 @@ class FileFragment : Fragment() {
         fun sendTextFileToDrive(
                 existingFileDriveId: DriveId?,
                 fileName: String,
-                fileContents: ByteArray)
+                fileContents: ByteArray,
+                fileItemId: Long,
+                idxInTheFolderFilesList: Int)
         fun onUpButtonPressedInFragment()
     }
 
@@ -152,9 +163,17 @@ class FileFragment : Fragment() {
         private const val ARG_FILE_NAME_KEY = "arg_file_name_key"
         private const val ARG_FILE_CONTENTS_KEY = "arg_file_contents_key"
         private const val ARG_THIS_FILE_DRIVE_ID_KEY = "arg_this_file_drive_id_key"
+        private const val ARG_FILE_ITEM_ID_KEY = "arg_file_item_id_key"
+        private const val ARG_IDX_IN_THE_FOLDER_FILES_LIST_KEY =
+                "arg_idx_in_the_folder_files_list_key"
 
         @JvmStatic
-        fun newInstance(fileName: String, fileContents: String, thisFileDriveId: DriveId?) =
+        fun newInstance(
+                fileName: String,
+                fileContents: String,
+                thisFileDriveId: DriveId?,
+                fileItemId: Long,
+                idxInTheFolderFilesList: Int) =
                 FileFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_FILE_NAME_KEY, fileName)
@@ -162,6 +181,8 @@ class FileFragment : Fragment() {
                         if (thisFileDriveId != null) {
                             putString(ARG_THIS_FILE_DRIVE_ID_KEY, thisFileDriveId.encodeToString())
                         }
+                        putLong(ARG_FILE_ITEM_ID_KEY, fileItemId)
+                        putInt(ARG_IDX_IN_THE_FOLDER_FILES_LIST_KEY, idxInTheFolderFilesList)
                     }
                 }
     }
