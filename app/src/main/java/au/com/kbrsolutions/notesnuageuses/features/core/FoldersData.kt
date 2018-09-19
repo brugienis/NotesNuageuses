@@ -169,11 +169,11 @@ object FoldersData {
             idxInTheFolderFilesList: Int,
             fileMetadataInfo: FileMetadataInfo) {
 
-        /* Update coming for the folder level that was already removed - ignore it */
+        /* If an update is coming for the folder level that was already removed - ignore it */
         if (currFolderLevel < folderLevel) {
             verifyDataStructure()
             return
-            /* Ignore update request because the folder on the 'folderLevel' has changed */
+            /* Ignore update request if the folder's 'drive is' on the 'folderLevel' has changed */
         } else if (foldersDriveIdsList[folderLevel] != fileParentFolderDriveId) {
             verifyDataStructure()
             return
@@ -213,17 +213,7 @@ object FoldersData {
             } else {
                 foldersTrashedFilesCnt[folderLevel] = --trashedFilesCnt
             }
-            // fixLater: Sep 19, 2018 - no need to create new FolderData object 
-            foldersData[folderLevel] = FolderData(
-                    folderData.newFolderDriveId,
-                    folderData.newFolderTitle,
-                    folderData.folderLevel,
-                    folderData.fileParentFolderDriveId,
-                    folderData.newFolderData,
-                    trashedFilesCnt,
-                    folderData.filesMetadatasInfo)
         }
-        foldersData[folderLevel].filesMetadatasInfo[fileItemIdPos] = fileMetadataInfo
         verifyDataStructure()
     }
 
@@ -262,16 +252,6 @@ object FoldersData {
         } else {
             folderMetadataArrayInfoListAtLevel.removeAt(fileItemIdPos)
             val trashedFilesCnt = getCurrentFolderTrashedFilesCnt() - 1
-//            val folderData = foldersData[folderLevel]
-//            val newFolderData = FolderData(
-//                    folderData.newFolderDriveId,
-//                    folderData.newFolderTitle,
-//                    folderData.folderLevel,
-//                    folderData.fileParentFolderDriveId,
-//                    folderData.newFolderData,
-//                    trashedFilesCnt,
-//                    folderData.filesMetadatasInfo)
-//            foldersData[folderLevel] = newFolderData
             foldersTrashedFilesCnt[folderLevel] = trashedFilesCnt
         }
         verifyDataStructure()
