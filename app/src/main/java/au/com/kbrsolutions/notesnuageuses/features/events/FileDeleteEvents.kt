@@ -18,7 +18,8 @@ class FileDeleteEvents(
         var currFolderDriveId: DriveId?,
         var parentFolderDriveId: DriveId,
         var createDt: Date,
-        var updateDt: Date) {
+        var updateDt: Date,
+        var isFileDeleted: Boolean) {
 
     enum class Events {
         TRASH_FILE,
@@ -45,6 +46,7 @@ class FileDeleteEvents(
         private lateinit var parentFolderDriveId: DriveId
         private lateinit var createDate: Date
         private lateinit var updateDate: Date
+        private var isFileDeleted: Boolean = false
 
         fun msgContents(msgContents: String?) = apply { this.msgContents = msgContents }
 
@@ -79,6 +81,8 @@ class FileDeleteEvents(
 
         fun updateDate(updateDate: Date) = apply { this.updateDate = updateDate }
 
+        fun isFileDeleted(isFileDeleted: Boolean) = apply { this.isFileDeleted = isFileDeleted }
+
         fun build() = FileDeleteEvents(
                 request,
                 msgContents,
@@ -94,7 +98,8 @@ class FileDeleteEvents(
                 currFolderDriveId,
                 parentFolderDriveId,
                 createDate,
-                updateDate)
+                updateDate,
+                isFileDeleted)
         }
     }
 

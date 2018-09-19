@@ -194,24 +194,47 @@ class EventBusEventsHandler(private val listener: OnEventBusEventsHandlerInterac
 
                 val idxInTheFolderFilesList = event.idxInTheFolderFilesList
                 Log.v("EventBusEventsHandler", """onMessageEvent - index
-                    |idxInTheFolderFilesList: $idxInTheFolderFilesList """.trimMargin())
-                FoldersData.updateFolderItemView(
-                        event.fileItemId,
-                        event.thisFileFolderLevel,
-                        event.parentFolderDriveId,
-                        idxInTheFolderFilesList,
-                        FileMetadataInfo(
-                                event.parentFileName,
-                                event.fileName,
-                                event.thisFileDriveId,
-                                event.isFolder,
-                                event.mimeType,
-                                event.createDt,
-                                event.updateDt,
-                                event.fileItemId,
-                                true,
-                                event.isTrashed)
-                )
+                    |idxInTheFolderFilesList: $idxInTheFolderFilesList
+                    |isFileDeleted          : ${event.isFileDeleted}
+                    |""".trimMargin())
+
+                if (event.isFileDeleted) {
+                    FoldersData.updateFolderItemViewAfterFileDelete(
+                            event.fileItemId,
+                            event.thisFileFolderLevel,
+                            event.parentFolderDriveId,
+                            idxInTheFolderFilesList,
+                            FileMetadataInfo(
+                                    event.parentFileName,
+                                    event.fileName,
+                                    event.thisFileDriveId,
+                                    event.isFolder,
+                                    event.mimeType,
+                                    event.createDt,
+                                    event.updateDt,
+                                    event.fileItemId,
+                                    true,
+                                    event.isTrashed)
+                    )
+                } else {
+                    FoldersData.updateFolderItemView(
+                            event.fileItemId,
+                            event.thisFileFolderLevel,
+                            event.parentFolderDriveId,
+                            idxInTheFolderFilesList,
+                            FileMetadataInfo(
+                                    event.parentFileName,
+                                    event.fileName,
+                                    event.thisFileDriveId,
+                                    event.isFolder,
+                                    event.mimeType,
+                                    event.createDt,
+                                    event.updateDt,
+                                    event.fileItemId,
+                                    true,
+                                    event.isTrashed)
+                    )
+                }
                 // fixme: do we need updateFolderListAdapter()
                 val folderData = FoldersData.getCurrFolderData()
                 if (FoldersData.allCurrFolderFilesTrashedOrThereAreNoFiles()) {

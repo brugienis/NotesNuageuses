@@ -61,7 +61,7 @@ data class RemoveFileFromDriveTask(
 
                     lateinit var toggleTrashTask: Task<Void>
 
-                    if (metadata.isTrashed()) {
+                    if (metadata.isTrashed) {
                         toggleTrashTask = driveResourceClient.untrash(driveResource)
                         isTrashed = false
                     } else {
@@ -75,16 +75,16 @@ data class RemoveFileFromDriveTask(
 
             if (!success) {
                 sendProblemEvent(
-                        context.resources.
-                                getString(
-                                        R.string.file_delete_problem, currName))
+                        context.resources.getString(
+                                R.string.file_delete_problem, currName))
+            } else {
+                val msg = if (deleteThisFile) "File was deleted" else "File is trashed: $isTrashed"
+                postProgressEvent(
+                        FileDeleteEvents.Events.TRASH_FILE_FINISHED,
+                        msg,
+                        Date())
             }
-            postProgressEvent(
-                    FileDeleteEvents.Events.TRASH_FILE_FINISHED,
-                    "File is trashed: $isTrashed",
-                    Date())
 
-            // TODO: 29/06/2015 not tested yet
         } catch (e: IllegalStateException) {
             postProgressEvent(FileDeleteEvents.Events.TRASH_FILE_PROBLEMS,
                     context.resources.
@@ -118,6 +118,7 @@ data class RemoveFileFromDriveTask(
                 .thisFileDriveId(thisFileDriveId)
                 .parentFolderDriveId(parentFolderDriveId)
                 .isTrashed(isTrashed)
+                .isFileDeleted(deleteThisFile)
                 .build())
     }
 

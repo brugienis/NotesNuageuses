@@ -168,8 +168,6 @@ object FoldersData {
             fileParentFolderDriveId: DriveId,
             idxInTheFolderFilesList: Int,
             fileMetadataInfo: FileMetadataInfo) {
-        // TODO: check if folderLevel and position have correct value. ALSO add folder
-        // DriverId in case folder was removed and another opened on the same level
 
         /* Update coming for the folder level that was already removed - ignore it */
         if (currFolderLevel < folderLevel) {
@@ -185,30 +183,19 @@ object FoldersData {
         var fileItemIdPos = -1
         if (folderMetadataArrayInfoListAtLevel[idxInTheFolderFilesList].fileItemId == fileItemId) {
             fileItemIdPos = idxInTheFolderFilesList
-//            Log.v("FoldersData", """updateFolderItemView - OK
-//                |idxInTheFolderFilesList: $idxInTheFolderFilesList """.trimMargin())
         } else {
-//            Log.v("FoldersData", """updateFolderItemView - Searching
-//                |idxInTheFolderFilesList: $idxInTheFolderFilesList """.trimMargin())
             folderMetadataArrayInfoListAtLevel.withIndex().forEach {
-//                Log.v("FoldersData", """updateFolderItemView -
-//                    |it.value.fileItemId: ${it.value.fileItemId}
-//                    |fileItemId:          $fileItemId
-//                    |""".trimMargin())
                 if (it.value.fileItemId == fileItemId) {
                     fileItemIdPos = it.index
                     return@forEach
                 }
             }
         }
-//        Log.v("FoldersData", """updateFolderItemView - index - fileItemIdPos: ${fileItemIdPos} """)
 
         // fixme: throw exception in test only
         if (fileItemIdPos == -1) {
             throw RuntimeException("updateFolderItemView - fileItemId not found")
         }
-
-//        Log.v("FoldersData", """updateFolderItemView - index - fileItemIdIdx: $fileItemIdPos """)
 
         val folderFilesTitles = foldersFilesTitlesList[folderLevel]
         folderFilesTitles[fileItemIdPos] = fileMetadataInfo.fileTitle
@@ -226,6 +213,7 @@ object FoldersData {
             } else {
                 foldersTrashedFilesCnt[folderLevel] = --trashedFilesCnt
             }
+            // fixLater: Sep 19, 2018 - no need to create new FolderData object 
             foldersData[folderLevel] = FolderData(
                     folderData.newFolderDriveId,
                     folderData.newFolderTitle,
@@ -241,8 +229,13 @@ object FoldersData {
 
     // TODO: 30/06/2015 add Unit test
     @Synchronized
-    fun updateFolderItemViewAfterFileDelete(fileItemId: Long?, folderLevel: Int, fileParentFolderDriveId: DriveId, fileMetadataInfo: FileMetadataInfo) {
-        // TODO: check if folderLevel and position have correct value. ALSO add folder DriverId in case folder was removed and another opened on the same level
+    fun updateFolderItemViewAfterFileDelete(
+            fileItemId: Long?,
+            folderLevel: Int,
+            fileParentFolderDriveId: DriveId,
+            idxInTheFolderFilesList: Int,
+            fileMetadataInfo: FileMetadataInfo) {
+
         if (currFolderLevel < folderLevel) {
             verifyDataStructure()
             return
@@ -250,30 +243,36 @@ object FoldersData {
             verifyDataStructure()
             return
         }
-        val folderMetadatasInfoList = foldersMetadataArrayInfoList[folderLevel]
-        var fileItemIdIdx = 0
-        //		}
-        //		int fileIdx = 0;
-        for (oneFolderMetadataInfo in folderMetadatasInfoList) {
-            //			Log.v(LOG_TAG, "updateFolderItemViewAfterFileDelete - oneFolderMetadataInfo.fileItemId/fileItemId: " + oneFolderMetadataInfo.fileItemId + "/" + fileItemId);
-            if (oneFolderMetadataInfo.fileItemId === fileItemId) {
-                folderMetadatasInfoList.removeAt(fileItemIdIdx)
-                break
+        val folderMetadataArrayInfoListAtLevel = foldersMetadataArrayInfoList[folderLevel]
+
+        var fileItemIdPos = -1
+        if (folderMetadataArrayInfoListAtLevel[idxInTheFolderFilesList].fileItemId == fileItemId) {
+            fileItemIdPos = idxInTheFolderFilesList
+        } else {
+            folderMetadataArrayInfoListAtLevel.withIndex().forEach {
+                if (it.value.fileItemId == fileItemId) {
+                    fileItemIdPos = it.index
+                    return@forEach
+                }
             }
-            fileItemIdIdx++
         }
         // fixme: throw exception in test only
-        if (fileItemIdIdx == -1) {
+        if (fileItemIdPos == -1) {
             throw RuntimeException("updateFolderItemView - fileItemId not found")
         } else {
-            //			Log.v(LOG_TAG, "updateFolderItemViewAfterFileDelete - before - " + allCurrFolderFilesTrashedOrThereAreNoFiles() + "/" + getCurrentFolderTrashedFilesCnt());
+            folderMetadataArrayInfoListAtLevel.removeAt(fileItemIdPos)
             val trashedFilesCnt = getCurrentFolderTrashedFilesCnt() - 1
-            val folderData = foldersData[folderLevel]
-            val newFolderData = FolderData(folderData.newFolderDriveId, folderData.newFolderTitle, folderData.folderLevel, folderData.fileParentFolderDriveId, folderData.newFolderData, trashedFilesCnt, folderData.filesMetadatasInfo)
-            foldersData[folderLevel] = newFolderData
+//            val folderData = foldersData[folderLevel]
+//            val newFolderData = FolderData(
+//                    folderData.newFolderDriveId,
+//                    folderData.newFolderTitle,
+//                    folderData.folderLevel,
+//                    folderData.fileParentFolderDriveId,
+//                    folderData.newFolderData,
+//                    trashedFilesCnt,
+//                    folderData.filesMetadatasInfo)
+//            foldersData[folderLevel] = newFolderData
             foldersTrashedFilesCnt[folderLevel] = trashedFilesCnt
-            //			foldersData.get(folderLevel).filesMetadatasInfo.set(fileItemIdIdx, fileMetadataInfo);
-            //			Log.v(LOG_TAG, "updateFolderItemViewAfterFileDelete - after  - " + allCurrFolderFilesTrashedOrThereAreNoFiles() + "/" + getCurrentFolderTrashedFilesCnt());
         }
         verifyDataStructure()
     }
