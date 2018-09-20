@@ -8,16 +8,17 @@ import au.com.kbrsolutions.notesnuageuses.features.events.FileRenameEvents.Event
 import com.google.android.gms.drive.DriveId
 import com.google.android.gms.drive.DriveResourceClient
 import com.google.android.gms.drive.MetadataChangeSet
+import com.google.android.gms.tasks.Tasks
 import org.greenrobot.eventbus.EventBus
 import java.util.*
 import java.util.concurrent.Callable
 
-data class RenameFileOnGoogleDriveCallable(
+data class RenameFileOnDriveTask(
         var context: Context,
         var eventBus: EventBus,
         var driveResourceClient: DriveResourceClient,
-        val selectedDriveId: DriveId,
-        val newName: String,
+        val thisFileDriveId: DriveId,
+        val newFileName: String,
         val idxInTheFolderFilesList: Int,
         val thisFileFolderLevel: Int,
         val thisFileFolderDriveId: DriveId) : Callable<String> {
@@ -45,34 +46,25 @@ data class RenameFileOnGoogleDriveCallable(
     }
 
     override fun call(): String {
-
-        /* no need to check if there is connection to the Google Drive - this task could not be submitted if there wasn't one */
-
         try {
             postProgressEvent(RENAME_FILE_START, null, Date())
 
-            //				Thread.sleep(5000);
-            //				if (true) mGoogleApiClient.disconnect();
-            //			if (true) throw new IllegalStateException("Just a test");
-            //			if (true) throw new Exception("Just a test");
-            //			if (true) throw new RuntimeException("Just a test - Runtime");
-
-            // fixLater - uncomment below line and use new Drive API
-            //				DriveFile selectedFileDrive = Drive.DriveApi.getFile(mGoogleApiClient, selectedFileDriveId);
-
             val changeSet = MetadataChangeSet.Builder()
-                    .setTitle(newName)
+                    .setTitle(newFileName)
                     .build()
 
-            // fixLater - uncomment below line and use new Drive API
-            //				MetadataResult metadataResult = selectedFileDrive.updateMetadata(getGoogleApiClient(), changeSet).await();
+            val updateMetadataTask =
+                    driveResourceClient.updateMetadata(thisFileDriveId.asDriveResource(), changeSet)
+            Tasks.await(updateMetadataTask)
 
-            // fixLater - uncomment below lines and use new Drive API
-            //				if (!metadataResult.getStatus().isSuccess()) {
-            //					postProgressEvent(HomeEvents.RENAME_FILE_FINISHED, getString(R.string.base_handler_rename_problem, currName), updateDateBeforeRename);
-            //					return null;
-            //				}
-            postProgressEvent(RENAME_FILE_FINISHED, null, Date())
+            if (updateMetadataTask.isSuccessful) {
+                postProgressEvent(RENAME_FILE_FINISHED, null, Date())
+            } else {
+                postProgressEvent(RENAME_FILE_PROBLEMS,
+
+                        context.resources.getString(R.string.base_handler_rename_problem, currName),
+                        updateDateBeforeRename)
+            }
         } catch (e: IllegalStateException) {
             postProgressEvent(RENAME_FILE_PROBLEMS,
 
@@ -91,7 +83,7 @@ data class RenameFileOnGoogleDriveCallable(
                 .msgContents(msg)
                 .parentFileName(parentFileName)
                 .fileName(currName)
-                .newFileName(newName)
+                .newFileName(newFileName)
                 .idxInTheFolderFilesList(idxInTheFolderFilesList)
                 .fileItemId(fileItemId)
                 .mimeType(mimeType)
@@ -102,5 +94,49 @@ data class RenameFileOnGoogleDriveCallable(
                 .currFolderDriveId(thisFileFolderDriveId)
                 .thisFileDriveId(selectedFileDriveId)
                 .build())
+    }
+
+    class Builder {
+
+        private lateinit var context: Context
+        private lateinit var eventBus: EventBus
+        private lateinit var driveResourceClient: DriveResourceClient
+        private lateinit var thisFileDriveId: DriveId
+        private lateinit var newFileName: String
+        private var idxInTheFolderFilesList: Int = 0
+        private var thisFileFolderLevel: Int = 0
+        private lateinit var thisFileFolderDriveId: DriveId
+
+        fun context(context: Context) = apply { this.context = context }
+
+        fun eventBus(eventBus: EventBus) = apply { this.eventBus = eventBus }
+
+        fun driveResourceClient(driveResourceClient: DriveResourceClient) =
+                apply { this.driveResourceClient = driveResourceClient }
+
+        fun thisFileDriveId(thisFileDriveId: DriveId) =
+                apply { this.thisFileDriveId = thisFileDriveId }
+
+        fun newFileName(newFileName: String) =
+                apply { this.newFileName = newFileName }
+
+        fun idxInTheFolderFilesList(idxInTheFolderFilesList: Int) =
+                apply { this.idxInTheFolderFilesList = idxInTheFolderFilesList }
+
+        fun thisFileFolderLevel(thisFileFolderLevel: Int) =
+                apply { this.thisFileFolderLevel = thisFileFolderLevel }
+
+        fun thisFileFolderDriveId(thisFileFolderDriveId: DriveId) =
+                apply { this.thisFileFolderDriveId = thisFileFolderDriveId }
+
+        fun build() = RenameFileOnDriveTask (
+                context,
+                eventBus,
+                driveResourceClient,
+                thisFileDriveId,
+                newFileName,
+                idxInTheFolderFilesList,
+                thisFileFolderLevel,
+                thisFileFolderDriveId)
     }
 }

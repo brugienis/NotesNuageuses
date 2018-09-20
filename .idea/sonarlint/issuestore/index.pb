@@ -113,3 +113,7 @@ a
 capp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/FileDetailsFragment.kt,4/3/43ce5d13214bd923218929d72eae79901a50fc08
 Ž
 ^app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/RemoveFileFromDriveTask.kt,0/d/0d7089b05f1a0bcf25484388b5cce3d3bebcdf60
+Œ
+\app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/RenameFileOnDriveTask.kt,0/c/0cf034081ef8ce5d16d2a1dd817e55364d88f365
+ˆ
+Xapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/events/FileRenameEvents.kt,e/7/e7240b8776f33ba953cd114f09b904ee4e9e3b4c

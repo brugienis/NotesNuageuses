@@ -19,17 +19,12 @@ class FileRenameEvents(
         var currFolderDriveId: DriveId?,
         var parentFolderDriveId: DriveId,
         var createDt: Date,
-        var updateDt: Date,
-        var isFileDeleted: Boolean) {
+        var updateDt: Date) {
 
     enum class Events {
         RENAME_FILE_START,
         RENAME_FILE_FINISHED,
-        RENAME_FILE_PROBLEMS,
-        DELETE_FILE_PROBLEMS,
-        DELETE_FILE_FINISHED,
-        DELETE_FILE,
-        DELETE_FILE_START
+        RENAME_FILE_PROBLEMS
     }
 
     class Builder(private var request: FileRenameEvents.Events) {
@@ -48,7 +43,6 @@ class FileRenameEvents(
         private lateinit var parentFolderDriveId: DriveId
         private lateinit var createDate: Date
         private lateinit var updateDate: Date
-        private var isFileDeleted: Boolean = false
 
         fun msgContents(msgContents: String?) = apply { this.msgContents = msgContents }
 
@@ -85,8 +79,6 @@ class FileRenameEvents(
 
         fun updateDate(updateDate: Date) = apply { this.updateDate = updateDate }
 
-        fun isFileDeleted(isFileDeleted: Boolean) = apply { this.isFileDeleted = isFileDeleted }
-
         fun build() = FileRenameEvents(
                 request,
                 msgContents,
@@ -103,8 +95,7 @@ class FileRenameEvents(
                 currFolderDriveId,
                 parentFolderDriveId,
                 createDate,
-                updateDate,
-                isFileDeleted)
+                updateDate)
         }
     }
 
