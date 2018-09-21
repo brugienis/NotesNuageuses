@@ -153,22 +153,22 @@ class FileDetailsFragment : Fragment() {
 
     private fun renameFile() {
         Log.i(LOC_CAT_TAG, "renameFile - start")
-        //		renameUntrashLayout.setBackgroundColor(getResources().getColor(R.color.action_view_clicked));
-//        val newFragment = RenameFileDialog.newInstance()
-//        newFragment.setCancelable(false)
-//        val args = Bundle()
-//        args.putInt(RenameFileDialog.POSITION_IN_FOLDER_FILES_LIST, position)
-//        args.putLong(RenameFileDialog.FILE_ITEM_ID, fileItemId)
-//        args.putString(RenameFileDialog.FILE_DRIVE_ID, thisFileDriveId!!.encodeToString())
-//        args.putString(RenameFileDialog.CURR_FILE_NAME, fileName)
-//        args.putBoolean(RenameFileDialog.IS_FOLDER, isFolder)
-//        args.putString(RenameFileDialog.MIME_TYPE, mimeType)
-//        args.putLong(RenameFileDialog.CREATE_DATE, createDateMillis)
-//        args.putLong(RenameFileDialog.UPDATE_DATE, updateDateMillis)
-//        args.putInt(RenameFileDialog.CURR_FOLDER_LEVEL, currFolderLevel)
-//        args.putString(RenameFileDialog.CURR_FOLDER_DRIVE_ID, currFolderDriveId!!.encodeToString())
-//        newFragment.setArguments(args)
-//        newFragment.show(mActivity!!.getFragmentManager(), "dialog")
+        		renameUntrashLayout.setBackgroundColor(getResources().getColor(R.color.action_view_clicked));
+        val newFragment = RenameFileDialog.newInstance()
+        newFragment.setCancelable(false)
+        val args = Bundle()
+        args.putInt(RenameFileDialog.POSITION_IN_FOLDER_FILES_LIST, position)
+        args.putLong(RenameFileDialog.FILE_ITEM_ID, fileItemId)
+        args.putString(RenameFileDialog.FILE_DRIVE_ID, thisFileDriveId!!.encodeToString())
+        args.putString(RenameFileDialog.CURR_FILE_NAME, fileName)
+        args.putBoolean(RenameFileDialog.IS_FOLDER, isFolder)
+        args.putString(RenameFileDialog.MIME_TYPE, mimeType)
+        args.putLong(RenameFileDialog.CREATE_DATE, createDateMillis)
+        args.putLong(RenameFileDialog.UPDATE_DATE, updateDateMillis)
+        args.putInt(RenameFileDialog.CURR_FOLDER_LEVEL, currFolderLevel)
+        args.putString(RenameFileDialog.CURR_FOLDER_DRIVE_ID, currFolderDriveId!!.encodeToString())
+        newFragment.setArguments(args)
+        newFragment.show(mActivity!!.getFragmentManager(), "dialog")
     }
 
     private fun trashFile() {

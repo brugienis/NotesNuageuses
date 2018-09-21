@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/selectedLegsMapActivityRootViewId"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+					
+	<TextView
+	    android:id="@+id/renameFileTextHeaderId"
+	    android:layout_width="match_parent"
+	    android:layout_height="36dp"
+	    android:gravity="center_vertical"
+	    android:paddingLeft="20dp"
+	    android:paddingStart="20dp"
+	    android:paddingRight="20dp"
+        android:text="@string/rename_file_header"
+	    android:textColor="@android:color/black"
+	    android:textStyle="bold"
+        android:textSize="@dimen/header_size"/>
+       
+	<View android:layout_height="3dip" android:layout_width="match_parent" android:background="#FF909090"/>
+		   
+    <EditText
+	    android:id="@+id/renameFileTextEtId"
+        android:layout_width="match_parent"
+		android:layout_height="36dp"
+	    android:inputType="text"
+        android:textColor="@android:color/black" />
+		
+	<LinearLayout android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+    	android:orientation="horizontal" >
+
+	    <Button
+	        android:id="@+id/renameFileCancelBtnId"
+	        android:layout_width="@dimen/touchable_size"
+	        android:layout_height="@dimen/touchable_size"
+	        android:scaleGravity="center"
+	        android:background="@mipmap/ic_action_cancel" />
+	    
+	    <View android:layout_height="match_parent" android:layout_marginLeft="3dip"  android:layout_marginStart="3dip" android:layout_marginRight="3dip"  android:layout_marginEnd="3dip" android:layout_width="3dp" android:background="#FF909090" />
+
+	    <Button
+	        android:id="@+id/renameFileOkBtnId"
+	        android:layout_width="@dimen/touchable_size"
+	        android:layout_height="@dimen/touchable_size"
+	        android:scaleGravity="center"
+	        android:maxWidth="36dp"
+	        android:background="@mipmap/ic_action_accept"
+	        android:enabled="false" />
+
+	</LinearLayout>
+
+</LinearLayout>
+
+
+<!-- 
+
+    <EditText
+	    android:id="@+id/renameFileTextEtId"
+        android:layout_width="match_parent"
+		android:layout_height="36dp"
+        android:enabled="true"
+        android:inputType="text|textMultiLine"
+        android:textAlignment="gravity"
+        android:textColor="@android:color/black" />
+	<LinearLayout android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+    	android:orientation="horizontal" >
+
+	    <Button
+	        android:id="@+id/renameFileCancelBtnId"
+	        style="?android:attr/buttonStyleSmall"
+	        android:layout_width="0dp"
+	        android:layout_weight="5"
+			android:layout_height="36dp"
+			android:minHeight="36dp"
+	        android:enabled="false"
+	        android:text="@string/rename_file_cancel_text" />
+	    
+	    <View android:layout_height="match_parent" android:layout_marginLeft="1dip" android:layout_marginRight="1dip" android:layout_width="2dp" android:background="#FF909090" />
+
+	    <Button
+	        android:id="@+id/renameFileOkBtnId"
+       		style="?android:attr/buttonStyleSmall"
+	        android:layout_width="0dp"
+	        android:layout_weight="5"
+			android:layout_height="36dp"
+			android:minHeight="36dp"
+	        android:text="@string/rename_file_ok_text"
+	        android:enabled="false" />
+
+	</LinearLayout>
+ -->

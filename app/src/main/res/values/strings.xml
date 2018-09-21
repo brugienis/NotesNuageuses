@@ -86,6 +86,18 @@
     <string name="file_detail_updated">Updated</string>
     <string name="file_detail_trashed_files_cnt">Trashed files</string>
     <string name="title_activity_text_note">TextNoteActivity</string>
+
+    <!-- rename_file_dialog -->
+    <string name="rename_file_cancel_text">Cancel</string>
+    <string name="rename_file_ok_text">OK</string>
+    <string name="rename_file_folder">Rename folder</string>
+    <string name="rename_file_file">Rename file</string>
+    <string name="rename_file_header">Enter new name</string>
+
+    <!-- fragment_rename_file_dialog -->
+    <string name="rename_dialog_file_name">Enter file name</string>
+    <string name="rename_dialog_file_required">File name can not be empty</string>
+
     <!-- test only -->
     <string name="file_detail_kind_tst_text">Text</string>
     <string name="file_detail_location_tst_text">Folder</string>
