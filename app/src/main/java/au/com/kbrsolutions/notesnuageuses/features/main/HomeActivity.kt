@@ -358,6 +358,16 @@ class HomeActivity : BaseActivity(),
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: DriveAccessEvents) {
+        eventBusListenable.onMessageEvent(event)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: FilesDownloadEvents) {
+        eventBusListenable.onMessageEvent(event)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FilesUploadEvents) {
         eventBusListenable.onMessageEvent(event)
     }

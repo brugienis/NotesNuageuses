@@ -193,7 +193,7 @@ class RenameFileDialog : DialogFragment() {
     interface OnRenameFileDialogInteractionListener {
         fun startRenameFile(thisFileDriveId: DriveId,
                             newFileName: String,
-                            setIdxInTheFolderFilesList: Int,
+                            idxInTheFolderFilesList: Int,
                             thisFileFolderLevel: Int,
                             thisFileFolderDriveId: DriveId)
 
