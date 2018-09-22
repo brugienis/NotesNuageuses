@@ -1,4 +1,4 @@
-package au.com.kbrsolutions.notesnuageuses.features.events
+package au.com.kbrsolutions.notesnuageuses.features.eventbus.events
 
 import android.graphics.Bitmap
 import com.google.android.gms.drive.DriveId

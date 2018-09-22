@@ -3,8 +3,8 @@ package au.com.kbrsolutions.notesnuageuses.features.tasks
 import android.content.Context
 import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.R
-import au.com.kbrsolutions.notesnuageuses.features.events.DriveAccessEvents
-import au.com.kbrsolutions.notesnuageuses.features.events.FilesUploadEvents
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.DriveAccessEvents
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.FilesUploadEvents
 import com.google.android.gms.drive.*
 import com.google.android.gms.tasks.Tasks
 import org.greenrobot.eventbus.EventBus

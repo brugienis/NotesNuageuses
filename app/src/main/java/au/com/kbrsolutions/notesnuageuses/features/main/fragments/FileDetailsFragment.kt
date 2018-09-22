@@ -15,6 +15,7 @@ import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.base.BaseActivity
 import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
+import au.com.kbrsolutions.notesnuageuses.features.main.dialogs.RenameFileDialog
 import com.google.android.gms.drive.DriveId
 import kotlinx.android.synthetic.main.fragment_file_details.view.*
 import java.text.DateFormat
@@ -153,13 +154,11 @@ class FileDetailsFragment : Fragment() {
 
     private fun renameFile() {
         Log.i(LOC_CAT_TAG, "renameFile - start")
-        		renameUntrashLayout.setBackgroundColor(getResources().getColor(R.color.action_view_clicked));
-        val newFragment = RenameFileDialog.newInstance()
-        newFragment.setCancelable(false)
+        renameUntrashLayout!!.setBackgroundColor(getResources().getColor(R.color.action_view_clicked))
         val args = Bundle()
         args.putInt(RenameFileDialog.POSITION_IN_FOLDER_FILES_LIST, position)
         args.putLong(RenameFileDialog.FILE_ITEM_ID, fileItemId)
-        args.putString(RenameFileDialog.FILE_DRIVE_ID, thisFileDriveId!!.encodeToString())
+        args.putString(RenameFileDialog.FILE_DRIVE_ID, selectedFileDriveId!!.encodeToString())
         args.putString(RenameFileDialog.CURR_FILE_NAME, fileName)
         args.putBoolean(RenameFileDialog.IS_FOLDER, isFolder)
         args.putString(RenameFileDialog.MIME_TYPE, mimeType)
@@ -167,8 +166,11 @@ class FileDetailsFragment : Fragment() {
         args.putLong(RenameFileDialog.UPDATE_DATE, updateDateMillis)
         args.putInt(RenameFileDialog.CURR_FOLDER_LEVEL, currFolderLevel)
         args.putString(RenameFileDialog.CURR_FOLDER_DRIVE_ID, currFolderDriveId!!.encodeToString())
-        newFragment.setArguments(args)
-        newFragment.show(mActivity!!.getFragmentManager(), "dialog")
+//        val renameFileDialog = RenameFileDialog.newInstance()
+//        renameFileDialog.isCancelable = false
+//        renameFileDialog.arguments = args
+        listener!!.showRenameFiledialog(args)
+//        newFragment.show(context as HomeActivity!!.getFragmentManager(), "dialog")
     }
 
     private fun trashFile() {
@@ -215,6 +217,7 @@ class FileDetailsFragment : Fragment() {
         this.fileItemId = folderMetadataInfo.fileItemId
         this.selectedFileDriveId = folderMetadataInfo.fileDriveId!!
         this.fileName = folderMetadataInfo.fileTitle
+        Log.v("FileDetailsFragment", """setSelectedFileInfo - fileName: $fileName """)
         this.isFolder = folderMetadataInfo.isFolder
         this.mimeType = folderMetadataInfo.mimeType
         this.createDateMillis = folderMetadataInfo.createDt.getTime()
@@ -235,6 +238,7 @@ class FileDetailsFragment : Fragment() {
      */
     interface OnFileDetailsFragmentInteractionListener {
         fun handleOnFolderOrFileClick(position: Int)
+        fun showRenameFiledialog(args: Bundle)
         fun trashOrDeleteFile(
                 selectedFileDriveId: DriveId,
                 position: Int,

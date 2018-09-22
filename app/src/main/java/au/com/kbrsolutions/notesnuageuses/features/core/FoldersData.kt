@@ -199,7 +199,10 @@ object FoldersData {
 
         val folderFilesTitles = foldersFilesTitlesList[folderLevel]
         folderFilesTitles[fileItemIdPos] = fileMetadataInfo.fileTitle
+        Log.v("FoldersData", """updateFolderItemView -
+            |fileMetadataInfo.fileTitle: ${fileMetadataInfo.fileTitle} """.trimMargin())
 
+        folderMetadataArrayInfoListAtLevel[fileItemIdPos] = fileMetadataInfo
         val folderData = foldersData[folderLevel]
         val filesMetadataInfo = foldersData[folderLevel].filesMetadatasInfo
 

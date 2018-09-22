@@ -2,8 +2,8 @@ package au.com.kbrsolutions.notesnuageuses.features.tasks
 
 import android.content.Context
 import au.com.kbrsolutions.notesnuageuses.R
-import au.com.kbrsolutions.notesnuageuses.features.events.DriveAccessEvents
-import au.com.kbrsolutions.notesnuageuses.features.events.FilesDownloadEvents
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.DriveAccessEvents
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.FilesDownloadEvents
 import com.google.android.gms.drive.DriveFile
 import com.google.android.gms.drive.DriveId
 import com.google.android.gms.drive.DriveResourceClient

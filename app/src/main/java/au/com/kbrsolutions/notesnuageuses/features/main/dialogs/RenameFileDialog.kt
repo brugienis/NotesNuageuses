@@ -1,8 +1,7 @@
 package au.com.kbrsolutions.notesnuageuses.features.main.dialogs
 
-import android.app.Activity
 import android.app.DialogFragment
-import android.content.DialogInterface
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -14,7 +13,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import au.com.kbrsolutions.notesnuageuses.R
-import au.com.kbrsolutions.notesnuageuses.features.events.ActivitiesEvents
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.ActivitiesEvents
 import com.google.android.gms.drive.DriveId
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -42,43 +41,61 @@ class RenameFileDialog : DialogFragment() {
     private var fileExtension = ""
     private var fileExtensionStartIdx = -1
 
-    override fun onAttach(activity: Activity) {
-        super.onAttach(activity)
-        //		this.mActivity = (HomeActivity) activity;
+    private var mArgsProcessed = false
+    private var listener: OnRenameFileDialogInteractionListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnRenameFileDialogInteractionListener) {
+            listener = context
+        } else {
+            throw RuntimeException(context.toString() +
+                    " must implement OnRenameFileDialogInteractionListener")
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (eventBus == null) {
-            eventBus = EventBus.getDefault()
-            eventBus!!.register(this)
-        }
+//        if (eventBus == null) {
+//            eventBus = EventBus.getDefault()
+//            eventBus!!.register(this)
+//        }
         setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Holo_Light_Dialog)
+        if (!mArgsProcessed) {
+            arguments?.let {
+                val bundle: Bundle = it.getBundle(BUNDLE_KEY)
+                idxInTheFolderFilesList = bundle.getInt(POSITION_IN_FOLDER_FILES_LIST)
+                encodedSelectedDriveId = bundle.getString(FILE_DRIVE_ID)
+                currFileName = bundle.getString(CURR_FILE_NAME)
+                Log.v("RenameFileDialog", """onCreate - currFileName: $currFileName """)
+                isFolder = bundle.getBoolean(RenameFileDialog.IS_FOLDER)
+                mimeType = bundle.getString(MIME_TYPE)
+                //		createDateMillis = this.getArguments().getLong(CREATE_DATE);
+                //		updateDateMillis = this.getArguments().getLong(UPDATE_DATE);
+                currFolderLevel = bundle.getInt(CURR_FOLDER_LEVEL)
+                encodedCurrFolderDriveId = bundle.getString(CURR_FOLDER_DRIVE_ID)
+                if (isFolder!!) {
+                    currFileNameNoExtension = currFileName
+                } else {
+                    fileExtensionStartIdx = currFileName!!.lastIndexOf(".")
+                    fileExtension = if (fileExtensionStartIdx == -1) {
+                        ""
+                    } else {
+                        currFileName!!.substring(fileExtensionStartIdx)
+                    }
+                    if (fileExtensionStartIdx > -1) {
+                        currFileNameNoExtension = currFileName!!.substring(0, fileExtensionStartIdx)
+                    }
+                }
+            }
+        }
     }
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
-            savedInstanceState: Bundle): View? {
+            savedInstanceState: Bundle?): View? {
         Log.i(LOC_CAT_TAG, "onCreateView - start")
-        // fixLater: Sep 21, 2018 - should not below code be in onCreate(...)?
-        idxInTheFolderFilesList = this.arguments.getInt(POSITION_IN_FOLDER_FILES_LIST)
-        //		fileItemId = this.getArguments().getLong(FILE_ITEM_ID);
-        encodedSelectedDriveId = this.arguments.getString(FILE_DRIVE_ID)
-        currFileName = this.arguments.getString(CURR_FILE_NAME)
-        isFolder = this.arguments.getBoolean(RenameFileDialog.IS_FOLDER)
-        mimeType = this.arguments.getString(MIME_TYPE)
-        //		createDateMillis = this.getArguments().getLong(CREATE_DATE);
-        //		updateDateMillis = this.getArguments().getLong(UPDATE_DATE);
-        currFolderLevel = this.arguments.getInt(CURR_FOLDER_LEVEL)
-        encodedCurrFolderDriveId = this.arguments.getString(CURR_FOLDER_DRIVE_ID)
-        if (isFolder!!) {
-            currFileNameNoExtension = currFileName
-        } else {
-            fileExtensionStartIdx = currFileName!!.lastIndexOf(".")
-            fileExtension = if (fileExtensionStartIdx == -1) "" else currFileName!!.substring(fileExtensionStartIdx)
-            currFileNameNoExtension = currFileName!!.substring(0, fileExtensionStartIdx)
-        }
 
         val dialog = dialog
         if (isFolder!!) {
@@ -112,7 +129,7 @@ class RenameFileDialog : DialogFragment() {
     }
 
     private fun okButtonClicked() {
-        val fileName = fileNameEt!!.text.toString().trim { it <= ' ' }
+        val fileName = fileNameEt!!.text.toString().trim()
         Log.i(LOC_CAT_TAG, "okButtonClicked - fileName.length: " + fileName.length)
         if (fileName.length == 0) {
             Log.i(LOC_CAT_TAG, "okButtonClicked - fileName.length zero: " + fileName.length)
@@ -120,14 +137,22 @@ class RenameFileDialog : DialogFragment() {
             fileNameEt!!.setHint(R.string.rename_dialog_file_name)
             fileNameEt!!.setHintTextColor(Color.RED)
         } else {
-            Log.i(LOC_CAT_TAG, "#@#okButtonClicked - currFileName/newFileName: $currFileName/$fileName$fileExtension")
-            eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents.RENAME_FILE)
-                    .setSelectedFileDriveId(DriveId.decodeFromString(encodedSelectedDriveId!!))
-                    .setNewFileName(fileName + fileExtension)
-                    .setIdxInTheFolderFilesList(idxInTheFolderFilesList)
-                    .setCurrFolderLevel(currFolderLevel)
-                    .setCurrFolderDriveId(DriveId.decodeFromString(encodedCurrFolderDriveId!!))
-                    .build())
+            Log.i(LOC_CAT_TAG, "#@#okButtonClicked - " +
+                    "currFileName/newFileName: $currFileName/$fileName$fileExtension")
+            listener!!.startRenameFile(
+                    DriveId.decodeFromString(encodedSelectedDriveId!!),
+                    fileName + fileExtension,
+                    idxInTheFolderFilesList,
+                    currFolderLevel,
+                    DriveId.decodeFromString(encodedCurrFolderDriveId!!))
+
+//            eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents.RENAME_FILE)
+//                    .setSelectedFileDriveId(DriveId.decodeFromString(encodedSelectedDriveId!!))
+//                    .setNewFileName(fileName + fileExtension)
+//                    .setIdxInTheFolderFilesList(idxInTheFolderFilesList)
+//                    .setCurrFolderLevel(currFolderLevel)
+//                    .setCurrFolderDriveId(DriveId.decodeFromString(encodedCurrFolderDriveId!!))
+//                    .build())
             dismiss()
         }
         Log.i(LOC_CAT_TAG, "OK clicked")
@@ -137,13 +162,6 @@ class RenameFileDialog : DialogFragment() {
         Log.i(LOC_CAT_TAG, "#@#cancelClicked - end")
         dismiss()
     }
-
-    //    @Override
-    //    public void dismiss() {
-    //        renameTv.setBackgroundColor(getResources().getColor(R.color.action_view_not_in_focus));
-    //        super.dismiss();
-    //        Log.i(LOC_CAT_TAG, "#@#dismiss - end");
-    //    }
 
     override fun onResume() {
         super.onResume()
@@ -161,25 +179,56 @@ class RenameFileDialog : DialogFragment() {
     fun onMessageEvent(event: ActivitiesEvents) {
     }
 
-    companion object {
-        val FILE_DRIVE_ID = "selectedDriveId"
-        val CURR_FILE_NAME = "currFileName"
-        val POSITION_IN_FOLDER_FILES_LIST = "posInFolder"
-        val FILE_ITEM_ID = "fileItemId"
-        val IS_FOLDER = "isFilder"
-        val MIME_TYPE = "mimeType"
-        val CREATE_DATE = "createDate"
-        val UPDATE_DATE = "updateDate"
-        val DIALOG_TITLE = "dialogTitle"
-        val CURR_FOLDER_LEVEL = "currFolderLevel"
-        val CURR_FOLDER_DRIVE_ID = "currFolderDriveId"
-        //    private static View renameTv;
-        private val LOC_CAT_TAG = "RenameFileDialogFragmen"
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the context and potentially other fragments contained in that
+     * context.
+     *
+     *
+     * See the Android Training lesson
+     * [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html)
+     * for more information.
+     */
+    interface OnRenameFileDialogInteractionListener {
+        fun startRenameFile(thisFileDriveId: DriveId,
+                            newFileName: String,
+                            setIdxInTheFolderFilesList: Int,
+                            thisFileFolderLevel: Int,
+                            thisFileFolderDriveId: DriveId)
 
-        fun newInstance(): RenameFileDialog {
-            return RenameFileDialog()
-        }
     }
-    //	public void onEventMainThread(ActivitiesEvents event) {}
 
+    /*
+
+                    .setSelectedFileDriveId(DriveId.decodeFromString(encodedSelectedDriveId!!))
+                    .setNewFileName(fileName + fileExtension)
+                    .setIdxInTheFolderFilesList(idxInTheFolderFilesList)
+                    .setCurrFolderLevel(currFolderLevel)
+                    .setCurrFolderDriveId(DriveId.decodeFromString(encodedCurrFolderDriveId!!))
+     */
+
+    companion object {
+        const val BUNDLE_KEY = "bundle_key"
+        const val FILE_DRIVE_ID = "selectedDriveId"
+        const val CURR_FILE_NAME = "currFileName"
+        const val POSITION_IN_FOLDER_FILES_LIST = "posInFolder"
+        const val FILE_ITEM_ID = "fileItemId"
+        const val IS_FOLDER = "isFilder"
+        const val MIME_TYPE = "mimeType"
+        const val CREATE_DATE = "createDate"
+        const val UPDATE_DATE = "updateDate"
+        const val DIALOG_TITLE = "dialogTitle"
+        const val CURR_FOLDER_LEVEL = "currFolderLevel"
+        const val CURR_FOLDER_DRIVE_ID = "currFolderDriveId"
+        const val LOC_CAT_TAG = "RenameFileDialogFragmen"
+
+        @JvmStatic
+        fun newInstance(args: Bundle)=
+                RenameFileDialog().apply {
+                    arguments = Bundle().apply {
+                        putBundle(BUNDLE_KEY, args)
+                    }
+                }
+    }
 }

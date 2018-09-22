@@ -1,10 +1,11 @@
 package au.com.kbrsolutions.notesnuageuses.features.tasks
 
 import android.content.Context
+import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
-import au.com.kbrsolutions.notesnuageuses.features.events.FileRenameEvents
-import au.com.kbrsolutions.notesnuageuses.features.events.FileRenameEvents.Events.*
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.RenameFileEvents
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.RenameFileEvents.Events.*
 import com.google.android.gms.drive.DriveId
 import com.google.android.gms.drive.DriveResourceClient
 import com.google.android.gms.drive.MetadataChangeSet
@@ -21,12 +22,12 @@ data class RenameFileOnDriveTask(
         val newFileName: String,
         val idxInTheFolderFilesList: Int,
         val thisFileFolderLevel: Int,
-        val thisFileFolderDriveId: DriveId) : Callable<String> {
+        val parentFolderDriveId: DriveId) : Callable<String> {
 
     private val selectedFileDriveId: DriveId
     private val parentFileName: String
     private val currName: String
-    val fileItemId: Long
+    private val fileItemId: Long
     private val isFolder: Boolean
     private val mimeType: String
     private val createDate: Date
@@ -47,39 +48,49 @@ data class RenameFileOnDriveTask(
 
     override fun call(): String {
         try {
-            postProgressEvent(RENAME_FILE_START, null, Date())
+            Log.v("RenameFileOnDriveTask", """call - start newFileName: $newFileName """)
+            postProgressEvent(RENAME_FILE_START, "", Date())
 
             val changeSet = MetadataChangeSet.Builder()
                     .setTitle(newFileName)
                     .build()
 
+            Log.v("RenameFileOnDriveTask", """call - before  updateMetadataTask""")
             val updateMetadataTask =
                     driveResourceClient.updateMetadata(thisFileDriveId.asDriveResource(), changeSet)
+            Log.v("RenameFileOnDriveTask", """call - after   updateMetadataTask""")
             Tasks.await(updateMetadataTask)
+            Log.v("RenameFileOnDriveTask", """call - after   await""")
 
             if (updateMetadataTask.isSuccessful) {
-                postProgressEvent(RENAME_FILE_FINISHED, null, Date())
+                postProgressEvent(RENAME_FILE_FINISHED, "Success", Date())
+                Log.v("RenameFileOnDriveTask", """call - done newFileName: $newFileName """)
             } else {
                 postProgressEvent(RENAME_FILE_PROBLEMS,
-
-                        context.resources.getString(R.string.base_handler_rename_problem, currName),
+                        context.resources
+                                .getString(R.string.base_handler_rename_problem, currName),
                         updateDateBeforeRename)
+                Log.v("RenameFileOnDriveTask", """call - problem newFileName: $newFileName """)
             }
         } catch (e: IllegalStateException) {
+            Log.v("RenameFileOnDriveTask", """call - $e""")
             postProgressEvent(RENAME_FILE_PROBLEMS,
-
-                    context.resources.getString(R.string.base_handler_rename_connection_problem, currName), updateDateBeforeRename)
+                    context.resources
+                            .getString(R.string.base_handler_rename_connection_problem, currName),
+                    updateDateBeforeRename)
         } catch (e: Exception) {
+            Log.v("RenameFileOnDriveTask", """call - $e""")
             postProgressEvent(RENAME_FILE_PROBLEMS,
-
-                    context.resources.getString(R.string.base_handler_rename_problem, currName), updateDateBeforeRename)
+                    context.resources
+                            .getString(R.string.base_handler_rename_problem, currName),
+                    updateDateBeforeRename)
         }
 
         return ""
     }
 
-    private fun postProgressEvent(event: FileRenameEvents.Events, msg: String?, updateDate: Date) {
-        eventBus.post(FileRenameEvents.Builder(event)
+    private fun postProgressEvent(event: RenameFileEvents.Events, msg: String, updateDate: Date) {
+        eventBus.post(RenameFileEvents.Builder(event)
                 .msgContents(msg)
                 .parentFileName(parentFileName)
                 .fileName(currName)
@@ -91,7 +102,7 @@ data class RenameFileOnDriveTask(
                 .createDate(createDate)
                 .updateDate(updateDate)
                 .thisFileFolderLevel(thisFileFolderLevel)
-                .currFolderDriveId(thisFileFolderDriveId)
+                .parentFolderDriveId(parentFolderDriveId)
                 .thisFileDriveId(selectedFileDriveId)
                 .build())
     }

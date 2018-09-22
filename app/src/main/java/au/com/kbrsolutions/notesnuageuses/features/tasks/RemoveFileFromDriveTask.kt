@@ -3,8 +3,8 @@ package au.com.kbrsolutions.notesnuageuses.features.tasks
 import android.content.Context
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
-import au.com.kbrsolutions.notesnuageuses.features.events.DriveAccessEvents
-import au.com.kbrsolutions.notesnuageuses.features.events.FileDeleteEvents
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.DriveAccessEvents
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.FileDeleteEvents
 import com.google.android.gms.drive.DriveId
 import com.google.android.gms.drive.DriveResource
 import com.google.android.gms.drive.DriveResourceClient

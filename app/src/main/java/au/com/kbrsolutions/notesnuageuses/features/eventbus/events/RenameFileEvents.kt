@@ -1,11 +1,11 @@
-package au.com.kbrsolutions.notesnuageuses.features.events
+package au.com.kbrsolutions.notesnuageuses.features.eventbus.events
 
 import com.google.android.gms.drive.DriveId
 import java.util.*
 
-class FileDeleteEvents(
+class RenameFileEvents(
         var request: Events,
-        var msgContents: String?,
+        var msgContents: String,
         var fileItemId: Long,
         var thisFileDriveId: DriveId,
         var isFolder: Boolean,
@@ -15,24 +15,20 @@ class FileDeleteEvents(
         var idxInTheFolderFilesList: Int,
         var parentFileName: String,
         var fileName: String,
-        var currFolderDriveId: DriveId?,
+        var newFileName: String,
+//        var currFolderDriveId: DriveId,
         var parentFolderDriveId: DriveId,
         var createDt: Date,
-        var updateDt: Date,
-        var isFileDeleted: Boolean) {
+        var updateDt: Date) {
 
     enum class Events {
-        TRASH_FILE,
-        TRASH_FILE_FINISHED,
-        TRASH_FILE_PROBLEMS,
-        DELETE_FILE_PROBLEMS,
-        DELETE_FILE_FINISHED,
-        DELETE_FILE,
-        DELETE_FILE_START
+        RENAME_FILE_START,
+        RENAME_FILE_FINISHED,
+        RENAME_FILE_PROBLEMS
     }
 
-    class Builder(private var request: FileDeleteEvents.Events) {
-        private var msgContents: String? = null
+    class Builder(private var request: RenameFileEvents.Events) {
+        private lateinit var msgContents: String
         private var thisFileFolderLevel: Int = 0
         private var fileItemId: Long = 0
         private lateinit var thisFileDriveId: DriveId
@@ -42,13 +38,13 @@ class FileDeleteEvents(
         private var idxInTheFolderFilesList: Int = 0
         private lateinit var parentFileName: String
         private lateinit var fileName: String
-        private var currFolderDriveId: DriveId? = null
+        private lateinit var newFileName: String
+//        private lateinit var currFolderDriveId: DriveId
         private lateinit var parentFolderDriveId: DriveId
         private lateinit var createDate: Date
         private lateinit var updateDate: Date
-        private var isFileDeleted: Boolean = false
 
-        fun msgContents(msgContents: String?) = apply { this.msgContents = msgContents }
+        fun msgContents(msgContents: String) = apply { this.msgContents = msgContents }
 
         fun fileItemId(fileItemId: Long) = apply { this.fileItemId = fileItemId }
 
@@ -71,8 +67,10 @@ class FileDeleteEvents(
 
         fun fileName(fileName: String) = apply { this.fileName = fileName }
 
-        fun currFolderDriveId(currFolderDriveId: DriveId) =
-                apply { this.currFolderDriveId = currFolderDriveId }
+        fun newFileName(newFileName: String) = apply { this.newFileName = newFileName }
+
+//        fun currFolderDriveId(currFolderDriveId: DriveId) =
+//                apply { this.currFolderDriveId = currFolderDriveId }
 
         fun parentFolderDriveId(parentFolderDriveId: DriveId) =
                 apply { this.parentFolderDriveId = parentFolderDriveId }
@@ -81,9 +79,7 @@ class FileDeleteEvents(
 
         fun updateDate(updateDate: Date) = apply { this.updateDate = updateDate }
 
-        fun isFileDeleted(isFileDeleted: Boolean) = apply { this.isFileDeleted = isFileDeleted }
-
-        fun build() = FileDeleteEvents(
+        fun build() = RenameFileEvents(
                 request,
                 msgContents,
                 fileItemId,
@@ -95,11 +91,11 @@ class FileDeleteEvents(
                 idxInTheFolderFilesList,
                 parentFileName,
                 fileName,
-                currFolderDriveId,
+                newFileName,
+//                currFolderDriveId,
                 parentFolderDriveId,
                 createDate,
-                updateDate,
-                isFileDeleted)
+                updateDate)
         }
     }
 

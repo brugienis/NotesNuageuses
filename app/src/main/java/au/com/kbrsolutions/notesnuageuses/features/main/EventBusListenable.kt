@@ -1,6 +1,6 @@
 package au.com.kbrsolutions.notesnuageuses.features.main
 
-import au.com.kbrsolutions.notesnuageuses.features.events.*
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.*
 
 interface EventBusListenable {
 

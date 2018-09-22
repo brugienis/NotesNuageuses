@@ -5,7 +5,7 @@ import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
-import au.com.kbrsolutions.notesnuageuses.features.events.FoldersEvents
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.FoldersEvents
 import com.google.android.gms.drive.DriveFolder
 import com.google.android.gms.drive.DriveId
 import com.google.android.gms.drive.DriveResourceClient

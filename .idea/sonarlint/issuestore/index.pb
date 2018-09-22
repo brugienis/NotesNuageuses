@@ -117,3 +117,7 @@ capp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/Fi
 \app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/RenameFileOnDriveTask.kt,0/c/0cf034081ef8ce5d16d2a1dd817e55364d88f365
 ˆ
 Xapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/events/FileRenameEvents.kt,e/7/e7240b8776f33ba953cd114f09b904ee4e9e3b4c
+f
+6app/src/main/res/layout/fragment_rename_file_dalog.xml,8/7/87e470f9a6be1822b286391938943f83a3ee77e2
+Ž
+^app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/dialogs/RenameFileDialog.kt,3/2/32302c635b91051d7ba9a391aa81e16a4631e7b4

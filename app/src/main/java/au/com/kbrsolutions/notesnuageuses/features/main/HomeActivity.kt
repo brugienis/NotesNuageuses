@@ -14,10 +14,12 @@ import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.addFragment
-import au.com.kbrsolutions.notesnuageuses.features.events.*
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.RenameFileEventHandler
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.*
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import au.com.kbrsolutions.notesnuageuses.features.main.dialogs.CreateFileDialog
+import au.com.kbrsolutions.notesnuageuses.features.main.dialogs.RenameFileDialog
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.*
 import au.com.kbrsolutions.notesnuageuses.features.tasks.*
 import com.google.android.gms.drive.DriveId
@@ -39,6 +41,8 @@ class HomeActivity : BaseActivity(),
         EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
         FolderFragment.OnFolderFragmentInteractionListener,
         CreateFileDialog.OnCreateFileDialogInteractionListener,
+        RenameFileDialog.OnRenameFileDialogInteractionListener,
+        RenameFileEventHandler.OnRenameFileEventHandlerInteractionListener,
         FileFragment.OnFileFragmentInteractionListener,
         EventBusEventsHandler.OnEventBusEventsHandlerInteractionListener,
         FileDetailsFragment.OnFileDetailsFragmentInteractionListener {
@@ -82,6 +86,8 @@ class HomeActivity : BaseActivity(),
 
     private val eventBusListenable: EventBusListenable =
             EventBusEventsHandler(this)
+
+    private val renameFileEventHandler = RenameFileEventHandler(this)
 
     init {
         FragmentsStack.initialize(mTestMode)
@@ -347,13 +353,8 @@ class HomeActivity : BaseActivity(),
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: DriveAccessEvents) {
-        eventBusListenable.onMessageEvent(event)
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: FilesDownloadEvents) {
-        eventBusListenable.onMessageEvent(event)
+    fun onMessageEvent(event: RenameFileEvents) {
+        renameFileEventHandler.onMessageEvent(event)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -468,7 +469,9 @@ class HomeActivity : BaseActivity(),
                                 itemIdxInList
                         ))
                     }
-                }
+
+                Log.v("HomeActivity", """updateFolderListAdapter -
+                    |folderMetadataInfo.fileTitle: ${folderMetadataInfo.fileTitle} """.trimMargin())}
 
         folderArrayAdapter!!.clear()
         folderArrayAdapter!!.addAll(folderItemsList)
@@ -495,6 +498,27 @@ class HomeActivity : BaseActivity(),
             mNonCancellableFuture = null
         }
 
+    }
+    override fun startRenameFile(
+            thisFileDriveId: DriveId,
+            newFileName: String,
+            idxInTheFolderFilesList: Int,
+            thisFileFolderLevel: Int,
+            thisFileFolderDriveId: DriveId) {
+        Log.v("HomeActivity", """startRenameFile - newFileName: $newFileName """)
+
+        handleNonCancellableFuturesCallable.submitCallable(
+                RenameFileOnDriveTask.Builder()
+                        .context(applicationContext)
+                        .eventBus(eventBus)
+                        .driveResourceClient(mDriveResourceClient)
+                        .thisFileDriveId(thisFileDriveId)
+                        .newFileName(newFileName)
+                        .idxInTheFolderFilesList(idxInTheFolderFilesList)
+                        .thisFileFolderLevel(thisFileFolderLevel)
+                        .thisFileFolderDriveId(thisFileFolderDriveId)
+                        .build())
+        removeTopFragment("onEventMainThread-RENAME_FILE", false)
     }
 
     @Synchronized
@@ -664,6 +688,13 @@ class HomeActivity : BaseActivity(),
         val dialog = CreateFileDialog.newInstance()
         dialog.show(fragmentManager, "dialog")
     }
+
+    override fun showRenameFiledialog(args: Bundle) {
+        val renameFileDialog = RenameFileDialog.newInstance(args)
+        renameFileDialog.isCancelable = false
+        renameFileDialog.show(fragmentManager, "rename dialog")
+    }
+
     override fun createFolder(fileName: CharSequence) {
         handleNonCancellableFuturesCallable.submitCallable(
                 CreateDriveFolderTask.Builder()
