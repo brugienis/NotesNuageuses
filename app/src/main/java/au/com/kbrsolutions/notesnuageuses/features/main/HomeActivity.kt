@@ -14,6 +14,7 @@ import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.addFragment
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.FileDownloadEventHandler
 import au.com.kbrsolutions.notesnuageuses.features.eventbus.RenameFileEventHandler
 import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.*
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
@@ -43,6 +44,7 @@ class HomeActivity : BaseActivity(),
         CreateFileDialog.OnCreateFileDialogInteractionListener,
         RenameFileDialog.OnRenameFileDialogInteractionListener,
         RenameFileEventHandler.OnRenameFileEventHandlerInteractionListener,
+        FileDownloadEventHandler.OnFileDownloadEventHandlerInteractionListener,
         FileFragment.OnFileFragmentInteractionListener,
         EventBusEventsHandler.OnEventBusEventsHandlerInteractionListener,
         FileDetailsFragment.OnFileDetailsFragmentInteractionListener {
@@ -87,6 +89,7 @@ class HomeActivity : BaseActivity(),
     private val eventBusListenable: EventBusListenable =
             EventBusEventsHandler(this)
 
+    private val fileDownloadEventHandler = FileDownloadEventHandler(this)
     private val renameFileEventHandler = RenameFileEventHandler(this)
 
     init {
@@ -364,7 +367,8 @@ class HomeActivity : BaseActivity(),
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FilesDownloadEvents) {
-        eventBusListenable.onMessageEvent(event)
+        fileDownloadEventHandler.onMessageEvent(event)
+//        eventBusListenable.onMessageEvent(event)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

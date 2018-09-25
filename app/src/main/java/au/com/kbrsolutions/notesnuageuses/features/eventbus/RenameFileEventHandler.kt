@@ -1,12 +1,9 @@
 package au.com.kbrsolutions.notesnuageuses.features.eventbus
 
-import android.os.Bundle
 import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
-import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
 import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.RenameFileEvents
-import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
 
 class RenameFileEventHandler(private val listener: OnRenameFileEventHandlerInteractionListener) {
     fun onMessageEvent(event: RenameFileEvents) {
@@ -20,6 +17,7 @@ class RenameFileEventHandler(private val listener: OnRenameFileEventHandlerInter
                 Log.v("EventBusEventsHandler", """onMessageEvent.RenameFileEvents -
                     |msgContents: $msgContents
                     |""".trimMargin())
+                listener.showMessage(msgContents)
             }
 
             RenameFileEvents.Events.RENAME_FILE_FINISHED -> {
@@ -56,16 +54,7 @@ class RenameFileEventHandler(private val listener: OnRenameFileEventHandlerInter
      */
     interface OnRenameFileEventHandlerInteractionListener {
 
-        fun setFragment(
-                fragmentId: HomeActivity.FragmentsEnum,
-                titleText: String,
-                addFragmentToStack: Boolean,
-                foldersAddData: FolderData?,
-                fragmentArgs: Bundle?)
         fun showMessage(message: String)
         fun updateFolderListAdapter()
-        fun removeTopFragment(source: String, actionCancelled: Boolean): Boolean
-        fun setActionBarTitle(title: CharSequence)
-        fun setFolderFragment(folderData: FolderData)
     }
 }
