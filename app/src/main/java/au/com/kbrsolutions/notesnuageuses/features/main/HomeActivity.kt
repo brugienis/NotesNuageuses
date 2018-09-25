@@ -15,6 +15,7 @@ import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.addFragment
 import au.com.kbrsolutions.notesnuageuses.features.eventbus.FileDownloadEventHandler
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.FileUploadEventsHandler
 import au.com.kbrsolutions.notesnuageuses.features.eventbus.RenameFileEventHandler
 import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.*
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
@@ -45,6 +46,7 @@ class HomeActivity : BaseActivity(),
         RenameFileDialog.OnRenameFileDialogInteractionListener,
         RenameFileEventHandler.OnRenameFileEventHandlerInteractionListener,
         FileDownloadEventHandler.OnFileDownloadEventHandlerInteractionListener,
+        FileUploadEventsHandler.OnFileUploadEventsHandlerInteractionListener,
         FileFragment.OnFileFragmentInteractionListener,
         EventBusEventsHandler.OnEventBusEventsHandlerInteractionListener,
         FileDetailsFragment.OnFileDetailsFragmentInteractionListener {
@@ -54,7 +56,7 @@ class HomeActivity : BaseActivity(),
     private val mTestMode: Boolean = false
     private lateinit var handleCancellableFuturesCallable: HandleCancellableFuturesCallable
     private var mCancellableFuture: Future<String>? = null
-    private lateinit var handleNonCancellableFuturesCallable: HandleNonCancellableFuturesCallable
+    private lateinit var handleNonCancellableFuturesCallable: BaseActivity.HandleNonCancellableFuturesCallable
     private var mNonCancellableFuture: Future<String>? = null
     private lateinit var mExecutorService: ExecutorService
     private var showTrashedFiles: Boolean = false
@@ -89,6 +91,7 @@ class HomeActivity : BaseActivity(),
     private val eventBusListenable: EventBusListenable =
             EventBusEventsHandler(this)
 
+    private val fileUploadEventsHandler = FileUploadEventsHandler(this)
     private val fileDownloadEventHandler = FileDownloadEventHandler(this)
     private val renameFileEventHandler = RenameFileEventHandler(this)
 
@@ -368,12 +371,11 @@ class HomeActivity : BaseActivity(),
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FilesDownloadEvents) {
         fileDownloadEventHandler.onMessageEvent(event)
-//        eventBusListenable.onMessageEvent(event)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FilesUploadEvents) {
-        eventBusListenable.onMessageEvent(event)
+        fileUploadEventsHandler.onMessageEvent(event)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
