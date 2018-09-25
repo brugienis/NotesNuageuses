@@ -14,9 +14,7 @@ import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack.addFragment
-import au.com.kbrsolutions.notesnuageuses.features.eventbus.FileDownloadEventHandler
-import au.com.kbrsolutions.notesnuageuses.features.eventbus.FileUploadEventsHandler
-import au.com.kbrsolutions.notesnuageuses.features.eventbus.RenameFileEventHandler
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.*
 import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.*
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
@@ -43,6 +41,8 @@ class HomeActivity : BaseActivity(),
         EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
         FolderFragment.OnFolderFragmentInteractionListener,
         CreateFileDialog.OnCreateFileDialogInteractionListener,
+        DriveAccessEventsHandler.OnDriveAccessEventsHandlerInteractionListener,
+        FolderEventsHandler.OnFolderEventsHandlerInteractionListener,
         RenameFileDialog.OnRenameFileDialogInteractionListener,
         RenameFileEventHandler.OnRenameFileEventHandlerInteractionListener,
         FileDownloadEventHandler.OnFileDownloadEventHandlerInteractionListener,
@@ -91,6 +91,8 @@ class HomeActivity : BaseActivity(),
     private val eventBusListenable: EventBusListenable =
             EventBusEventsHandler(this)
 
+    private val driveAccessEventsHandler = DriveAccessEventsHandler(this)
+    private val folderEventsHandler = FolderEventsHandler(this)
     private val fileUploadEventsHandler = FileUploadEventsHandler(this)
     private val fileDownloadEventHandler = FileDownloadEventHandler(this)
     private val renameFileEventHandler = RenameFileEventHandler(this)
@@ -365,7 +367,7 @@ class HomeActivity : BaseActivity(),
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: DriveAccessEvents) {
-        eventBusListenable.onMessageEvent(event)
+        driveAccessEventsHandler.onMessageEvent(event)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -380,7 +382,7 @@ class HomeActivity : BaseActivity(),
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FoldersEvents) {
-        eventBusListenable.onMessageEvent(event)
+        folderEventsHandler.onMessageEvent(event)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
