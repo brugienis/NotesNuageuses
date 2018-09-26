@@ -49,7 +49,6 @@ class HomeActivity : BaseActivity(),
         FileUploadEventsHandler.OnFileUploadEventsHandlerInteractionListener,
         FileDeleteEventsHandler.OnFileDeleteEventsHandlerInteractionListener,
         FileFragment.OnFileFragmentInteractionListener,
-        EventBusEventsHandler.OnEventBusEventsHandlerInteractionListener,
         FileDetailsFragment.OnFileDetailsFragmentInteractionListener {
 
     private lateinit var eventBus: EventBus
@@ -72,25 +71,6 @@ class HomeActivity : BaseActivity(),
     private var downloadFragment: DownloadFragment? = null
     private var folderArrayAdapter: FolderArrayAdapter<FolderItem>? = null
     private var fileFragment: FileFragment? = null
-
-    companion object {
-        private val TAG = HomeActivity::class.java.simpleName
-
-        const val EMPTY_FOLDER_TAG = "empty_folder_tag"
-        const val FILE_FRAGMENT_TAG = "file_fragment_tag"
-        const val FOLDER_TAG = "folder_tag"
-        const val RETRIEVE_FOLDER_PROGRESS_TAG = "retrieve_folder_progress_tag"
-
-        const val RETRIEVING_FOLDER_TITLE_KEY = "retrieving_folder_title_key"
-        const val FILE_NAME_KEY = "file_name_key"
-        const val THIS_FILE_DRIVE_ID_KEY = "this_file_drive_id_key"
-        const val FILE_CONTENTS_KEY = "file_contents_key"
-        const val FILE_ITEM_ID_KEY = "file_item_id_key"
-        const val IDX_IN_THE_FOLDER_FILES_LIST_KEY = "idx_in_the_folder_files_list_key"
-    }
-
-    private val eventBusListenable: EventBusListenable =
-            EventBusEventsHandler(this)
 
     private val driveAccessEventsHandler = DriveAccessEventsHandler(this)
     private val folderEventsHandler = FolderEventsHandler(this)
@@ -932,5 +912,21 @@ class HomeActivity : BaseActivity(),
         Log.i(TAG, "\nprintCollection $msg")
         coll.forEach { Log.i(TAG, it.toString()) }
         Log.i(TAG, "\nend")
+    }
+
+    companion object {
+        private val TAG = HomeActivity::class.java.simpleName
+
+        const val EMPTY_FOLDER_TAG = "empty_folder_tag"
+        const val FILE_FRAGMENT_TAG = "file_fragment_tag"
+        const val FOLDER_TAG = "folder_tag"
+        const val RETRIEVE_FOLDER_PROGRESS_TAG = "retrieve_folder_progress_tag"
+
+        const val RETRIEVING_FOLDER_TITLE_KEY = "retrieving_folder_title_key"
+        const val FILE_NAME_KEY = "file_name_key"
+        const val THIS_FILE_DRIVE_ID_KEY = "this_file_drive_id_key"
+        const val FILE_CONTENTS_KEY = "file_contents_key"
+        const val FILE_ITEM_ID_KEY = "file_item_id_key"
+        const val IDX_IN_THE_FOLDER_FILES_LIST_KEY = "idx_in_the_folder_files_list_key"
     }
 }

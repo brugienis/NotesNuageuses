@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
-import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.EventBusEventsHandler
 import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.FoldersEvents
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
 
@@ -91,7 +90,7 @@ class FolderEventsHandler(private val listener: OnFolderEventsHandlerInteraction
     // fixLater: Aug 27, 2018 - used for debugging. Remove later
     private fun printCollection(msg: String, coll: Array<HomeActivity.FragmentsEnum>) {
         Log.i("FolderEventsHandler", "\nprintCollection $msg")
-        coll.forEach { Log.i("${EventBusEventsHandler::class.simpleName}", it.toString()) }
+        coll.forEach { Log.i("${FolderEventsHandler::class.simpleName}", it.toString()) }
         Log.i("FolderEventsHandler", "\nend")
     }
 

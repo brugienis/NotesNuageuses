@@ -14,7 +14,7 @@ import java.util.*
 
 class FragmentsStackTest {
 
-//    private val TAG = FragmentsStackTest::class.java.simpleName
+    private val TAG = FragmentsStackTest::class.java.simpleName
 
     @Before
     fun setUp() {
@@ -355,6 +355,50 @@ class FragmentsStackTest {
                 true)
         val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse, actualFragmentsStackResponse)
         Assert.assertEquals("wrong fragmentsStackResponse", null, errMsg)
+    }
+
+    /* Creating text note in non empty folder - after CREATE_FILE_FRAGMENT set, FILE_FRAGMENT is set.
+	 * Either user clicked on the Back button or in 'file name and password' dialog clicked on the Cancel button.
+	 *      DOWNLOAD_FRAGMENT,
+	 *      FOLDER_FRAGMENT,
+	 *      FILE_FRAGMENT
+	 */
+    @Test
+    fun create_text_file_in_non_empty_folder_and_trash_untrash_it() {
+        var folderLevel = -1
+
+        val fileParentFolderDriveId = addTopFolderDetails()
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder",
+                null)
+
+        var foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder",
+                foldersAddData)
+
+        FragmentsStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "image", foldersAddData)
+        assertEquals("wrong FragmentsStack size", 3, FragmentsStack.getStackSize())
+        val isTrashedBefore = foldersAddData.filesMetadatasInfo[0].isTrashed
+        val trashedCntBefore = FoldersData.getCurrentFolderTrashedFilesCnt()
+        Assert.assertEquals("trashedCnt should be 1", 0, trashedCntBefore)
+        Assert.assertEquals("'isTrashed' should be false", false, isTrashedBefore)
+
+
+        val foldersAddDataMetadataCopy = foldersAddData.filesMetadatasInfo[0].copy()
+        foldersAddDataMetadataCopy.isTrashed = true
+
+        FoldersData.updateFolderItemView(
+                foldersAddDataMetadataCopy.fileItemId,
+                0,
+                foldersAddDataMetadataCopy.fileDriveId!!,
+                0,
+                foldersAddDataMetadataCopy
+        )
+
+        val isTrashedAfter = foldersAddData.filesMetadatasInfo[0].isTrashed
+        val trashedCntAfter = FoldersData.getCurrentFolderTrashedFilesCnt()
+
+        Assert.assertEquals("trashedCnt should be 1", 1, trashedCntAfter)
+        Assert.assertEquals("'isTrashed' should be true", true, isTrashedAfter)
     }
 
     /* Creating text note in non empty folder - after CREATE_FILE_FRAGMENT set, FILE_FRAGMENT is set.

@@ -25,6 +25,7 @@ class FileDeleteEventsHandler(
             val idxInTheFolderFilesList = event.idxInTheFolderFilesList
             Log.v("FileDeleteEventsHandler", """onMessageEvent - index
                     |idxInTheFolderFilesList: $idxInTheFolderFilesList
+                    |isTrashed              : ${event.isTrashed}
                     |isFileDeleted          : ${event.isFileDeleted}
                     |""".trimMargin())
 

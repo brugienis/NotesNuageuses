@@ -202,7 +202,7 @@ object FoldersData {
         Log.v("FoldersData", """updateFolderItemView -
             |fileMetadataInfo.fileTitle: ${fileMetadataInfo.fileTitle} """.trimMargin())
 
-        folderMetadataArrayInfoListAtLevel[fileItemIdPos] = fileMetadataInfo
+//        folderMetadataArrayInfoListAtLevel[fileItemIdPos] = fileMetadataInfo
 //        val folderData = foldersData[folderLevel]
         val filesMetadataInfo = foldersData[folderLevel].filesMetadatasInfo
 
@@ -220,12 +220,12 @@ object FoldersData {
                 foldersTrashedFilesCnt[folderLevel] = ++trashedFilesCnt
             } else {
                 foldersTrashedFilesCnt[folderLevel] = --trashedFilesCnt
-                Log.v("FoldersData", """updateFolderItemView -
-                    |before trashedFilesCnt: $trashedFilesCnt
-                    |after  trashedFilesCnt: ${foldersTrashedFilesCnt[folderLevel]}
-                    |""".trimMargin())
             }
         }
+        Log.v("FoldersData", """updateFolderItemView -
+                    |after  trashedFilesCnt: ${foldersTrashedFilesCnt[folderLevel]}
+                    |""".trimMargin())
+        folderMetadataArrayInfoListAtLevel[fileItemIdPos] = fileMetadataInfo
         verifyDataStructure()
     }
 
