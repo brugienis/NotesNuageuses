@@ -203,18 +203,27 @@ object FoldersData {
             |fileMetadataInfo.fileTitle: ${fileMetadataInfo.fileTitle} """.trimMargin())
 
         folderMetadataArrayInfoListAtLevel[fileItemIdPos] = fileMetadataInfo
-        val folderData = foldersData[folderLevel]
+//        val folderData = foldersData[folderLevel]
         val filesMetadataInfo = foldersData[folderLevel].filesMetadatasInfo
 
         val isTrashedCurr = filesMetadataInfo[fileItemIdPos].isTrashed
         val isTrashedNewValue = fileMetadataInfo.isTrashed
+        Log.v("FoldersData", """updateFolderItemView -
+            |isTrashedCurr:     $isTrashedCurr
+            |isTrashedNewValue: $isTrashedNewValue
+            |""".trimMargin())
 
         if (isTrashedCurr != isTrashedNewValue) {
-            var trashedFilesCnt = getCurrentFolderTrashedFilesCnt()
+//            var trashedFilesCnt = getCurrentFolderTrashedFilesCnt()
+            var trashedFilesCnt = foldersTrashedFilesCnt[folderLevel]
             if (isTrashedNewValue) {
                 foldersTrashedFilesCnt[folderLevel] = ++trashedFilesCnt
             } else {
                 foldersTrashedFilesCnt[folderLevel] = --trashedFilesCnt
+                Log.v("FoldersData", """updateFolderItemView -
+                    |before trashedFilesCnt: $trashedFilesCnt
+                    |after  trashedFilesCnt: ${foldersTrashedFilesCnt[folderLevel]}
+                    |""".trimMargin())
             }
         }
         verifyDataStructure()

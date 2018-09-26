@@ -14,90 +14,67 @@ import java.util.*
 
 class FragmentsStackTest {
 
-    private var testFragmentStack: FragmentsStack? = null
-    private var testFoldersData: FoldersData? = null
-
-    private val TAG = FragmentsStackTest::class.java.simpleName
+//    private val TAG = FragmentsStackTest::class.java.simpleName
 
     @Before
     fun setUp() {
-        testFragmentStack = FragmentsStack
-        testFoldersData = FoldersData
-        testFragmentStack!!.initialize(true)
-        testFoldersData!!.init()
+        FragmentsStack.initialize(true)
+        FoldersData.init()
     }
 
     @After
     fun tearDown() {
-        fun tearDown() {
-            testFoldersData = null
-            testFragmentStack = null
-        }
     }
 
     @Test
     fun testInit() {
-        Assert.assertTrue("testFragmentStack can't be null", testFragmentStack != null)
-    }
-
-    private fun getEssentials(): Pair<FragmentsStack, FoldersData> {
-        val fragmentStack: FragmentsStack = testFragmentStack ?:
-        throw RuntimeException("testFragmentStack cant be null")
-
-        val foldersData: FoldersData = testFoldersData ?:
-        throw RuntimeException("testFoldersData cant be null")
-        return fragmentStack to foldersData
     }
 
     @Test
     fun testAddFragment_notFolder() {
-        val (fragmentStack, foldersData) = getEssentials()
 
         val foldersAddData: FolderData? = null
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", foldersAddData)
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", foldersAddData)
 
-        assertEquals("wrong testFragmentStack size", 1, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", FragmentsEnum.ACTIVITY_LOG_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", -1, foldersData.getCurrFolderLevel())
+        assertEquals("wrong testFragmentStack size", 1, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.ACTIVITY_LOG_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", -1, FoldersData.getCurrFolderLevel())
     }
 
     @Test
     fun testAddFragment_folder() {
-        val (fragmentStack, foldersData) = getEssentials()
 
         var folderLevel = -1
         val fileParentFolderDriveId = addTopFolderDetails()
 
         val foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
 
-        assertEquals("wrong testFragmentStack size", 1, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 0, foldersData.getCurrFolderLevel())
+        assertEquals("wrong testFragmentStack size", 1, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 0, FoldersData.getCurrFolderLevel())
     }
 
     @Test
     fun testRemoveTopFragment_just_one_top_IsFolder() {
-        val (fragmentStack, foldersData) = getEssentials()
 
-        assertEquals("wrong currFolderLevel", -1, foldersData.getCurrFolderLevel())
+        assertEquals("wrong currFolderLevel", -1, FoldersData.getCurrFolderLevel())
         testAddFragment_folder()
-        assertEquals("wrong currFolderLevel", 0, foldersData.getCurrFolderLevel())
+        assertEquals("wrong currFolderLevel", 0, FoldersData.getCurrFolderLevel())
 
-        val fragmentsStackResponse = fragmentStack.removeTopFragment(
+        val fragmentsStackResponse = FragmentsStack.removeTopFragment(
                 "testRemoveTopFragment_fromEmptyStack", false)
 
-        assertEquals("wrong testFragmentStack size", 0, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", FragmentsEnum.NONE, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", -1, foldersData.getCurrFolderLevel())
+        assertEquals("wrong testFragmentStack size", 0, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.NONE, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", -1, FoldersData.getCurrFolderLevel())
         assertEquals("wrong fragmentsStackResponse", true, fragmentsStackResponse.finishRequired)
     }
 
     @Test
     fun testRemoveTopFragment_fromEmptyStack() {
-        val (fragmentStack, foldersData) = getEssentials()
 
-        val fragmentsStackResponse = fragmentStack.removeTopFragment(
+        val fragmentsStackResponse = FragmentsStack.removeTopFragment(
                 "testRemoveTopFragment_fromEmptyStack", false)
         assertEquals("wrong fragmentsStackResponse", true, fragmentsStackResponse.finishRequired)
     }
@@ -107,19 +84,18 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_00() {
-        val (fragmentStack, foldersData) = getEssentials()
 
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
         val foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(
+        FragmentsStack.addFragment(
                 FragmentsEnum.ACTIVITY_LOG_FRAGMENT,
                 "Activity log", foldersAddData)
         assertEquals(
-                "wrong testFragmentStack size", 1, fragmentStack.getStackSize())
+                "wrong testFragmentStack size", 1, FragmentsStack.getStackSize())
 
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment(
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment(
                 "testRemoveTopFragment_topFragmentFolder_00", false)
 
 //        Log.v(TAG, "testRemoveTopFragment_topFragmentFolder_00 - actualFragmentsStackResponse: " +
@@ -128,11 +104,11 @@ class FragmentsStackTest {
         assertNotNull("actualFragmentsStackResponse cannot be null",
                 actualFragmentsStackResponse)
         assertEquals("wrong testFragmentStack size", 0,
-                fragmentStack.getStackSize())
+                FragmentsStack.getStackSize())
         assertEquals("wrong currFragment", FragmentsEnum.NONE ,
-                fragmentStack.getCurrFragment())
+                FragmentsStack.getCurrFragment())
         assertEquals("wrong currFolderLevel", -1,
-                foldersData.getCurrFolderLevel())
+                FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(
                 true,
                 FragmentsEnum.NONE,
@@ -150,7 +126,6 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_01() {
-        val (fragmentStack, foldersData) = getEssentials()
 
         Log.v(TAG, " - testRemoveTopFragment_topFragmentFolder_01 start");
         var folderLevel = -1
@@ -158,33 +133,33 @@ class FragmentsStackTest {
 
         val fileParentFolderDriveId = addTopFolderDetails()
         var foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log",
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log",
                 foldersAddData)
 
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT,
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT,
                 "Progress", null)
 
         foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder",
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder",
                 foldersAddData)
 
         assertEquals("wrong testFragmentStack size", 3,
-                fragmentStack.getStackSize())
+                FragmentsStack.getStackSize())
 
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment(
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment(
                 "testRemoveTopFragment_topFragmentFolder_01", false)
 
         Log.v(TAG, "testRemoveTopFragment_topFragmentFolder_00 - actualFragmentsStackResponse: " +
                 actualFragmentsStackResponse)
 
         assertEquals(
-                "wrong testFragmentStack size", 0, fragmentStack.getStackSize())
+                "wrong testFragmentStack size", 0, FragmentsStack.getStackSize())
         assertEquals(
                 "wrong currFragment",
                 FragmentsEnum.NONE,
-                fragmentStack.getCurrFragment())
+                FragmentsStack.getCurrFragment())
         assertEquals(
-                "wrong currFolderLevel", -1, foldersData.getCurrFolderLevel())
+                "wrong currFolderLevel", -1, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(
                 true,
                 FragmentsEnum.NONE,
@@ -202,35 +177,34 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_02() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log",
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log",
                 null)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT,
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT,
                 "Folder",
                 null)
         var foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder",
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder",
                 foldersAddData)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT,
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT,
                 "Folder",
                 null)
         foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder1",
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder1",
                 foldersAddData)
-        assertEquals("wrong fragmentStack size", 5, fragmentStack.getStackSize())
-        assertEquals("wrong currFolderLevel", 1, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 5, FragmentsStack.getStackSize())
+        assertEquals("wrong currFolderLevel", 1, FoldersData.getCurrFolderLevel())
 
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment(
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment(
                 "testRemoveTopFragment_topFragmentFolder_02",
                 false)
 
-        assertEquals("wrong fragmentStack size", 3, fragmentStack.getStackSize())
+        assertEquals("wrong FragmentsStack size", 3, FragmentsStack.getStackSize())
         assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT,
-                fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 0, foldersData.getCurrFolderLevel())
+                FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 0, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(
                 false,
                 FragmentsEnum.NONE,
@@ -251,12 +225,11 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_03() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
         val folderName = "Folder-"
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT,
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT,
                 "Progress",
                 null)
 
@@ -265,11 +238,11 @@ class FragmentsStackTest {
                 fileParentFolderDriveId,
                 folderLevel,
                 titleToSetAfterTopRemoved)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT,
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT,
                 titleToSetAfterTopRemoved,
                 foldersAddData)
 
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT,
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT,
                 "Progress",
                 null)
 
@@ -278,28 +251,28 @@ class FragmentsStackTest {
                 fileParentFolderDriveId,
                 folderLevel,
                 folderName + folderLevel)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT,
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT,
                 folderName + folderLevel,
                 foldersAddData)
 
-        assertEquals("wrong fragmentStack size", 4, fragmentStack.getStackSize())
-        assertEquals("wrong currFolderLevel", 1, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 4, FragmentsStack.getStackSize())
+        assertEquals("wrong currFolderLevel", 1, FoldersData.getCurrFolderLevel())
 
-        Log.v("FragmentsStackTest", "testRemoveTopFragment_topFragmentFolder_03 - fragmentStack: $fragmentStack ")
-        var actualStackFragmentsAfterAdd = fragmentStack.getFragmentsList()
+        Log.v("FragmentsStackTest", "testRemoveTopFragment_topFragmentFolder_03 - FragmentsStack: $FragmentsStack ")
+        var actualStackFragmentsAfterAdd = FragmentsStack.getFragmentsList()
         Log.v(TAG, " - actualStackFragmentsAfterAdd: ${printCollection("after fragments added  ", actualStackFragmentsAfterAdd)}")
 
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment(
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment(
                 "testRemoveTopFragment_topFragmentFolder_02",
                 false)
 
-        actualStackFragmentsAfterAdd = fragmentStack.getFragmentsList()
+        actualStackFragmentsAfterAdd = FragmentsStack.getFragmentsList()
         Log.v(TAG, " - actualStackFragmentsAfterAdd: ${printCollection("after fragments removed", actualStackFragmentsAfterAdd)}")
 
-        assertEquals("wrong fragmentStack size", 2, fragmentStack.getStackSize())
+        assertEquals("wrong FragmentsStack size", 2, FragmentsStack.getStackSize())
         assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT,
-                fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 0, foldersData.getCurrFolderLevel())
+                FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 0, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(
                 false,
                 FragmentsEnum.NONE,
@@ -319,29 +292,28 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_04_create_text_file_in_non_empty_folder_Cancel_clicked() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder", null)
         var foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder", null)
         foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder1", foldersAddData)
-        //		fragmentStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
-        fragmentStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "image", foldersAddData)
-        assertEquals("wrong fragmentStack size", 6, fragmentStack.getStackSize())
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder1", foldersAddData)
+        //		FragmentsStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
+        FragmentsStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "image", foldersAddData)
+        assertEquals("wrong FragmentsStack size", 6, FragmentsStack.getStackSize())
 
         val actionCancelled = true
         Log.i(TAG, "@#testRemoveTopFragment_topFragmentFolder_03 - before removeTopFragment")
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
         Log.i(TAG, "@#testRemoveTopFragment_topFragmentFolder_03 - after  removeTopFragment")
 
-        assertEquals("wrong fragmentStack size", 5, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 1, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 5, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 1, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(false, FragmentsEnum.FOLDER_FRAGMENT, "A", true, true, true)
         val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse, actualFragmentsStackResponse)
         Assert.assertEquals("wrong fragmentsStackResponse", null, errMsg)
@@ -356,25 +328,24 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_041_create_text_file_in_non_empty_folder_Cancel_clicked() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder", null)
         var foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder", null)
-        fragmentStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "image", foldersAddData)
-        assertEquals("wrong fragmentStack size", 4, fragmentStack.getStackSize())
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "image", foldersAddData)
+        assertEquals("wrong FragmentsStack size", 4, FragmentsStack.getStackSize())
 
         val actionCancelled = true
         Log.i(TAG, "@#testRemoveTopFragment_topFragmentFolder_041_create_text_file_in_non_empty_folder_Cancel_clicked - before removeTopFragment")
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
         Log.i(TAG, "@#testRemoveTopFragment_topFragmentFolder_041_create_text_file_in_non_empty_folder_Cancel_clicked - after  removeTopFragment")
 
-        assertEquals("wrong fragmentStack size", 2, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 0, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 2, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 0, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(
                 false,
                 FragmentsEnum.FOLDER_FRAGMENT,
@@ -393,29 +364,28 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_04_create_text_file_in_non_empty_folder_Save_clicked() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder", null)
         var foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "progress folder", null)
         foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder1", foldersAddData)
-        //		fragmentStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
-        fragmentStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "image", foldersAddData)
-        assertEquals("wrong fragmentStack size", 6, fragmentStack.getStackSize())
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder1", foldersAddData)
+        //		FragmentsStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
+        FragmentsStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "image", foldersAddData)
+        assertEquals("wrong FragmentsStack size", 6, FragmentsStack.getStackSize())
 
         val actionCancelled = false
         Log.i(TAG, "@#testRemoveTopFragment_topFragmentFolder_03 - before removeTopFragment")
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
         Log.i(TAG, "@#testRemoveTopFragment_topFragmentFolder_03 - after  removeTopFragment")
 
-        assertEquals("wrong fragmentStack size", 5, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 1, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 5, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 1, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(false, FragmentsEnum.FOLDER_FRAGMENT, "A", true, true, true)
         val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse, actualFragmentsStackResponse)
         Assert.assertEquals("wrong fragmentsStackResponse", null, errMsg)
@@ -428,27 +398,26 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_04_create_text_file_in_empty_folder_Cancel_clicked() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
         var foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
         foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.EMPTY_FOLDER_FRAGMENT, "Folder1", foldersAddData)
-        //		fragmentStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
-        fragmentStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "image", foldersAddData)
-        assertEquals("wrong fragmentStack size", 6, fragmentStack.getStackSize())
+        FragmentsStack.addFragment(FragmentsEnum.EMPTY_FOLDER_FRAGMENT, "Folder1", foldersAddData)
+        //		FragmentsStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
+        FragmentsStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "image", foldersAddData)
+        assertEquals("wrong FragmentsStack size", 6, FragmentsStack.getStackSize())
 
         val actionCancelled = true
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
 
-        assertEquals("wrong fragmentStack size", 5, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", FragmentsEnum.EMPTY_FOLDER_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 1, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 5, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.EMPTY_FOLDER_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 1, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(false, FragmentsEnum.EMPTY_FOLDER_FRAGMENT, "A", true, true, true)
         val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse, actualFragmentsStackResponse)
         Assert.assertEquals("wrong fragmentsStackResponse", null, errMsg)
@@ -463,23 +432,22 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_04_picture_view_in_non_empty_folder_Cancel_clicked() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
         val foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
-        fragmentStack.addFragment(FragmentsEnum.IMAGE_VIEW_FRAGMENT, "image", foldersAddData)
-        assertEquals("wrong fragmentStack size", 4, fragmentStack.getStackSize())
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        FragmentsStack.addFragment(FragmentsEnum.IMAGE_VIEW_FRAGMENT, "image", foldersAddData)
+        assertEquals("wrong FragmentsStack size", 4, FragmentsStack.getStackSize())
 
         val actionCancelled = true
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
 
-        assertEquals("wrong fragmentStack size", 3, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 0, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 3, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 0, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(
                 false,
                 FragmentsEnum.FOLDER_FRAGMENT,
@@ -498,26 +466,25 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_04_create_text_file_in_empty_folder_Save_clicked() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
         var foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
         foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.EMPTY_FOLDER_FRAGMENT, "Folder1", foldersAddData)
-        //		fragmentStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
-        fragmentStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "image", foldersAddData)
-        assertEquals("wrong fragmentStack size", 6, fragmentStack.getStackSize())
-        val actualStackFragmentsAfterAdd = fragmentStack.getFragmentsList()
+        FragmentsStack.addFragment(FragmentsEnum.EMPTY_FOLDER_FRAGMENT, "Folder1", foldersAddData)
+        //		FragmentsStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
+        FragmentsStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "image", foldersAddData)
+        assertEquals("wrong FragmentsStack size", 6, FragmentsStack.getStackSize())
+        val actualStackFragmentsAfterAdd = FragmentsStack.getFragmentsList()
 //        printCollection("after fragments added", actualStackFragmentsAfterAdd)
         Log.v(TAG, " - actualStackFragmentsAfterAdd: ${printCollection("after fragments added", actualStackFragmentsAfterAdd)}")
 
         val actionCancelled = false
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
 
         val expectedStackFragments = arrayOf(
                 FragmentsEnum.ACTIVITY_LOG_FRAGMENT,
@@ -526,14 +493,14 @@ class FragmentsStackTest {
                 FragmentsEnum.DOWNLOAD_FRAGMENT,
                 FragmentsEnum.FOLDER_FRAGMENT)
         Log.v(TAG, " - expectedStackFragments: ${printCollection("expected after removeTopFragment", expectedStackFragments)}")
-        val actualStackFragments = fragmentStack.getFragmentsList()
+        val actualStackFragments = FragmentsStack.getFragmentsList()
         Log.v(TAG, " - actualStackFragments: ${printCollection("actual after removeTopFragment", actualStackFragments)}")
         val match = verifyFoldersStack(expectedStackFragments, actualStackFragments)
 
         Assert.assertTrue("wrong fragments on stack", match)
-        assertEquals("wrong fragmentStack size", 5, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 1, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 5, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 1, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(
                 false,
                 FragmentsEnum.FOLDER_FRAGMENT,
@@ -552,32 +519,31 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_05_new_text_file_opened_and_switched_to_activity_log() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
         val foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
-        //		fragmentStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
-        fragmentStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "text", foldersAddData)
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        assertEquals("wrong fragmentStack size", 5, fragmentStack.getStackSize())
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        //		FragmentsStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
+        FragmentsStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "text", foldersAddData)
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        assertEquals("wrong FragmentsStack size", 5, FragmentsStack.getStackSize())
 
         val actionCancelled = false
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
 
         val expectedStackFragments = arrayOf(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, FragmentsEnum.DOWNLOAD_FRAGMENT, FragmentsEnum.FOLDER_FRAGMENT,
                 //				FragmentsEnum.CREATE_FILE_FRAGMENT,
                 FragmentsEnum.FILE_FRAGMENT)
-        val actualStackFragments = fragmentStack.getFragmentsList()
+        val actualStackFragments = FragmentsStack.getFragmentsList()
         val match = verifyFoldersStack(expectedStackFragments, actualStackFragments)
 
         Assert.assertTrue("wrong fragments on stack", match)
-        assertEquals("wrong fragmentStack size", 4, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", FragmentsEnum.FILE_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 0, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 4, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.FILE_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 0, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(false, FragmentsEnum.FILE_FRAGMENT, "text", false, false, true)
         val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse, actualFragmentsStackResponse)
         Assert.assertEquals("wrong fragmentsStackResponse", null, errMsg)
@@ -590,32 +556,31 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_06_photo_file_opened_and_switched_to_activity_log() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
         val foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
-        //		fragmentStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
-        fragmentStack.addFragment(FragmentsEnum.IMAGE_VIEW_FRAGMENT, "text", foldersAddData)
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        assertEquals("wrong fragmentStack size", 5, fragmentStack.getStackSize())
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        //		FragmentsStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
+        FragmentsStack.addFragment(FragmentsEnum.IMAGE_VIEW_FRAGMENT, "text", foldersAddData)
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        assertEquals("wrong FragmentsStack size", 5, FragmentsStack.getStackSize())
 
         val actionCancelled = false
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
 
         val expectedStackFragments = arrayOf(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, FragmentsEnum.DOWNLOAD_FRAGMENT, FragmentsEnum.FOLDER_FRAGMENT,
                 //				FragmentsEnum.CREATE_FILE_FRAGMENT,
                 FragmentsEnum.IMAGE_VIEW_FRAGMENT)
-        val actualStackFragments = fragmentStack.getFragmentsList()
+        val actualStackFragments = FragmentsStack.getFragmentsList()
         val match = verifyFoldersStack(expectedStackFragments, actualStackFragments)
 
         Assert.assertTrue("wrong fragments on stack", match)
-        assertEquals("wrong fragmentStack size", 4, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", FragmentsEnum.IMAGE_VIEW_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 0, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 4, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.IMAGE_VIEW_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 0, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(false, FragmentsEnum.IMAGE_VIEW_FRAGMENT, "text", false, false, true)
         val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse, actualFragmentsStackResponse)
         Assert.assertEquals("wrong fragmentsStackResponse", null, errMsg)
@@ -626,28 +591,27 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_07_legal_notices_top_folder_below() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
         val foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
-        fragmentStack.addFragment(FragmentsEnum.LEGAL_NOTICES, "Activity log", null)
-        assertEquals("wrong fragmentStack size", 4, fragmentStack.getStackSize())
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        FragmentsStack.addFragment(FragmentsEnum.LEGAL_NOTICES, "Activity log", null)
+        assertEquals("wrong FragmentsStack size", 4, FragmentsStack.getStackSize())
 
         val actionCancelled = false
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
 
         val expectedStackFragments = arrayOf(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, FragmentsEnum.DOWNLOAD_FRAGMENT, FragmentsEnum.FOLDER_FRAGMENT)
-        val actualStackFragments = fragmentStack.getFragmentsList()
+        val actualStackFragments = FragmentsStack.getFragmentsList()
         val match = verifyFoldersStack(expectedStackFragments, actualStackFragments)
 
         Assert.assertTrue("wrong fragments on stack", match)
-        assertEquals("wrong fragmentStack size", 3, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 0, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 3, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.FOLDER_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 0, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(false, FragmentsEnum.FOLDER_FRAGMENT, "A", false, false, true)
         val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse, actualFragmentsStackResponse)
         Assert.assertEquals("wrong fragmentsStackResponse", null, errMsg)
@@ -658,31 +622,30 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_07_legal_notices_top_empty_folder_below() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
         var foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
         foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.EMPTY_FOLDER_FRAGMENT, "Folder", foldersAddData)
-        fragmentStack.addFragment(FragmentsEnum.LEGAL_NOTICES, "Activity log", null)
-        assertEquals("wrong fragmentStack size", 6, fragmentStack.getStackSize())
+        FragmentsStack.addFragment(FragmentsEnum.EMPTY_FOLDER_FRAGMENT, "Folder", foldersAddData)
+        FragmentsStack.addFragment(FragmentsEnum.LEGAL_NOTICES, "Activity log", null)
+        assertEquals("wrong FragmentsStack size", 6, FragmentsStack.getStackSize())
 
         val actionCancelled = false
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
 
         val expectedStackFragments = arrayOf(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, FragmentsEnum.DOWNLOAD_FRAGMENT, FragmentsEnum.FOLDER_FRAGMENT, FragmentsEnum.DOWNLOAD_FRAGMENT, FragmentsEnum.EMPTY_FOLDER_FRAGMENT)
-        val actualStackFragments = fragmentStack.getFragmentsList()
+        val actualStackFragments = FragmentsStack.getFragmentsList()
         val match = verifyFoldersStack(expectedStackFragments, actualStackFragments)
 
         Assert.assertTrue("wrong fragments on stack", match)
-        assertEquals("wrong fragmentStack size", 5, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", FragmentsEnum.EMPTY_FOLDER_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 1, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 5, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.EMPTY_FOLDER_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 1, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(false, FragmentsEnum.EMPTY_FOLDER_FRAGMENT, "A", false, false, true)
         val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse, actualFragmentsStackResponse)
         Assert.assertEquals("wrong fragmentsStackResponse", null, errMsg)
@@ -693,32 +656,31 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_07_legal_notices_top_text_note_below() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        fragmentStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
+        FragmentsStack.addFragment(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        FragmentsStack.addFragment(FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
         val foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
-        //		fragmentStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
-        fragmentStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "text", foldersAddData)
-        fragmentStack.addFragment(FragmentsEnum.LEGAL_NOTICES, "Activity log", null)
-        assertEquals("wrong fragmentStack size", 5, fragmentStack.getStackSize())
+        FragmentsStack.addFragment(FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        //		FragmentsStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
+        FragmentsStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "text", foldersAddData)
+        FragmentsStack.addFragment(FragmentsEnum.LEGAL_NOTICES, "Activity log", null)
+        assertEquals("wrong FragmentsStack size", 5, FragmentsStack.getStackSize())
 
         val actionCancelled = false
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
 
         val expectedStackFragments = arrayOf(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, FragmentsEnum.DOWNLOAD_FRAGMENT, FragmentsEnum.FOLDER_FRAGMENT,
                 //				FragmentsEnum.CREATE_FILE_FRAGMENT,
                 FragmentsEnum.FILE_FRAGMENT)
-        val actualStackFragments = fragmentStack.getFragmentsList()
+        val actualStackFragments = FragmentsStack.getFragmentsList()
         val match = verifyFoldersStack(expectedStackFragments, actualStackFragments)
 
         Assert.assertTrue("wrong fragments on stack", match)
-        assertEquals("wrong fragmentStack size", 4, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", FragmentsEnum.FILE_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 0, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 4, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", FragmentsEnum.FILE_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 0, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(false, FragmentsEnum.FILE_FRAGMENT, "text", false, false, true)
         val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse, actualFragmentsStackResponse)
         Assert.assertEquals("wrong fragmentsStackResponse", null, errMsg)
@@ -729,32 +691,31 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_07_legal_notices_top_image_note_below() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        fragmentStack.addFragment(HomeActivity.FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
+        FragmentsStack.addFragment(HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        FragmentsStack.addFragment(HomeActivity.FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
         val foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
-        //		fragmentStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
-        fragmentStack.addFragment(HomeActivity.FragmentsEnum.IMAGE_VIEW_FRAGMENT, "text", foldersAddData)
-        fragmentStack.addFragment(HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        assertEquals("wrong fragmentStack size", 5, fragmentStack.getStackSize())
+        FragmentsStack.addFragment(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        //		FragmentsStack.addFragment(HomeActivity.FragmentsEnum.CREATE_FILE_FRAGMENT, "Create file", foldersAddData);
+        FragmentsStack.addFragment(HomeActivity.FragmentsEnum.IMAGE_VIEW_FRAGMENT, "text", foldersAddData)
+        FragmentsStack.addFragment(HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        assertEquals("wrong FragmentsStack size", 5, FragmentsStack.getStackSize())
 
         val actionCancelled = false
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
 
         val expectedStackFragments = arrayOf(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, FragmentsEnum.DOWNLOAD_FRAGMENT, FragmentsEnum.FOLDER_FRAGMENT,
                 //				FragmentsEnum.CREATE_FILE_FRAGMENT,
                 FragmentsEnum.IMAGE_VIEW_FRAGMENT)
-        val actualStackFragments = fragmentStack.getFragmentsList()
+        val actualStackFragments = FragmentsStack.getFragmentsList()
         val match = verifyFoldersStack(expectedStackFragments, actualStackFragments)
 
         Assert.assertTrue("wrong fragments on stack", match)
-        assertEquals("wrong fragmentStack size", 4, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", HomeActivity.FragmentsEnum.IMAGE_VIEW_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 0, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 4, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", HomeActivity.FragmentsEnum.IMAGE_VIEW_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 0, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(false, HomeActivity.FragmentsEnum.IMAGE_VIEW_FRAGMENT, "text", false, false, true)
         val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse, actualFragmentsStackResponse)
         Assert.assertEquals("wrong fragmentsStackResponse", null, errMsg)
@@ -766,28 +727,27 @@ class FragmentsStackTest {
 	 */
     @Test
     fun testRemoveTopFragment_topFragmentFolder_08_file_details_on_top() {
-        val (fragmentStack, foldersData) = getEssentials()
         var folderLevel = -1
 
         val fileParentFolderDriveId = addTopFolderDetails()
-        fragmentStack.addFragment(HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
-        fragmentStack.addFragment(HomeActivity.FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
+        FragmentsStack.addFragment(HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT, "Activity log", null)
+        FragmentsStack.addFragment(HomeActivity.FragmentsEnum.DOWNLOAD_FRAGMENT, "Folder", null)
         val foldersAddData = getFoldersAddData(fileParentFolderDriveId, folderLevel++)
-        fragmentStack.addFragment(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
-        fragmentStack.addFragment(HomeActivity.FragmentsEnum.FILE_DETAILS_FRAGMENT, "File details", null)
-        assertEquals("wrong fragmentStack size", 4, fragmentStack.getStackSize())
+        FragmentsStack.addFragment(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT, "Folder", foldersAddData)
+        FragmentsStack.addFragment(HomeActivity.FragmentsEnum.FILE_DETAILS_FRAGMENT, "File details", null)
+        assertEquals("wrong FragmentsStack size", 4, FragmentsStack.getStackSize())
 
         val actionCancelled = false
-        val actualFragmentsStackResponse = fragmentStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
+        val actualFragmentsStackResponse = FragmentsStack.removeTopFragment("testRemoveTopFragment_topFragmentFolder_03", actionCancelled)
 
         val expectedStackFragments = arrayOf(FragmentsEnum.ACTIVITY_LOG_FRAGMENT, FragmentsEnum.DOWNLOAD_FRAGMENT, FragmentsEnum.FOLDER_FRAGMENT)
-        val actualStackFragments = fragmentStack.getFragmentsList()
+        val actualStackFragments = FragmentsStack.getFragmentsList()
         val match = verifyFoldersStack(expectedStackFragments, actualStackFragments)
 
         Assert.assertTrue("wrong fragments on stack", match)
-        assertEquals("wrong fragmentStack size", 3, fragmentStack.getStackSize())
-        assertEquals("wrong currFragment", HomeActivity.FragmentsEnum.FOLDER_FRAGMENT, fragmentStack.getCurrFragment())
-        assertEquals("wrong currFolderLevel", 0, foldersData.getCurrFolderLevel())
+        assertEquals("wrong FragmentsStack size", 3, FragmentsStack.getStackSize())
+        assertEquals("wrong currFragment", HomeActivity.FragmentsEnum.FOLDER_FRAGMENT, FragmentsStack.getCurrFragment())
+        assertEquals("wrong currFolderLevel", 0, FoldersData.getCurrFolderLevel())
         val expectedFragmentsStackResponse = FragmentsStackResponse(false, HomeActivity.FragmentsEnum.FOLDER_FRAGMENT, "A", false, false, true)
         val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse, actualFragmentsStackResponse)
         Assert.assertEquals("wrong fragmentsStackResponse", null, errMsg)

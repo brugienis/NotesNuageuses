@@ -47,6 +47,7 @@ class HomeActivity : BaseActivity(),
         RenameFileEventHandler.OnRenameFileEventHandlerInteractionListener,
         FileDownloadEventHandler.OnFileDownloadEventHandlerInteractionListener,
         FileUploadEventsHandler.OnFileUploadEventsHandlerInteractionListener,
+        FileDeleteEventsHandler.OnFileDeleteEventsHandlerInteractionListener,
         FileFragment.OnFileFragmentInteractionListener,
         EventBusEventsHandler.OnEventBusEventsHandlerInteractionListener,
         FileDetailsFragment.OnFileDetailsFragmentInteractionListener {
@@ -96,6 +97,7 @@ class HomeActivity : BaseActivity(),
     private val fileUploadEventsHandler = FileUploadEventsHandler(this)
     private val fileDownloadEventHandler = FileDownloadEventHandler(this)
     private val renameFileEventHandler = RenameFileEventHandler(this)
+    private val fileDeleteEventsHandler = FileDeleteEventsHandler(this)
 
     init {
         FragmentsStack.initialize(mTestMode)
@@ -387,7 +389,7 @@ class HomeActivity : BaseActivity(),
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: FileDeleteEvents) {
-        eventBusListenable.onMessageEvent(event)
+        fileDeleteEventsHandler.onMessageEvent(event)
     }
 
     // fixLater: Aug 28, 2018 - move logic to the onSupportNavigateUp
