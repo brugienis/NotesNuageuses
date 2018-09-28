@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.fragment_retrieving_folder_in_progress.vie
 
 class DownloadFragment : Fragment() {
 
-    private var mContext: Context? = null
+    private lateinit var mContext: Context
     private var mRetrievingFolderFileName:String = "Folder/file name undefined"
     private var mArgsProcessed = false
 

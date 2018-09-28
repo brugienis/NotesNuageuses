@@ -28,6 +28,7 @@ class FolderArrayAdapter<T>(
         return objects[idx]
     }
 
+    // fixLater: Sep 28, 2018 - remove findViewById<View>(...) calls
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
         if (view == null) {

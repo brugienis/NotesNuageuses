@@ -19,9 +19,9 @@ import java.util.concurrent.Callable
  */
 
 data class RemoveFileFromDriveTask(
-        var context: Context,
-        var eventBus: EventBus,
-        var driveResourceClient: DriveResourceClient,
+        val context: Context,
+        val eventBus: EventBus,
+        val driveResourceClient: DriveResourceClient,
         val thisFileDriveId: DriveId,
         val parentFolderDriveId: DriveId,
         val idxInTheFolderFilesList: Int,
@@ -93,12 +93,12 @@ data class RemoveFileFromDriveTask(
         } catch (e: IllegalStateException) {
             postProgressEvent(FileDeleteEvents.Events.REMOVE_FILE_PROBLEMS,
                     context.resources.
-                    getString(R.string.file_delete_connection_problem, currName + "; " + e),
+                    getString(R.string.file_delete_connection_problem, "$currName; $e"),
                     updateDateBeforeRename)
         } catch (e: Exception) {            // added to test if any exception is handled properly
             postProgressEvent(FileDeleteEvents.Events.REMOVE_FILE_PROBLEMS,
                     context.resources.
-                    getString(R.string.file_delete_problem, currName + "; " + e),
+                    getString(R.string.file_delete_problem, "$currName; $e"),
                     updateDateBeforeRename)
         }
 

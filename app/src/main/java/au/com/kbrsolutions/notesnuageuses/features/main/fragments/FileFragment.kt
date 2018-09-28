@@ -12,8 +12,6 @@ import kotlinx.android.synthetic.main.fragment_text_viewer.view.*
 
 class FileFragment : Fragment() {
 
-    private lateinit var listener: OnFileFragmentInteractionListener
-
     private var mArgsProcessed = false
     private var mFileName: String = "Unknown"
     private var mFileContents: String = "Unknown"
@@ -24,10 +22,12 @@ class FileFragment : Fragment() {
     private var mTextContents: String? = null
     private var mThisFileDriveId: DriveId? = null
 
+    private lateinit var mListener: OnFileFragmentInteractionListener
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnFileFragmentInteractionListener) {
-            listener = context
+            mListener = context
         } else {
             throw RuntimeException(context.toString() +
                     " must implement OnFileFragmentInteractionListener")
@@ -70,10 +70,6 @@ class FileFragment : Fragment() {
         mTextEt.setText(mFileContents)
     }
 
-//    override fun onSaveInstanceState(outState: Bundle?) {
-//        super.onSaveInstanceState(outState)
-//    }
-
     fun setFileDetails(fileName: String, fileContents: String, thisFileDriveId: DriveId?,
                        fileItemId: Long, idxInTheFolderFilesList: Int) {
         mFileName = fileName
@@ -85,7 +81,7 @@ class FileFragment : Fragment() {
 
     private fun handleSaveMenuItemClicked() {
         hideKeyboard()
-        listener.sendTextFileToDrive(
+        mListener.sendTextFileToDrive(
                 mThisFileDriveId,
                 mFileName,
                 mTextEt.text.toString().toByteArray(),
@@ -129,7 +125,7 @@ class FileFragment : Fragment() {
     }
 
     private fun onUpButtonPressed() {
-        listener.onUpButtonPressedInFragment()
+        mListener.onUpButtonPressedInFragment()
     }
 
     fun getText(): String {

@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.fragment_empty_folder.view.*
 class EmptyFolderFragment : Fragment() {
 
     private var mTrashedFilesCnt: Int = 0
-    private var mContext: Context? = null
+    private lateinit var mContext: Context
     private var mArgsProcessed = false
 
     private var listener: OnEmptyFolderFragmentInteractionListener? = null
@@ -49,10 +49,6 @@ class EmptyFolderFragment : Fragment() {
             }
             mArgsProcessed = true
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

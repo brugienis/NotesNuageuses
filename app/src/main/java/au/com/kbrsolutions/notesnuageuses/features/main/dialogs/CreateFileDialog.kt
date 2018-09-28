@@ -8,19 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import au.com.kbrsolutions.notesnuageuses.R
-import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
 import kotlinx.android.synthetic.main.create_file_dialog.view.*
-import org.greenrobot.eventbus.EventBus
 
 class CreateFileDialog : DialogFragment() {
 
     private var fileNameTv: TextView? = null
-    private var createFolderTv: TextView? = null
-    private var createPhotoTv: TextView? = null
-    private var createTextTv: TextView? = null
-    private var cancelTv: TextView? = null
-    private var mActivity: HomeActivity? = null
-    private var eventBus: EventBus? = null
 
     private var listener: OnCreateFileDialogInteractionListener? = null
 
@@ -59,10 +51,6 @@ class CreateFileDialog : DialogFragment() {
     private fun createFolder() {
         listener!!.createFolder(fileNameTv!!.text)
         dismiss()
-        // move code below to a new method in HomeActivity
-        //		FolderFileNameDialog fileNameDialogFragment = FolderFileNameDialog.newInstance();
-        //		fileNameDialogFragment.setParentFragment(this);
-        //		fileNameDialogFragment.show(mActivity.getFragmentManager(), "dialog");
     }
 
     private fun cancelCreateFileDialog() {

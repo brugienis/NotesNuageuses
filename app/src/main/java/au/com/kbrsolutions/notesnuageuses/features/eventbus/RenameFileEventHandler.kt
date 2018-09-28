@@ -1,6 +1,5 @@
 package au.com.kbrsolutions.notesnuageuses.features.eventbus
 
-import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
 import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.RenameFileEvents
@@ -14,17 +13,10 @@ class RenameFileEventHandler(private val listener: OnRenameFileEventHandlerInter
         when (request) {
 
             RenameFileEvents.Events.RENAME_FILE_START -> {
-                Log.v("EventBusEventsHandler", """onMessageEvent.RenameFileEvents -
-                    |msgContents: $msgContents
-                    |""".trimMargin())
                 listener.showMessage(msgContents)
             }
 
             RenameFileEvents.Events.RENAME_FILE_FINISHED -> {
-                listener.showMessage(msgContents)
-                Log.v("EventBusEventsHandler", """onMessageEvent.RenameFileEvents -
-                    |msgContents: $msgContents
-                    |""".trimMargin())
 
                 FoldersData.updateFolderItemView(
                         event.fileItemId,

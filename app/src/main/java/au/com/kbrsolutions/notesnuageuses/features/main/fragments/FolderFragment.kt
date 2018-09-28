@@ -12,8 +12,9 @@ import au.com.kbrsolutions.notesnuageuses.R
 class FolderFragment : ListFragment(), OnClickListener {
 
     private var mTrashedFilesCnt: Int = 0
-    private var listener: OnFolderFragmentInteractionListener? = null
     private var mArgsProcessed = false
+
+    private var listener: OnFolderFragmentInteractionListener? = null
 
     private enum class TouchedObject {
         MENU_QUICK_PHOTO, MENU_CREATE_FILE, MENU_REFRESH, FILE_OR_FOLDER

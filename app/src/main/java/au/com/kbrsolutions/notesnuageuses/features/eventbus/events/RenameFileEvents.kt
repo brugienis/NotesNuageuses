@@ -39,7 +39,6 @@ class RenameFileEvents(
         private lateinit var parentFileName: String
         private lateinit var fileName: String
         private lateinit var newFileName: String
-//        private lateinit var currFolderDriveId: DriveId
         private lateinit var parentFolderDriveId: DriveId
         private lateinit var createDate: Date
         private lateinit var updateDate: Date
@@ -69,9 +68,6 @@ class RenameFileEvents(
 
         fun newFileName(newFileName: String) = apply { this.newFileName = newFileName }
 
-//        fun currFolderDriveId(currFolderDriveId: DriveId) =
-//                apply { this.currFolderDriveId = currFolderDriveId }
-
         fun parentFolderDriveId(parentFolderDriveId: DriveId) =
                 apply { this.parentFolderDriveId = parentFolderDriveId }
 
@@ -92,7 +88,6 @@ class RenameFileEvents(
                 parentFileName,
                 fileName,
                 newFileName,
-//                currFolderDriveId,
                 parentFolderDriveId,
                 createDate,
                 updateDate)

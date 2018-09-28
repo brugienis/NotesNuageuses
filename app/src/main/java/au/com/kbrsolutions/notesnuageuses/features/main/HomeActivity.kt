@@ -101,7 +101,6 @@ class HomeActivity : BaseActivity(),
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
 
-
         when (item.itemId) {
 
             R.id.navigation_home -> {
@@ -469,9 +468,7 @@ class HomeActivity : BaseActivity(),
                                 itemIdxInList
                         ))
                     }
-
-                Log.v("HomeActivity", """updateFolderListAdapter -
-                    |folderMetadataInfo.fileTitle: ${folderMetadataInfo.fileTitle} """.trimMargin())}
+                }
 
         folderArrayAdapter!!.clear()
         folderArrayAdapter!!.addAll(folderItemsList)
@@ -505,7 +502,6 @@ class HomeActivity : BaseActivity(),
             idxInTheFolderFilesList: Int,
             thisFileFolderLevel: Int,
             thisFileFolderDriveId: DriveId) {
-        Log.v("HomeActivity", """startRenameFile - newFileName: $newFileName """)
 
         handleNonCancellableFuturesCallable.submitCallable(
                 RenameFileOnDriveTask.Builder()

@@ -4,7 +4,6 @@ package au.com.kbrsolutions.notesnuageuses.features.main.fragments
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -148,13 +147,11 @@ class FileDetailsFragment : Fragment() {
     }
 
     private fun openFile() {
-        Log.i(LOC_CAT_TAG, "openFile - start")
         listener!!.handleOnFolderOrFileClick(position)
     }
 
     private fun renameFile() {
-        Log.i(LOC_CAT_TAG, "renameFile - start")
-        renameUntrashLayout!!.setBackgroundColor(getResources().getColor(R.color.action_view_clicked))
+        renameUntrashLayout!!.setBackgroundColor(resources.getColor(R.color.action_view_clicked))
         val args = Bundle()
         args.putInt(RenameFileDialog.POSITION_IN_FOLDER_FILES_LIST, position)
         args.putLong(RenameFileDialog.FILE_ITEM_ID, fileItemId)
@@ -166,15 +163,10 @@ class FileDetailsFragment : Fragment() {
         args.putLong(RenameFileDialog.UPDATE_DATE, updateDateMillis)
         args.putInt(RenameFileDialog.CURR_FOLDER_LEVEL, currFolderLevel)
         args.putString(RenameFileDialog.CURR_FOLDER_DRIVE_ID, currFolderDriveId!!.encodeToString())
-//        val renameFileDialog = RenameFileDialog.newInstance()
-//        renameFileDialog.isCancelable = false
-//        renameFileDialog.arguments = args
         listener!!.showRenameFiledialog(args)
-//        newFragment.show(context as HomeActivity!!.getFragmentManager(), "dialog")
     }
 
     private fun trashFile() {
-        Log.i(LOC_CAT_TAG, "trashOrDeleteFile - start")
         trashDeleteTv!!.setBackgroundColor(resources.getColor(R.color.action_view_clicked))
         listener!!.trashOrDeleteFile(
                 selectedFileDriveId,
@@ -188,12 +180,10 @@ class FileDetailsFragment : Fragment() {
 		same logic to trash and un trash file. If the file is trashed, it will be un trashed and vice versa
 	 */
     private fun unTrashFile() {
-        Log.i(LOC_CAT_TAG, "unTrashFile - start")
         trashFile()
     }
 
     private fun deleteFile() {
-        Log.i(LOC_CAT_TAG, "deleteFile - start")
         trashDeleteTv!!.setBackgroundColor(resources.getColor(R.color.action_view_clicked))
         listener!!.trashOrDeleteFile(
                 selectedFileDriveId,
@@ -217,14 +207,12 @@ class FileDetailsFragment : Fragment() {
         this.fileItemId = folderMetadataInfo.fileItemId
         this.selectedFileDriveId = folderMetadataInfo.fileDriveId!!
         this.fileName = folderMetadataInfo.fileTitle
-        Log.v("FileDetailsFragment", """setSelectedFileInfo - fileName: $fileName """)
         this.isFolder = folderMetadataInfo.isFolder
         this.mimeType = folderMetadataInfo.mimeType
         this.createDateMillis = folderMetadataInfo.createDt.getTime()
         this.updateDateMillis = folderMetadataInfo.updateDt.getTime()
         this.currFolderLevel = currFolderLevel
         this.currFolderDriveId = currFolderDriveId
-        //		this.trashedFilesCnt = trashedFilesCnt;
     }
 
     /**

@@ -6,9 +6,9 @@ import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
 import au.com.kbrsolutions.notesnuageuses.features.core.FragmentsStack
 import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.FileDeleteEvents
 
-// fixLater: Sep 25, 2018 - created 3 niotes and then deleted them - hide/show shows (-3)? 
 class FileDeleteEventsHandler(
         private val listener: OnFileDeleteEventsHandlerInteractionListener) {
+
     fun onMessageEvent(event: FileDeleteEvents) {
         val request = event.request
         val msgContents = event.msgContents

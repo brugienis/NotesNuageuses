@@ -49,7 +49,6 @@ class FolderEventsHandler(private val listener: OnFolderEventsHandlerInteraction
 //            ActivitiesEvents.HomeEvents.SHOW_MESSAGE -> addMsgToActivityLogShowOnScreen(msgContents, true, true)
 
             FoldersEvents.Events.FOLDER_CREATED -> {
-//				addMsgToActivityLogShowOnScreen("Folder created");
                 val folderName = event.newFileName ?: "undefined"
                 listener.setActionBarTitle(folderName)
                 val stackFragmentsAfterAdd = FragmentsStack.getFragmentsList()
