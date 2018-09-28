@@ -181,7 +181,7 @@ class FoldersDataTest {
                 folderMetadataInfo)
 
         folderData = FoldersData.getCurrFolderData()
-        val filesMetadataInfo = folderData.filesMetadatasInfo
+        val filesMetadataInfo = folderData.filesMetadataInfoList
         Assert.assertEquals("wrong filesMetadataInfo size", 1, filesMetadataInfo.size)
 
         //        ArrayList<FileMetadataInfo> folderMetadataInfo1 = FoldersData.getCurrFolderMetadataInfo();
@@ -256,7 +256,7 @@ class FoldersDataTest {
                 folderMetadataInfo)
 
         folderData = FoldersData.getCurrFolderData()
-        val filesMetadataInfo = folderData.filesMetadatasInfo
+        val filesMetadataInfo = folderData.filesMetadataInfoList
         Assert.assertEquals("wrong filesMetadataInfo size", 1, filesMetadataInfo.size)
 
         //        ArrayList<FileMetadataInfo> folderMetadataInfo1 = FoldersData.getCurrFolderMetadataInfo();
@@ -356,12 +356,12 @@ class FoldersDataTest {
                 folderMetadataInfo)
 
         folderData = FoldersData.getCurrFolderData()
-        val filesMetadataInfo = folderData.filesMetadatasInfo
+        val filesMetadataInfo = folderData.filesMetadataInfoList
 
         Assert.assertEquals(
                 "Wrong files count in the folder",
                 1,
-                FoldersData.getCurrFolderData().filesMetadatasInfo.size)
+                FoldersData.getCurrFolderData().filesMetadataInfoList.size)
 
         Assert.assertEquals(
                 "Wrong trashedFilesCnt",

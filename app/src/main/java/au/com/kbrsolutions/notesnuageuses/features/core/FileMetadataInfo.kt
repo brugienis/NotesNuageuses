@@ -16,7 +16,7 @@ data class FileMetadataInfo(
         var isTrashable: Boolean,
         var isTrashed: Boolean) {
 
-    public constructor(parentTitleArg: String, metadata: Metadata): this(
+    constructor(parentTitleArg: String, metadata: Metadata): this(
             parentTitleArg,
             metadata.title,
             metadata.driveId,
@@ -26,9 +26,6 @@ data class FileMetadataInfo(
             metadata.modifiedDate,
             metadata.createdDate.time,
             metadata.isTrashable,
-            metadata.isTrashed) {
-
-        fun getFileDriveId(): DriveId? = fileDriveId
-    }
+            metadata.isTrashed)
 
 }

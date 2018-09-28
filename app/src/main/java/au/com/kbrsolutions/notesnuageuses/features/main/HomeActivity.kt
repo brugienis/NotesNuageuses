@@ -187,7 +187,7 @@ class HomeActivity : BaseActivity(),
      * It means, you have to inspect the details of the 'folderData' to figure out which folder to
      * show - Folder or Empty Folder.
      *
-     * if there are no files in the 'folderData.filesMetadatasInfo' or all files are trashed, show
+     * if there are no files in the 'folderData.filesMetadataInfoList' or all files are trashed, show
      * Empty Folder.
      *
      */
@@ -289,7 +289,7 @@ class HomeActivity : BaseActivity(),
                 val folderItemsList = ArrayList<FolderItem>()
 
                 // fixLater: Sep 17, 2018 - why not the same logis as in updateFolderListAdapter()?
-                val list: ArrayList<FileMetadataInfo>? = foldersAddData?.filesMetadatasInfo
+                val list: ArrayList<FileMetadataInfo>? = foldersAddData?.filesMetadataInfoList
                         ?: FoldersData.getCurrFolderMetadataInfo()
 
                 list!!.withIndex()

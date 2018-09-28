@@ -377,13 +377,13 @@ class FragmentsStackTest {
 
         FragmentsStack.addFragment(FragmentsEnum.FILE_FRAGMENT, "image", foldersAddData)
         assertEquals("wrong FragmentsStack size", 3, FragmentsStack.getStackSize())
-        val isTrashedBefore = foldersAddData.filesMetadatasInfo[0].isTrashed
+        val isTrashedBefore = foldersAddData.filesMetadataInfoList[0].isTrashed
         val trashedCntBefore = FoldersData.getCurrentFolderTrashedFilesCnt()
         Assert.assertEquals("trashedCnt should be 1", 0, trashedCntBefore)
         Assert.assertEquals("'isTrashed' should be false", false, isTrashedBefore)
 
 
-        val foldersAddDataMetadataCopy = foldersAddData.filesMetadatasInfo[0].copy()
+        val foldersAddDataMetadataCopy = foldersAddData.filesMetadataInfoList[0].copy()
         foldersAddDataMetadataCopy.isTrashed = true
 
         FoldersData.updateFolderItemView(
@@ -394,7 +394,7 @@ class FragmentsStackTest {
                 foldersAddDataMetadataCopy
         )
 
-        val isTrashedAfter = foldersAddData.filesMetadatasInfo[0].isTrashed
+        val isTrashedAfter = foldersAddData.filesMetadataInfoList[0].isTrashed
         val trashedCntAfter = FoldersData.getCurrentFolderTrashedFilesCnt()
 
         Assert.assertEquals("trashedCnt should be 1", 1, trashedCntAfter)
@@ -828,7 +828,7 @@ class FragmentsStackTest {
         val foldersMetadatasInfo = ArrayList<FileMetadataInfo>()
         val folderMetadataInfo = FileMetadataInfo("", newFolderTitle, newFolderDriveId, isFolder, mimeType, createDate, updateDate, System.currentTimeMillis(), true, false)
         foldersMetadatasInfo.add(folderMetadataInfo)
-        //		FoldersAddData foldersAddData = new FoldersAddData(newFolderDriveId, newFolderTitle, folderLevel, fileParentFolderDriveId, newFolderData, filesMetadatasInfo);
+        //		FoldersAddData foldersAddData = new FoldersAddData(newFolderDriveId, newFolderTitle, folderLevel, fileParentFolderDriveId, newFolderData, filesMetadataInfoList);
         return FolderData(newFolderDriveId, newFolderTitle, folderLevel, fileParentFolderDriveId, newFolderData, trashedFilesCnt, foldersMetadatasInfo)
     }
 

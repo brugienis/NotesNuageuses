@@ -111,5 +111,7 @@
     <string name="file_delete_problem">Could not delete file: %1$s. Try again later.</string>
     <string name="file_type_folder">Folder</string>
     <string name="file_type_file">Text</string>
+    <string name="file_was_deleted">File was deleted</string>
+    <string name="file_is_trashed">File trashed: %1$b</string>
 
 </resources>

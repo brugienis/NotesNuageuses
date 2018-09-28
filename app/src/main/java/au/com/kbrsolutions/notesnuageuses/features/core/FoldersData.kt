@@ -47,7 +47,7 @@ object FoldersData {
         foldersDriveIdsList.add(folderData.newFolderDriveId)
 
         foldersTitlesList.add(folderData.newFolderTitle)
-        processFolderMetadata(folderData.filesMetadatasInfo, false)
+        processFolderMetadata(folderData.filesMetadataInfoList, false)
         verifyDataStructure()
     }
 
@@ -160,7 +160,7 @@ object FoldersData {
         val folderFilesTitles = foldersFilesTitlesList[folderLevel]
         folderFilesTitles[fileItemIdPos] = fileMetadataInfo.fileTitle
 
-        val filesMetadataInfo = foldersData[folderLevel].filesMetadatasInfo
+        val filesMetadataInfo = foldersData[folderLevel].filesMetadataInfoList
 
         val isTrashedCurr = filesMetadataInfo[fileItemIdPos].isTrashed
         val isTrashedNewValue = fileMetadataInfo.isTrashed

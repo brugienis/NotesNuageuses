@@ -31,7 +31,6 @@ data class RemoveFileFromDriveTask(
     private val folderMetadataArrayInfo = FoldersData.getCurrFolderMetadataInfo()
     private val folderMetadataInfo = folderMetadataArrayInfo!![idxInTheFolderFilesList]
 
-//    private val thisFileDriveId = folderMetadataInfo.fileDriveId
     private val fileItemId = folderMetadataInfo.fileItemId
     private val parentFileName = FoldersData.getFolderTitle(thisFileFolderLevel)
     private val currName = folderMetadataInfo.fileTitle
@@ -78,20 +77,26 @@ data class RemoveFileFromDriveTask(
                         context.resources.getString(
                                 R.string.file_delete_problem, currName))
             } else {
-                val msg = if (deleteThisFile) "File was deleted" else "File is trashed: $isTrashed"
+                val msg = if (deleteThisFile) {
+                    context.
+                            getString(R.string.file_was_deleted)
+                } else {
+                    context.
+                            getString(R.string.file_is_trashed, isTrashed)
+                }
                 postProgressEvent(
-                        FileDeleteEvents.Events.TRASH_FILE_FINISHED,
+                        FileDeleteEvents.Events.REMOVE_FILE_FINISHED,
                         msg,
                         Date())
             }
 
         } catch (e: IllegalStateException) {
-            postProgressEvent(FileDeleteEvents.Events.TRASH_FILE_PROBLEMS,
+            postProgressEvent(FileDeleteEvents.Events.REMOVE_FILE_PROBLEMS,
                     context.resources.
                     getString(R.string.file_delete_connection_problem, currName + "; " + e),
                     updateDateBeforeRename)
         } catch (e: Exception) {            // added to test if any exception is handled properly
-            postProgressEvent(FileDeleteEvents.Events.TRASH_FILE_PROBLEMS,
+            postProgressEvent(FileDeleteEvents.Events.REMOVE_FILE_PROBLEMS,
                     context.resources.
                     getString(R.string.file_delete_problem, currName + "; " + e),
                     updateDateBeforeRename)
@@ -102,7 +107,7 @@ data class RemoveFileFromDriveTask(
 
     private fun postProgressEvent(
             event: FileDeleteEvents.Events,
-            msg: String?,
+            msg: String,
             updateDate: Date) {
         eventBus.post(FileDeleteEvents.Builder(event)
                 .msgContents(msg)
