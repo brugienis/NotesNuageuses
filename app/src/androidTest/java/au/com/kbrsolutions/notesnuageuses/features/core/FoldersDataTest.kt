@@ -46,7 +46,7 @@ class FoldersDataTest {
         var updateDate: Date
 
         // this should be OK
-        folderLevel = 2            // folderLevel is ignored the first time the 'add is executes - it doesn't matter what value will be passed
+        folderLevel = 2            // folderLevel is ignored the first time the 'add is executed - it doesn't matter what value will be passed
         parentDriveId = null        //DriveId.decodeFromString("DriveId:CAESHDBCN3VRMnJDUU0wZVFUV3R6VDFNeWVEWkhXbFUYxFUg-sbQ7YpR");
         thisDriveId = DriveId.decodeFromString("DriveId:CAESBHJvb3QYpFUg-sbQ7YpR")
         parentTitle = "parT"
@@ -168,7 +168,7 @@ class FoldersDataTest {
         val currFolderLevel = FoldersData.getCurrFolderLevel()
         val expectedCurrFolderLevel = 0
         Assert.assertEquals("incorrect currFolderLevel", expectedCurrFolderLevel, currFolderLevel)
-        Assert.assertEquals("not all files in the folder are trashed", false, FoldersData.allCurrFolderFilesTrashedOrThereAreNoFiles())
+        Assert.assertEquals("not all files in the folder are trashed", false, FoldersData.currFolderIsEmptyOrAllFilesAreTrashed())
 
         /* change file status to trashed */
         isTrashed = true
@@ -187,7 +187,7 @@ class FoldersDataTest {
         //        ArrayList<FileMetadataInfo> folderMetadataInfo1 = FoldersData.getCurrFolderMetadataInfo();
 
         Assert.assertEquals("wrong trashedFilesCnt", 1, FoldersData.getCurrentFolderTrashedFilesCnt())
-        Assert.assertEquals("all files in the folder are trashed", true, FoldersData.allCurrFolderFilesTrashedOrThereAreNoFiles())
+        Assert.assertEquals("all files in the folder are trashed", true, FoldersData.currFolderIsEmptyOrAllFilesAreTrashed())
 
         /* change name - the status is still trashed */
         val newTitle = title + "new"
@@ -200,7 +200,13 @@ class FoldersDataTest {
                 folderMetadataInfo)
 
         Assert.assertEquals("wrong trashedFilesCnt", 1, FoldersData.getCurrentFolderTrashedFilesCnt())
+        Assert.assertEquals(
+                "wrong trashedFilesCnt",
+                1,
+                FoldersData.getCurrFolderData().trashedFilesCnt)
     }
+
+    // fixLater: Sep 28, 2018 - add test: add trashed file and check counts
 
     @Test
     fun testAddFolderData_oneFile_thenDeleteFile() {
@@ -238,7 +244,7 @@ class FoldersDataTest {
         val currFolderLevel = FoldersData.getCurrFolderLevel()
         val expectedCurrFolderLevel = 0
         Assert.assertEquals("incorrect currFolderLevel", expectedCurrFolderLevel, currFolderLevel)
-        Assert.assertEquals("not all files in the folder are trashed", false, FoldersData.allCurrFolderFilesTrashedOrThereAreNoFiles())
+        Assert.assertEquals("not all files in the folder are trashed", false, FoldersData.currFolderIsEmptyOrAllFilesAreTrashed())
 
         isTrashed = true
         folderMetadataInfo = FileMetadataInfo(parentTitle, title, fileDriveId, isFolder, mimeType, createDate, updateDate, fileItemId, true, isTrashed)
@@ -256,7 +262,7 @@ class FoldersDataTest {
         //        ArrayList<FileMetadataInfo> folderMetadataInfo1 = FoldersData.getCurrFolderMetadataInfo();
 
         Assert.assertEquals("wrong trashedFilesCnt", 1, FoldersData.getCurrentFolderTrashedFilesCnt())
-        Assert.assertEquals("all files in the folder are trashed", true, FoldersData.allCurrFolderFilesTrashedOrThereAreNoFiles())
+        Assert.assertEquals("all files in the folder are trashed", true, FoldersData.currFolderIsEmptyOrAllFilesAreTrashed())
 
         // pretend file was deleted
 
@@ -271,43 +277,35 @@ class FoldersDataTest {
         val foldersMetadatasInfoAfterDelete = FoldersData.getCurrFolderMetadataInfo()
         //        FileMetadataInfo folderMetadataInfoAfterDelete = foldersMetadatasInfoAfterDelete.get(0);
         Assert.assertEquals("There should be no files after this delete", 0, foldersMetadatasInfoAfterDelete!!.size)
-        Assert.assertTrue("There should be no files in the current folder", FoldersData.allCurrFolderFilesTrashedOrThereAreNoFiles())
+        Assert.assertTrue("There should be no files in the current folder", FoldersData.currFolderIsEmptyOrAllFilesAreTrashed())
     }
 
     @Test
     fun testAllCurrFolderFilesTrashed() {
-        val folderLevel: Int
-        val thisDriveId: DriveId
-        val parentDriveId: DriveId?
-        val parentTitle: String
-        val title: String
-        val fileDriveId: DriveId
+        val folderLevel = 0
+        val thisDriveId: DriveId = DriveId.decodeFromString("DriveId:CAESBHJvb3QYpFUg-sbQ7YpR")
+        val parentDriveId: DriveId = DriveId.decodeFromString("DriveId:CAESHDBCN3VRMnJDUU0wZVFUV3R6VDFNeWVEWkhXbFUYxFUg-sbQ7YpR")
+        val parentTitle = "parT"
+        val title = "Trash1File"
+        val fileDriveId: DriveId = DriveId.decodeFromString("DriveId:CAESBHJvb3QYpFUg-sbQ7YpR")
         val isFolder: Boolean?
-        val mimeType: String
-        val createDate: Date
-        val updateDate: Date
+        val mimeType = "text/plain"
+        val createDate = Date()
+        val updateDate = Date()
 
-        folderLevel = 0
-        parentDriveId = DriveId.decodeFromString("DriveId:CAESHDBCN3VRMnJDUU0wZVFUV3R6VDFNeWVEWkhXbFUYxFUg-sbQ7YpR");
-        thisDriveId = DriveId.decodeFromString("DriveId:CAESBHJvb3QYpFUg-sbQ7YpR")
-        parentTitle = "parT"
-        title = "Trash1File"
-        fileDriveId = DriveId.decodeFromString("DriveId:CAESBHJvb3QYpFUg-sbQ7YpR")
         isFolder = true
-        mimeType = "text/plain"
-        createDate = Date()
-        updateDate = Date()
         var isTrashed = false
 
         // test before any folder added
         Assert.assertEquals(
-                "all files in the folder are trashed",
+                "There should be no files in the folder",
                 true,
-                FoldersData.allCurrFolderFilesTrashedOrThereAreNoFiles())
+                FoldersData.currFolderIsEmptyOrAllFilesAreTrashed())
 
         // adding new folder - one un trashed file
         val foldersMetadatasInfo = ArrayList<FileMetadataInfo>()
         val fileItemId = System.currentTimeMillis()
+
         var folderMetadataInfo = FileMetadataInfo(
                 parentTitle,
                 title,
@@ -331,11 +329,25 @@ class FoldersDataTest {
                 foldersMetadatasInfo)
 
         FoldersData.addFolderData(folderData)
-        Assert.assertEquals("not all files in the folder are trashed", false, FoldersData.allCurrFolderFilesTrashedOrThereAreNoFiles())
+        Assert.assertEquals(
+                "not all files in the folder are trashed",
+                false,
+                FoldersData.currFolderIsEmptyOrAllFilesAreTrashed())
 
         // changing file's mIsTrashed to true
         isTrashed = true
-        folderMetadataInfo = FileMetadataInfo(parentTitle, title, fileDriveId, isFolder, mimeType, createDate, updateDate, fileItemId, true, isTrashed)
+        folderMetadataInfo = FileMetadataInfo(
+                parentTitle,
+                title,
+                fileDriveId,
+                isFolder,
+                mimeType,
+                createDate,
+                updateDate,
+                fileItemId,
+                true,
+                isTrashed)
+
         FoldersData.updateFolderItemView(
                 fileItemId,
                 folderLevel,
@@ -345,10 +357,21 @@ class FoldersDataTest {
 
         folderData = FoldersData.getCurrFolderData()
         val filesMetadataInfo = folderData.filesMetadatasInfo
-        Assert.assertEquals("wrong trashedFilesCnt", 1, folderData.trashedFilesCnt)
-        Assert.assertEquals("wrong filesMetadataInfo size", 1, filesMetadataInfo.size)
 
-        Assert.assertEquals("all files in the folder are trashed", true, FoldersData.allCurrFolderFilesTrashedOrThereAreNoFiles())
+        Assert.assertEquals(
+                "Wrong files count in the folder",
+                1,
+                FoldersData.getCurrFolderData().filesMetadatasInfo.size)
+
+        Assert.assertEquals(
+                "Wrong trashedFilesCnt",
+                1,
+                FoldersData.getCurrentFolderTrashedFilesCnt())
+
+        Assert.assertEquals(
+                "All files in the folder are trashed",
+                true,
+                FoldersData.currFolderIsEmptyOrAllFilesAreTrashed())
     }
 
     fun testRefreshFolderData() {

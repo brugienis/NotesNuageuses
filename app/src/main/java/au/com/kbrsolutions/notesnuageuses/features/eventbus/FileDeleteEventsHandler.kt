@@ -68,7 +68,7 @@ class FileDeleteEventsHandler(
             }
             // fixme: do we need updateFolderListAdapter()
             val folderData = FoldersData.getCurrFolderData()
-            if (FoldersData.allCurrFolderFilesTrashedOrThereAreNoFiles()) {
+            if (FoldersData.currFolderIsEmptyOrAllFilesAreTrashed()) {
                 FragmentsStack.removeTopFragment("onEventMainThread-TRASH_FILE_FINISHED",
                         false)
                 listener.setFolderFragment(folderData)

@@ -6,7 +6,7 @@ import java.util.*
 
 object FoldersData {
     private var currFolderLevel = -1
-    private var foldersTrashedFilesCnt: MutableList<Int> = ArrayList()
+//    private var foldersTrashedFilesCnt: MutableList<Int> = ArrayList()
     private var foldersData: MutableList<FolderData> = ArrayList()
     private var foldersDriveIdsList: MutableList<DriveId> = ArrayList()
     private var foldersTitlesList: MutableList<String> = ArrayList()
@@ -21,7 +21,7 @@ object FoldersData {
 
     fun init() {
         currFolderLevel = -1
-        foldersTrashedFilesCnt = ArrayList()
+//        foldersTrashedFilesCnt = ArrayList()
         foldersData = ArrayList<FolderData>()
         foldersDriveIdsList = ArrayList()
         foldersTitlesList = ArrayList()
@@ -35,7 +35,7 @@ object FoldersData {
     private fun showFoldersDataInfo() {
         Log.v(TAG, "showFoldersDataInfo - " +
                 " currFolderLevel: " + currFolderLevel +
-                "; foldersTrashedFilesCnt size: " + foldersTrashedFilesCnt.size +
+//                "; foldersTrashedFilesCnt size: " + foldersTrashedFilesCnt.size +
                 "; foldersData size: " + foldersData.size +
                 "; foldersDriveIdsList size: " + foldersDriveIdsList.size +
                 "; foldersTitlesList size: " + foldersTitlesList.size +
@@ -69,7 +69,8 @@ object FoldersData {
             verifyDataStructure()
             return
         }
-        foldersTrashedFilesCnt.add(folderData.trashedFilesCnt)
+        // fixLater: Sep 28, 2018 - do not store count in foldersTrashedFilesCnt
+//        foldersTrashedFilesCnt.add(folderData.trashedFilesCnt)
         foldersData.add(folderData)
 
         foldersDriveIdsList.add(folderData.newFolderDriveId)
@@ -88,7 +89,11 @@ object FoldersData {
 
     // TODO: add code to check before conditions as on addFolderData()
     @Synchronized
-    fun refreshFolderData(folderLevel: Int, fileParentFolderDriveId: DriveId?, trashedFilesCnt: Int, foldersMetadatasInfo: ArrayList<FileMetadataInfo>) {
+    fun refreshFolderData(
+            folderLevel: Int,
+            fileParentFolderDriveId: DriveId?,
+            trashedFilesCnt: Int,
+            foldersMetadatasInfo: ArrayList<FileMetadataInfo>) {
         if (currFolderLevel > -1 && currFolderLevel < folderLevel) {
             verifyDataStructure()
             return
@@ -96,7 +101,10 @@ object FoldersData {
             verifyDataStructure()
             return
         }
-        foldersTrashedFilesCnt[currFolderLevel] = trashedFilesCnt
+        // fixLater: Sep 28, 2018 - do not use processFolderMetadata to keep trashed files count 
+//        foldersTrashedFilesCnt[currFolderLevel] = trashedFilesCnt
+        var foldersDataAtLevel = foldersData[folderLevel]
+        foldersDataAtLevel.trashedFilesCnt = trashedFilesCnt
         processFolderMetadata(foldersMetadatasInfo, true)
         verifyDataStructure()
     }
@@ -105,12 +113,23 @@ object FoldersData {
         return currFolderLevel < 0
     }
 
-    fun allCurrFolderFilesTrashedOrThereAreNoFiles(): Boolean {
+    fun currFolderIsEmptyOrAllFilesAreTrashed(): Boolean {
+        Log.v("FoldersData", """currFolderIsEmptyOrAllFilesAreTrashed -
+            |currFolderLevel: ${currFolderLevel} """.trimMargin())
         if (currFolderLevel < 0) {
             return true
         }
-        val filesMetadataInfo = getCurrFolderData().filesMetadatasInfo
-        return filesMetadataInfo.size == getCurrentFolderTrashedFilesCnt()
+        val currFolderData = getCurrFolderData()
+        Log.v("FoldersData", """currFolderIsEmptyOrAllFilesAreTrashed -
+            |currFolderData.size:            ${currFolderData.filesMetadatasInfo.size}
+            |currFolderData.trashedFilesCnt: ${currFolderData.trashedFilesCnt}
+            |""".trimMargin())
+        // fixLater: Sep 26, 2018 - problem trashedFilesCnt is kept in foldersTrashedFilesCnt and
+        //           in FolderData.trashedFilesCnt - should be only in one place: FolderData.
+        return currFolderData.isEmptyOrAllFilesTrashed
+
+//        val filesMetadataInfo = getCurrFolderData().filesMetadatasInfo
+//        return filesMetadataInfo.size == getCurrentFolderTrashedFilesCnt()
     }
 
     @Synchronized
@@ -119,7 +138,7 @@ object FoldersData {
             // fixme: do not throw exception in release version
             throw RuntimeException("FoldersData - removeMostRecentFolderData should NOT be called")
         }
-        foldersTrashedFilesCnt.removeAt(currFolderLevel)
+//        foldersTrashedFilesCnt.removeAt(currFolderLevel)
         foldersData.removeAt(currFolderLevel)
         foldersDriveIdsList.removeAt(currFolderLevel)
         foldersTitlesList.removeAt(currFolderLevel)
@@ -150,6 +169,7 @@ object FoldersData {
             verifyDataStructure()
             return
         }
+        // fixLater: Sep 28, 2018 - how trash count is handled
         Log.v(TAG, "insertFolderItemView - validations passed")
         val folderFilesTitles = foldersFilesTitlesList[folderLevel]
         folderFilesTitles.add(position, folderMetadataInfo.fileTitle)
@@ -202,8 +222,6 @@ object FoldersData {
         Log.v("FoldersData", """updateFolderItemView -
             |fileMetadataInfo.fileTitle: ${fileMetadataInfo.fileTitle} """.trimMargin())
 
-//        folderMetadataArrayInfoListAtLevel[fileItemIdPos] = fileMetadataInfo
-//        val folderData = foldersData[folderLevel]
         val filesMetadataInfo = foldersData[folderLevel].filesMetadatasInfo
 
         val isTrashedCurr = filesMetadataInfo[fileItemIdPos].isTrashed
@@ -213,18 +231,22 @@ object FoldersData {
             |isTrashedNewValue: $isTrashedNewValue
             |""".trimMargin())
 
+        var foldersDataAtLevel = foldersData[folderLevel]
         if (isTrashedCurr != isTrashedNewValue) {
-//            var trashedFilesCnt = getCurrentFolderTrashedFilesCnt()
-            var trashedFilesCnt = foldersTrashedFilesCnt[folderLevel]
+//            var trashedFilesCnt = foldersTrashedFilesCnt[folderLevel]
+            var trashedFilesCnt = foldersDataAtLevel.trashedFilesCnt
             if (isTrashedNewValue) {
-                foldersTrashedFilesCnt[folderLevel] = ++trashedFilesCnt
+                foldersDataAtLevel.trashedFilesCnt = ++trashedFilesCnt
             } else {
-                foldersTrashedFilesCnt[folderLevel] = --trashedFilesCnt
+                foldersDataAtLevel.trashedFilesCnt = --trashedFilesCnt
             }
         }
         Log.v("FoldersData", """updateFolderItemView -
-                    |after  trashedFilesCnt: ${foldersTrashedFilesCnt[folderLevel]}
+                    |foldersDataAtLevel.trashedFilesCnt:          ${foldersDataAtLevel.trashedFilesCnt}
+                    |foldersDataAtLevel.filesMetadatasInfo.size   ${foldersDataAtLevel.filesMetadatasInfo.size}
+                    |foldersDataAtLevel.isEmptyOrAllFilesTrashed: ${foldersDataAtLevel.isEmptyOrAllFilesTrashed}
                     |""".trimMargin())
+//        Log.v("FoldersData", """updateFolderItemView - foldersDataAtLevel.test: ${foldersDataAtLevel.test} """)
         folderMetadataArrayInfoListAtLevel[fileItemIdPos] = fileMetadataInfo
         verifyDataStructure()
     }
@@ -263,8 +285,13 @@ object FoldersData {
             throw RuntimeException("updateFolderItemView - fileItemId not found")
         } else {
             folderMetadataArrayInfoListAtLevel.removeAt(fileItemIdPos)
-            val trashedFilesCnt = getCurrentFolderTrashedFilesCnt() - 1
-            foldersTrashedFilesCnt[folderLevel] = trashedFilesCnt
+            if (fileMetadataInfo.isTrashed) {
+                val trashedFilesCnt = getCurrentFolderTrashedFilesCnt() - 1
+                var foldersDataAtLevel = foldersData[folderLevel]
+                foldersDataAtLevel.trashedFilesCnt = trashedFilesCnt
+
+//                foldersTrashedFilesCnt[folderLevel] = trashedFilesCnt
+            }
         }
         verifyDataStructure()
     }
@@ -275,8 +302,12 @@ object FoldersData {
     }
 
     @Synchronized
-    fun getCurrentFolderTrashedFilesCnt(): Int {
-        return if (currFolderLevel == -1) -1 else foldersTrashedFilesCnt[currFolderLevel]
+    fun getCurrentFolderTrashedFilesCnt(): Int =
+            if (currFolderLevel == -1) {
+                -1
+            } else {
+                foldersData[currFolderLevel].trashedFilesCnt
+//        foldersTrashedFilesCnt[currFolderLevel]
     }
 
     @Synchronized
@@ -353,9 +384,9 @@ object FoldersData {
     }
 
     private fun verifyDataStructure() {
-        if (foldersTrashedFilesCnt.size != currFolderLevel + 1) {
-            throw RuntimeException("FoldersData - verifyDataStructure - foldersTrashedFilesCnt/currFolderLevel: " + foldersTrashedFilesCnt.size + "/" + currFolderLevel)
-        }
+//        if (foldersTrashedFilesCnt.size != currFolderLevel + 1) {
+//            throw RuntimeException("FoldersData - verifyDataStructure - foldersTrashedFilesCnt/currFolderLevel: " + foldersTrashedFilesCnt.size + "/" + currFolderLevel)
+//        }
         if (foldersDriveIdsList.size != currFolderLevel + 1) {
             throw RuntimeException("FoldersData - verifyDataStructure - foldersDriveIdsList/currFolderLevel: " + foldersDriveIdsList.size + "/" + currFolderLevel)
         }

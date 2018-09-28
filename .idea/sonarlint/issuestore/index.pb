@@ -91,8 +91,6 @@ l
 \app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/FileFragment.kt,2/5/250360022416311b661f842f8116137f86d6f322
 z
 Japp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/Utilities.kt,d/5/d5038a035c73ff5e92f8e5569176f0b73922aba5
-à
-Xapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/EventBusListenable.kt,9/e/9ef96b12285c4e2c07d5d5acd6216818428fb0e6
 a
 1app/src/main/res/layout/fragment_file_details.xml,7/c/7c65e47bb732359721492a2b8cf188f0991b7fa8
 ì
@@ -105,8 +103,6 @@ f
 6app/src/main/res/layout/fragment_rename_file_dalog.xml,8/7/87e470f9a6be1822b286391938943f83a3ee77e2
 é
 ^app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/dialogs/RenameFileDialog.kt,3/2/32302c635b91051d7ba9a391aa81e16a4631e7b4
-ñ
-fapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/eventbus/events/EventBusEventsHandler.kt,b/0/b094324c1b7725c828095da4db53722dc2c26567
 ë
 aapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/eventbus/events/RenameFileEvents.kt,5/3/5370e4afe2c90d3cd51c7fa9cd92dc418f552f1d
 ê
@@ -139,3 +135,5 @@ bapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/eventbus/DriveAcc
 ]app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/eventbus/FolderEventsHandler.kt,8/1/814b76d42735231359736d7cc74feb69c2f09f4f
 ë
 aapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/eventbus/FileDeleteEventsHandler.kt,8/2/82c1f997719efa826511ab5544a7dd49f239d2e8
+å
+\app/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/features/core/FoldersDataTest.kt,0/6/062aea2621bde384f05c565a918821d017cf01e1

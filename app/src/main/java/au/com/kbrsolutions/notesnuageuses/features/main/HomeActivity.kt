@@ -848,7 +848,7 @@ class HomeActivity : BaseActivity(),
     }
 
     private fun handleMenuHideTrashed() {
-        if (FoldersData.allCurrFolderFilesTrashedOrThereAreNoFiles()) {
+        if (FoldersData.currFolderIsEmptyOrAllFilesAreTrashed()) {
             val currFragment = FragmentsStack.getCurrFragment()
             FragmentsStack.replaceCurrFragment(
                     "handleMenuHideTrashed", currFragment, FragmentsEnum.EMPTY_FOLDER_FRAGMENT)

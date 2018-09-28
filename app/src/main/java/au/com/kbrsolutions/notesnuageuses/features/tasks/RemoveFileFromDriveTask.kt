@@ -39,7 +39,7 @@ data class RemoveFileFromDriveTask(
     private val mimeType = folderMetadataInfo.mimeType
     private val createDate = folderMetadataInfo.createDt
     private val updateDateBeforeRename = folderMetadataInfo.updateDt
-    private var isTrashed: Boolean = false
+    private var isTrashed: Boolean = folderMetadataInfo.isTrashed
 
     override fun call(): String {
 
