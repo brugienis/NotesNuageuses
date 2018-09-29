@@ -287,7 +287,7 @@ class HomeActivity : BaseActivity(),
                 val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: -1
                 val folderItemsList = ArrayList<FolderItem>()
 
-                // fixLater: Sep 17, 2018 - why not the same logis as in updateFolderListAdapter()?
+                // fixLater: Sep 17, 2018 - why not the same logic as in updateFolderListAdapter()?
                 val list: ArrayList<FileMetadataInfo>? = foldersAddData?.filesMetadataInfoList
                         ?: FoldersData.getCurrFolderMetadataInfo()
 

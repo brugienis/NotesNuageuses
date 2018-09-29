@@ -113,5 +113,6 @@
     <string name="file_type_file">Text</string>
     <string name="file_was_deleted">File was deleted</string>
     <string name="file_is_trashed">File trashed: %1$b</string>
+    <string name="title_activity_new_test">NewTestActivity</string>
 
 </resources>

@@ -502,6 +502,9 @@ class FragmentsStackTest {
         val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse, actualFragmentsStackResponse)
         Assert.assertEquals("wrong fragmentsStackResponse", null, errMsg)
     }
+    
+    // fixLater: Sep 28, 2018 - create test: DOWNLOAD_FRAGMENT, FOLDER_FRAGMENT, DOWNLOAD_FRAGMENT, EMPTY_FOLDER_FRAGMENT, CREATE_FILE_FRAGMENT, FILE_FRAGMENT 
+    // fixLater: Sep 28, 2018 - in the folder of new file change file to trashed and then delete it 
 
     /* Creating text note in the empty folder - after CREATE_FILE_FRAGMENT set, FILE_FRAGMENT is set.
 	 * In 'file name and password' dialog clicked on the Save button.

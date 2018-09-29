@@ -7,8 +7,6 @@ Rapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/TestActivity
 Rapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/base/BaseActivity.kt,0/8/089ae5a5b05d5b9da23552797aae1e679d1851fc
 @
 app/build.gradle,f/4/f4a01d6a4fcb971362ec00a83903fd3902f52164
-|
-Lapp/build/generated/source/r/debug/au/com/kbrsolutions/notesnuageuses/R.java,f/6/f68023ed3d11393baaace1dc53b6d8666c4eeb2a
 Y
 )app/src/main/res/layout/activity_main.xml,7/6/76b07e40f24cce093536731477540f12e7da3cb6
 †
@@ -79,14 +77,6 @@ Zapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/SendFileToD
 ,app/src/main/res/menu/text_fragment_menu.xml,7/7/778e27ed9bbb15f6350b9ae77fdc86897bfd6607
 `
 0app/src/main/res/layout/fragment_text_viewer.xml,5/2/5292a0824eaf2d8556bc738d07a16f49fa771bdb
-p
-@app/build/generated/source/r/debug/android/support/compat/R.java,0/3/0385cfd1abefe04d4851c2f653afa3a4200afa29
-r
-Bapp/build/generated/source/r/debug/android/support/fragment/R.java,c/3/c3124866f4d3b979cc68cb400632d192bd1d6a44
-v
-Fapp/build/generated/source/r/debug/android/support/v7/appcompat/R.java,0/e/0e62372458d658ae455f0d233369705b61c67e63
-l
-<app/build/generated/source/r/debug/android/support/v4/R.java,8/0/807458aac103ebc4b2d281ef7f19b072bbd4dec4
 Œ
 \app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/FileFragment.kt,2/5/250360022416311b661f842f8116137f86d6f322
 z
@@ -137,3 +127,11 @@ bapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/eventbus/DriveAcc
 aapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/eventbus/FileDeleteEventsHandler.kt,8/2/82c1f997719efa826511ab5544a7dd49f239d2e8
 Œ
 \app/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/features/core/FoldersDataTest.kt,0/6/062aea2621bde384f05c565a918821d017cf01e1
+\
+,app/src/main/res/layout/content_new_test.xml,7/6/760d8fd40a2a1ee93584bf79768fb74d0b0a8fd4
+²
+app/build/generated/not_namespaced_r_class_sources/debug/processDebugResources/r/au/com/kbrsolutions/notesnuageuses/Manifest.java,f/5/f556f6b7b792788e2cce658fce128ab7443e1780
+
+`app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/activities/NewTestActivity.kt,0/7/072d14466052add69526fb91f9c0d913c0831a71
+P
+ app/src/main/AndroidManifest.xml,8/c/8c55c3ccc257e5907959013f99656e4c8ec3903e
