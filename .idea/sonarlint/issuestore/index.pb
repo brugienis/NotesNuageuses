@@ -129,8 +129,6 @@ aapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/eventbus/FileDele
 \app/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/features/core/FoldersDataTest.kt,0/6/062aea2621bde384f05c565a918821d017cf01e1
 \
 ,app/src/main/res/layout/content_new_test.xml,7/6/760d8fd40a2a1ee93584bf79768fb74d0b0a8fd4
-≤
-Åapp/build/generated/not_namespaced_r_class_sources/debug/processDebugResources/r/au/com/kbrsolutions/notesnuageuses/Manifest.java,f/5/f556f6b7b792788e2cce658fce128ab7443e1780
 ê
 `app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/activities/NewTestActivity.kt,0/7/072d14466052add69526fb91f9c0d913c0831a71
 P

@@ -660,6 +660,11 @@ class HomeActivity : BaseActivity(),
             fileContents: ByteArray,
             fileItemId:Long,
             idxInTheFolderFilesList: Int) {
+        Log.v("HomeActivity", """sendTextFileToDrive - before send task
+            |fileName:                  ${fileName}
+            |FragmentsStack.toString(): ${FragmentsStack.toString()}
+            |""".trimMargin())
+
         val currFolderLevel = FoldersData.getCurrFolderLevel()
 
         val sendTextToGoogleDriveCallable = SendFileToDriveTask.Builder()
