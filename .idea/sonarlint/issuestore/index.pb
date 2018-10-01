@@ -127,9 +127,7 @@ bapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/eventbus/DriveAcc
 aapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/eventbus/FileDeleteEventsHandler.kt,8/2/82c1f997719efa826511ab5544a7dd49f239d2e8
 å
 \app/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/features/core/FoldersDataTest.kt,0/6/062aea2621bde384f05c565a918821d017cf01e1
-\
-,app/src/main/res/layout/content_new_test.xml,7/6/760d8fd40a2a1ee93584bf79768fb74d0b0a8fd4
-ê
-`app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/activities/NewTestActivity.kt,0/7/072d14466052add69526fb91f9c0d913c0831a71
 P
  app/src/main/AndroidManifest.xml,8/c/8c55c3ccc257e5907959013f99656e4c8ec3903e
+ç
+]app/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/features/main/HomeActivityTest.kt,b/3/b3cc9e026dc3abefe77d5d12990f9b8f115bd041

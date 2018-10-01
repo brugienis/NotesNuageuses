@@ -21,9 +21,6 @@ class DownloadFragment : Fragment() {
         this.mContext = activity
     }
 
-    /*
-	 * uncomment onCreate if there are menu items specific for this fragment
-	 */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

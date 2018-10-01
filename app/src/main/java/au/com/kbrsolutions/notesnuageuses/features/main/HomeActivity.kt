@@ -191,6 +191,9 @@ class HomeActivity : BaseActivity(),
      *
      */
     override fun setFolderFragment(folderData: FolderData) {
+//        if (folderData.isEmptyOrAllFilesTrashed && !showTrashedFiles) {
+        Log.v("HomeActivity", """setFolderFragment -
+            |folderData.isEmptyOrAllFilesTrashed: ${folderData.isEmptyOrAllFilesTrashed} """.trimMargin())
         if (folderData.isEmptyOrAllFilesTrashed && !showTrashedFiles) {
             setFragment(
                     FragmentsEnum.EMPTY_FOLDER_FRAGMENT,
@@ -220,7 +223,7 @@ class HomeActivity : BaseActivity(),
         when (fragmentId) {
 
             FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
-                val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: -1
+                val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: 0
                 if (emptyFolderFragment == null) {
                     emptyFolderFragment = EmptyFolderFragment.newInstance(trashFilesCnt)
                 } else {

@@ -1,5 +1,6 @@
 package au.com.kbrsolutions.notesnuageuses.features.eventbus
 
+import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FolderData
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
@@ -57,7 +58,12 @@ class FileDeleteEventsHandler(
                                     event.isTrashed)
                     )
                 }
+                // fixLater: Sep 30, 2018 - problem: You delete the last file - listener.setFolderFragment(folderData) is called 
+                // fixLater: Sep 30, 2018 - and the empty list is shown instead of EmptyFragment showing counts - merge fragments? 
                 val folderData = FoldersData.getCurrFolderData()
+                Log.v("FileDeleteEventsHandler", """onMessageEvent -
+                    |FoldersData.currFolderIsEmptyOrAllFilesAreTrashed(): ${FoldersData.currFolderIsEmptyOrAllFilesAreTrashed()}
+                    |""".trimMargin())
                 if (FoldersData.currFolderIsEmptyOrAllFilesAreTrashed()) {
                     FragmentsStack.removeTopFragment("onEventMainThread-REMOVE_FILE_FINISHED",
                             false)
