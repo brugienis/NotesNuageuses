@@ -2,6 +2,7 @@ package au.com.kbrsolutions.notesnuageuses.features.main.adapters
 
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
@@ -30,11 +31,12 @@ class FolderArrayAdapter<T>(
 
     // fixLater: Sep 28, 2018 - remove findViewById<View>(...) calls
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        Log.v("FolderArrayAdapter", """getView - position: ${position} """)
         var view = convertView
         if (view == null) {
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)
                     as LayoutInflater
-            view = inflater.inflate(R.layout.fragment_list_screen_layout, parent, false)
+            view = inflater.inflate(R.layout.fragment_folder_list_screen, parent, false)
         }
         fileImage = view!!.findViewById<View>(R.id.folderFileImageId) as ImageView
 

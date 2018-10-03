@@ -47,8 +47,6 @@ Y
 )app/src/main/res/values-w820dp/dimens.xml,4/6/467054222a8c785d9f601de4a89582d93facd302
 R
 "app/src/main/res/values/dimens.xml,c/3/c3c1811dec2dbad2deeafb9aad505ca9631da740
-g
-7app/src/main/res/layout/fragment_list_screen_layout.xml,5/0/50561dc58d997998efcadf18645317e1957a2f49
 ë
 aapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/adapters/FolderArrayAdapter.kt,d/4/d4e9a9e74ac8fd42693c97ba1d1d01b862803ce1
 é
@@ -131,3 +129,9 @@ P
  app/src/main/AndroidManifest.xml,8/c/8c55c3ccc257e5907959013f99656e4c8ec3903e
 ç
 ]app/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/features/main/HomeActivityTest.kt,b/3/b3cc9e026dc3abefe77d5d12990f9b8f115bd041
+ó
+gapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/NestedScrollingListView.kt,f/9/f920ff4b18651c67c25f8409cf8843d209ea18ec
+[
++app/src/main/res/layout/fragment_folder.xml,8/7/873dd83ac4e25275ba4fd2e8d9e5d12b3a9ff52d
+ë
+aapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/FolderFragmentNew.kt,d/5/d5fbd2b3f16c6f339a02ae080ab2e2351942a0fc

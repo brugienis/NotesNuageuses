@@ -1,6 +1,5 @@
 package au.com.kbrsolutions.notesnuageuses.features.main
 
-import android.app.FragmentTransaction
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.widget.Toolbar
@@ -67,6 +66,7 @@ class HomeActivity : BaseActivity(),
 
     private var emptyFolderFragment: EmptyFolderFragment? = null
     private var folderFragment: FolderFragment? = null
+    private var folderFragmentNew: FolderFragmentNew? = null
     private var fileDetailsFragment: FileDetailsFragment? = null
     private var downloadFragment: DownloadFragment? = null
     private var folderArrayAdapter: FolderArrayAdapter<FolderItem>? = null
@@ -87,6 +87,7 @@ class HomeActivity : BaseActivity(),
         LOG_IN_FRAGMENT,
         ACTIVITY_LOG_FRAGMENT,
         FOLDER_FRAGMENT,
+        FOLDER_FRAGMENT_NEW,
         TRASH_FOLDER_FRAGMENT,
         FILE_FRAGMENT,
         FILE_DETAILS_FRAGMENT,
@@ -193,7 +194,9 @@ class HomeActivity : BaseActivity(),
     override fun setFolderFragment(folderData: FolderData) {
 //        if (folderData.isEmptyOrAllFilesTrashed && !showTrashedFiles) {
         Log.v("HomeActivity", """setFolderFragment -
-            |folderData.isEmptyOrAllFilesTrashed: ${folderData.isEmptyOrAllFilesTrashed} """.trimMargin())
+            |folderData.isEmptyOrAllFilesTrashed: ${folderData.isEmptyOrAllFilesTrashed}
+            |showTrashedFiles:                    $showTrashedFiles
+            |""".trimMargin())
         if (folderData.isEmptyOrAllFilesTrashed && !showTrashedFiles) {
             setFragment(
                     FragmentsEnum.EMPTY_FOLDER_FRAGMENT,
@@ -203,7 +206,7 @@ class HomeActivity : BaseActivity(),
                     null)
         } else {
             setFragment(
-                    FragmentsEnum.FOLDER_FRAGMENT,
+                    FragmentsEnum.FOLDER_FRAGMENT_NEW,
                     folderData.newFolderTitle,
                     true,
                     folderData,
@@ -217,8 +220,11 @@ class HomeActivity : BaseActivity(),
             addFragmentToStack: Boolean,
             foldersAddData: FolderData?,
             fragmentArgs: Bundle?) {
-        val fragmentManager = fragmentManager
-        val fragmentTransaction: FragmentTransaction
+        Log.v("HomeActivity", """setFragment - fragmentId: ${fragmentId} """)
+//        val fragmentManager = fragmentManager
+        val fragmentManager = supportFragmentManager
+//        val fragmentTransaction: FragmentTransaction
+        val fragmentTransaction: android.support.v4.app.FragmentTransaction
 
         when (fragmentId) {
 
@@ -323,6 +329,47 @@ class HomeActivity : BaseActivity(),
 
                 fragmentTransaction = fragmentManager.beginTransaction()
                 fragmentTransaction.replace(R.id.fragments_frame, folderFragment, FOLDER_TAG)
+                fragmentTransaction.commit()
+            }
+
+            FragmentsEnum.FOLDER_FRAGMENT_NEW -> {
+                val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: -1
+                val folderItemsList = ArrayList<FolderItem>()
+
+                // fixLater: Sep 17, 2018 - why not the same logic as in updateFolderListAdapter()?
+                val list: ArrayList<FileMetadataInfo>? = foldersAddData?.filesMetadataInfoList
+                        ?: FoldersData.getCurrFolderMetadataInfo()
+
+                list!!.withIndex()
+                        .forEach { (itemIdxInList, folderMetadataInfo) ->
+                    if (!folderMetadataInfo.isTrashed || folderMetadataInfo.isTrashed && showTrashedFiles) {
+                        folderItemsList.add(FolderItem(
+                                folderMetadataInfo.fileTitle,
+                                folderMetadataInfo.updateDt,
+                                folderMetadataInfo.mimeType,
+                                folderMetadataInfo.isTrashed,
+                                itemIdxInList))
+                    }
+                }
+
+                Log.v("HomeActivity", """setFragment -
+                    |list.size:       ${list.size}
+                    |list:            ${list}
+                    |folderItemsList: ${folderItemsList}
+                    | """.trimMargin())
+
+                if (folderFragmentNew == null) {
+                    folderFragmentNew = FolderFragmentNew.newInstance(
+                            folderItemsList,
+                            trashFilesCnt)
+                } else {
+                    folderFragmentNew!!.setNewValues(
+                            folderItemsList,
+                            trashFilesCnt)
+                }
+
+                fragmentTransaction = fragmentManager.beginTransaction()
+                fragmentTransaction.replace(R.id.fragments_frame, folderFragmentNew, FOLDER_TAG)
                 fragmentTransaction.commit()
             }
 

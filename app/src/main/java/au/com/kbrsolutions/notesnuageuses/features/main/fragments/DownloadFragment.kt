@@ -1,6 +1,6 @@
 package au.com.kbrsolutions.notesnuageuses.features.main.fragments
 
-import android.app.Fragment
+import android.support.v4.app.Fragment
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import au.com.kbrsolutions.notesnuageuses.R
 import kotlinx.android.synthetic.main.fragment_retrieving_folder_in_progress.view.*
-
 
 class DownloadFragment : Fragment() {
 

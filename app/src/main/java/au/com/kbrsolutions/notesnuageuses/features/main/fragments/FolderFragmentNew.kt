@@ -1,21 +1,28 @@
 package au.com.kbrsolutions.notesnuageuses.features.main.fragments
 
-//import android.app.ListFragment
-import android.support.v4.app.ListFragment
 import android.content.Context
 import android.os.Bundle
+import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.*
 import android.view.View.OnClickListener
-import android.widget.AdapterView.OnItemLongClickListener
+import android.widget.AdapterView
 import android.widget.ListView
 import au.com.kbrsolutions.notesnuageuses.R
+import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
+import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
+import kotlinx.android.synthetic.main.fragment_folder.view.*
+import java.util.*
 
-class FolderFragment : ListFragment(), OnClickListener {
+class FolderFragmentNew : Fragment(), OnClickListener {
 
     private var mTrashedFilesCnt: Int = 0
     private var mArgsProcessed = false
+    private lateinit var mFolderArrayAdapter: FolderArrayAdapter<FolderItem>
+    private var mFolderItemsList = ArrayList<FolderItem>()
+    private lateinit var mFolderListView: ListView
 
-    private var listener: OnFolderFragmentInteractionListener? = null
+    private var listener: FolderFragment.OnFolderFragmentInteractionListener? = null
 
     private enum class TouchedObject {
         MENU_QUICK_PHOTO, MENU_CREATE_FILE, MENU_REFRESH, FILE_OR_FOLDER
@@ -23,7 +30,7 @@ class FolderFragment : ListFragment(), OnClickListener {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnFolderFragmentInteractionListener) {
+        if (context is FolderFragment.OnFolderFragmentInteractionListener) {
             listener = context
         } else {
             throw RuntimeException(context.toString() +
@@ -43,32 +50,68 @@ class FolderFragment : ListFragment(), OnClickListener {
 
         if (!mArgsProcessed) {
             arguments?.let {
+                mFolderItemsList = it.getParcelableArrayList(ARG_FOLDER_ITEMS_LIST_KEY)
                 mTrashedFilesCnt = it.getInt(EmptyFolderFragment.ARG_TRASH_FILES_CNT_KEY)
             }
             mArgsProcessed = true
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_folder, container, false)
+
+        mFolderArrayAdapter = FolderArrayAdapter(
+                listener as Context,
+                this,
+                mFolderItemsList)
+        Log.v("FolderFragmentNew", """onCreateView -
+            |mFolderItemsList: ${mFolderItemsList}
+            |""".trimMargin())
+        mFolderListView = view.folderListView as NestedScrollingListView
+
+        mFolderListView.setAdapter(mFolderArrayAdapter)
+//        mFolderListView.setNestedScrollingEnabled(true)
+        mFolderListView.setItemsCanFocus(true)
+
+        mFolderListView.setOnItemClickListener { adapterView: AdapterView<*>?,
+                                                view: View?,
+                                                position: Int,
+                                                l: Long ->
+            handleRowSelected(adapterView, position)
+        }
+
+        return view
+    }
+
+    /*
+        List's view row was clicked - download folder or file details
+     */
+    private fun handleRowSelected(adapterView: AdapterView<*>?, position: Int) {
+        Log.v("FolderFragmentNew", """handleRowSelected - position: ${position} """)
+        listener!!.handleOnFolderOrFileClick(position)
+    }
+
+    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val listView = listView
         listView.setOnTouchListener { _, m ->
             handleTouch(m)
             false
         }
-    }
+    }*/
 
     private fun handleTouch(m: MotionEvent) {
 //        mContext!!.handleTouchEvent(m, listView)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
+    /*override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         listView.onItemLongClickListener = OnItemLongClickListener { parent, view, position, id ->
 //            mContext!!.showSelectedFileDetails(position)
             true
         }
-    }
+    }*/
 
     private fun handleCreateFileOptionSelected() {
 //        if (isAppFinishing) {
@@ -81,7 +124,7 @@ class FolderFragment : ListFragment(), OnClickListener {
         }
     }
 
-    override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
+   /* override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
         super.onListItemClick(l, v, position, id)
         // fixLater: Aug 24, 2018 - uncomment below - isAppFinishing is set up in removeTopFragment(...)
 //        if (isAppFinishing) {
@@ -92,13 +135,12 @@ class FolderFragment : ListFragment(), OnClickListener {
                     return
                 }
             }
-
         listener!!.handleOnFolderOrFileClick(position)
 
-    }
+    }*/
 
     override fun onClick(v: View) {
-        val position = listView.getPositionForView(v)
+        val position = mFolderListView.getPositionForView(v)
         if (position != ListView.INVALID_POSITION) {
             v.setBackgroundColor(resources.getColor(R.color.action_view_clicked))
             listener!!.showSelectedFileDetails(position)
@@ -232,14 +274,15 @@ class FolderFragment : ListFragment(), OnClickListener {
                 mPrevRefreshTouchTimeNonos = currTimeNonos
             }
 
-            else -> throw RuntimeException("delaysExpired - no code to handle case: $touchedObject")
+//            else -> throw RuntimeException("delaysExpired - no code to handle case: $touchedObject")
         }
 
         return delaysExpired
     }
 
-    fun setTrashedFilesCnt(trashedFilesCnt: Int) {
+    fun setNewValues(folderItemsList: ArrayList<FolderItem>, trashedFilesCnt: Int) {
         this.mTrashedFilesCnt = trashedFilesCnt
+        mFolderItemsList = folderItemsList
     }
 
     /**
@@ -258,13 +301,15 @@ class FolderFragment : ListFragment(), OnClickListener {
     }
 
     companion object {
-        private val TAG = FolderFragment::class.java.simpleName
+        private val TAG = FolderFragmentNew::class.java.simpleName
         private const val ARG_TRASH_FILES_CNT_KEY = "arg_trash_files_cnt_key"
+        private const val ARG_FOLDER_ITEMS_LIST_KEY = "arg_folder_items_list_key"
 
         @JvmStatic
-        fun newInstance(trashFilesCnt: Int) =
-                FolderFragment().apply {
+        fun newInstance(folderItemsList: ArrayList<FolderItem>, trashFilesCnt: Int) =
+                FolderFragmentNew().apply {
                     arguments = Bundle().apply {
+                        putParcelableArrayList(ARG_FOLDER_ITEMS_LIST_KEY, folderItemsList)
                         putInt(ARG_TRASH_FILES_CNT_KEY, trashFilesCnt)
                     }
 //                    Log.v("FolderFragment", "newInstance - arguments: $arguments ")

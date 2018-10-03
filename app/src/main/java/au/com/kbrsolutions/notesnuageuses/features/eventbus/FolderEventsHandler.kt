@@ -63,7 +63,8 @@ class FolderEventsHandler(private val listener: OnFolderEventsHandlerInteraction
                             currFolder, HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)
 
                     listener.setFragment(
-                            HomeActivity.FragmentsEnum.FOLDER_FRAGMENT,
+//                            HomeActivity.FragmentsEnum.FOLDER_FRAGMENT,
+                            HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW,
                             folderName,
                             false,
                             null,

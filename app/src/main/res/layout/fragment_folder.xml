@@ -1,0 +1,26 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".features.main.fragments.FolderFragmentNew">
+
+    <au.com.kbrsolutions.notesnuageuses.features.main.fragments.NestedScrollingListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/folderListView"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="@dimen/list_view_bottom_padding"
+        android:clipToPadding="false" />
+
+</FrameLayout>
+<!--
+
+    <TextView
+        android:id="@+id/emptyFolderView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:textColor="@android:color/black"
+        tools:text="empty_folder" />
+
+        android:gravity="center"
+-->
