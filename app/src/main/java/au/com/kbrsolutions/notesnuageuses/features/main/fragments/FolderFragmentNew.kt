@@ -63,7 +63,7 @@ class FolderFragmentNew : Fragment(), OnClickListener {
 
         mFolderArrayAdapter = FolderArrayAdapter(
                 listener as Context,
-                this,
+                listener as FolderArrayAdapter.OnFolderArrayAdapterInteractionListener,
                 mFolderItemsList)
         Log.v("FolderFragmentNew", """onCreateView -
             |mFolderItemsList: ${mFolderItemsList}
@@ -90,6 +90,10 @@ class FolderFragmentNew : Fragment(), OnClickListener {
     private fun handleRowSelected(adapterView: AdapterView<*>?, position: Int) {
         Log.v("FolderFragmentNew", """handleRowSelected - position: ${position} """)
         listener!!.handleOnFolderOrFileClick(position)
+    }
+
+    fun getFolderItem(idx: Int): FolderItem {
+        return mFolderItemsList[idx]
     }
 
     /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

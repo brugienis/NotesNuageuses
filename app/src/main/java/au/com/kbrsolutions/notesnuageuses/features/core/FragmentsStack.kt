@@ -17,11 +17,13 @@ object FragmentsStack {
     private var notEmptyFolderHomeActivity: MutableSet<HomeActivity.FragmentsEnum>
 
     init {
-        allFoldersFragmentsEnumTypesSet = mutableSetOf(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)
+//        allFoldersFragmentsEnumTypesSet = mutableSetOf(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)
+        allFoldersFragmentsEnumTypesSet = mutableSetOf(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW)
 //        allFoldersFragmentsEnumTypesSet.add(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)
         allFoldersFragmentsEnumTypesSet.add(HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT)
         
-        notEmptyFolderHomeActivity = mutableSetOf(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)
+//        notEmptyFolderHomeActivity = mutableSetOf(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)
+        notEmptyFolderHomeActivity = mutableSetOf(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW)
     }
 
     private val TAG = "xyz" + FragmentsStack::class.java.simpleName
@@ -144,7 +146,7 @@ object FragmentsStack {
 
                 when (startingTopFragmentRemoved) {
 
-                    HomeActivity.FragmentsEnum.FOLDER_FRAGMENT -> {
+                    HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW -> {
                         folderFragmentsCnt--
                         foldersData.removeMostRecentFolderData()
 //                        Log.v(TAG, " - folderFragmentsCnt: $folderFragmentsCnt folders data level: ${foldersData.getCurrFolderLevel()}")
@@ -159,8 +161,8 @@ object FragmentsStack {
                     HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
                         folderFragmentsCnt--
                         foldersData.removeMostRecentFolderData()
-                        if (currTopFragmentJustPeeked === HomeActivity.FragmentsEnum.FOLDER_FRAGMENT) {    // impossible case
-                            fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT
+                        if (currTopFragmentJustPeeked === HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW) {    // impossible case
+                            fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW
                             updateFolderListAdapterRequired = true
                         } else if (currTopFragmentJustPeeked === HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT) {
                             callFinishRequired = true
@@ -168,7 +170,7 @@ object FragmentsStack {
                             removeFragmentsFromStackUntilSpecificFragmentFound()
                             if (fragmentsArrayDeque.size > 0) {                            // FOLDER_FRAGMENT found
                                 updateFolderListAdapterRequired = true
-                                fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT
+                                fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW
                             } else {
                                 callFinishRequired = true
                             }
@@ -177,9 +179,9 @@ object FragmentsStack {
 
                     HomeActivity.FragmentsEnum.ACTIVITY_LOG_FRAGMENT ->
                         when {
-                            currTopFragmentJustPeeked === HomeActivity.FragmentsEnum.FOLDER_FRAGMENT -> {
+                            currTopFragmentJustPeeked === HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW -> {
                                 updateFolderListAdapterRequired = true
-                                fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT
+                                fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW
                             }
 
                             currTopFragmentJustPeeked === HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
@@ -204,7 +206,7 @@ object FragmentsStack {
                         viewFragmentsCleanupRequired = true
                         if (currTopFragmentJustPeeked == HomeActivity.FragmentsEnum.DOWNLOAD_FRAGMENT) {
                             removeLastFragment()            // remove placeholder DOWNLOAD_FRAGMENT
-                            fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT
+                            fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW
                         } else if (currTopFragmentJustPeeked == HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
                             if (actionCancelled) {
                                 updateFolderListAdapterRequired = true
@@ -212,12 +214,12 @@ object FragmentsStack {
                             } else {                                            // Save was clicked
                                 updateFolderListAdapterRequired = true
                                 removeLastFragment()                            // remove EMPTY_FOLDER_FRAGMENT
-                                fragmentsArrayDeque.addLast(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT) // add FOLDER_FRAGMENT
-                                fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT
+                                fragmentsArrayDeque.addLast(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW) // add FOLDER_FRAGMENT
+                                fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW
                             }
                         } else {
                             updateFolderListAdapterRequired = true
-                            fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT
+                            fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW
                         }
                     }
 
@@ -233,7 +235,7 @@ object FragmentsStack {
                         viewFragmentsCleanupRequired = true
                         run {
                             updateFolderListAdapterRequired = true
-                            fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT
+                            fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW
                         }
                     }
 
@@ -246,14 +248,14 @@ object FragmentsStack {
                             throw RuntimeException("$TAG-FragmentStack - we should never be here - prevTopFragment/currTopFragment: $startingTopFragmentRemoved/$currTopFragmentJustPeeked")
                         }
                         when (currTopFragmentJustPeeked) {
-                            HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT, HomeActivity.FragmentsEnum.FOLDER_FRAGMENT -> fragmentToSet = currTopFragmentJustPeeked            // HomeActivity.FragmentsEnum.FOLDER_FRAGMENT;
+                            HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT, HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW -> fragmentToSet = currTopFragmentJustPeeked            // HomeActivity.FragmentsEnum.FOLDER_FRAGMENT;
 
-                            else -> if (currTopFragmentJustPeeked === HomeActivity.FragmentsEnum.FOLDER_FRAGMENT) { // ??? it would be handled in the case above - probably remove it
+                            else -> if (currTopFragmentJustPeeked === HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW) { // ??? it would be handled in the case above - probably remove it
                                 updateFolderListAdapterRequired = true
                             } else {
                                 removeFragmentsFromStackUntilSpecificFragmentFound()
                                 if (fragmentsArrayDeque.size > 0) {        // FOLDER_FRAGMENT found
-                                    fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT
+                                    fragmentToSet = HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW
                                 } else {
                                     callFinishRequired = true
                                 }

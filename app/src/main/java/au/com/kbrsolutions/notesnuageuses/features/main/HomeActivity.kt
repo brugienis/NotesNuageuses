@@ -39,6 +39,7 @@ import java.util.concurrent.Future
 class HomeActivity : BaseActivity(),
         EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
         FolderFragment.OnFolderFragmentInteractionListener,
+        FolderArrayAdapter.OnFolderArrayAdapterInteractionListener,
         CreateFileDialog.OnCreateFileDialogInteractionListener,
         DriveAccessEventsHandler.OnDriveAccessEventsHandlerInteractionListener,
         FolderEventsHandler.OnFolderEventsHandlerInteractionListener,
@@ -86,7 +87,7 @@ class HomeActivity : BaseActivity(),
     enum class FragmentsEnum {
         LOG_IN_FRAGMENT,
         ACTIVITY_LOG_FRAGMENT,
-        FOLDER_FRAGMENT,
+//        FOLDER_FRAGMENT,
         FOLDER_FRAGMENT_NEW,
         TRASH_FOLDER_FRAGMENT,
         FILE_FRAGMENT,
@@ -292,7 +293,7 @@ class HomeActivity : BaseActivity(),
                         .commit()
             }
 
-            FragmentsEnum.FOLDER_FRAGMENT -> {
+            /*FragmentsEnum.FOLDER_FRAGMENT -> {
                 val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: -1
                 val folderItemsList = ArrayList<FolderItem>()
 
@@ -330,7 +331,7 @@ class HomeActivity : BaseActivity(),
                 fragmentTransaction = fragmentManager.beginTransaction()
                 fragmentTransaction.replace(R.id.fragments_frame, folderFragment, FOLDER_TAG)
                 fragmentTransaction.commit()
-            }
+            }*/
 
             FragmentsEnum.FOLDER_FRAGMENT_NEW -> {
                 val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: -1
@@ -520,8 +521,16 @@ class HomeActivity : BaseActivity(),
                     }
                 }
 
-        folderArrayAdapter!!.clear()
-        folderArrayAdapter!!.addAll(folderItemsList)
+        // fixLater: Oct 03, 2018 - folderArrayAdapter is not in use anymore - add code in
+        // fixLater: Oct 03, 2018 - FolderFragmentNew setNewFolderItemsList(...) and remove
+        // fixLater: Oct 03, 2018 - folderArrayAdapter
+//        folderArrayAdapter!!.clear()
+//        folderArrayAdapter!!.addAll(folderItemsList)
+        if (folderFragmentNew != null) {
+            folderFragmentNew!!.setNewValues(
+                    folderItemsList,
+                    FoldersData.getCurrFolderData().trashedFilesCnt)
+        }
     }
 
     private fun startFuturesHandlers() {
@@ -630,7 +639,8 @@ class HomeActivity : BaseActivity(),
             menuItem.isVisible = false
             menuItem.isEnabled = false
         } else if (
-                FragmentsStack.getCurrFragment() !== FragmentsEnum.FOLDER_FRAGMENT &&
+//                FragmentsStack.getCurrFragment() !== FragmentsEnum.FOLDER_FRAGMENT &&
+                FragmentsStack.getCurrFragment() !== FragmentsEnum.FOLDER_FRAGMENT_NEW &&
                 FragmentsStack.getCurrFragment() !== FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
             menuItem = menu.findItem(R.id.menuShowTrashed)
             menuItem.isVisible = false
@@ -788,6 +798,7 @@ class HomeActivity : BaseActivity(),
     }
 
     override fun showSelectedFileDetails(position: Int) {
+        Log.v("HomeActivity", """showSelectedFileDetails - position: ${position} """)
         if (fileDetailsFragment == null) {
             fileDetailsFragment = FileDetailsFragment()
         }
@@ -814,6 +825,10 @@ class HomeActivity : BaseActivity(),
     override fun handleOnFolderOrFileClick(position: Int) {
         val idxInTheFolderFilesList = getIdxOfClickedFolderItem(position)
         val folderMetadataArrayInfo = FoldersData.getCurrFolderMetadataInfo()
+        Log.v("HomeActivity", """handleOnFolderOrFileClick -
+            |idxInTheFolderFilesList: ${idxInTheFolderFilesList}
+            |folderMetadataArrayInfo: ${folderMetadataArrayInfo}
+            |""".trimMargin())
         val fileMetadataInfo: FileMetadataInfo = folderMetadataArrayInfo!![idxInTheFolderFilesList]
         if (fileMetadataInfo.isFolder) {
             startDownloadFolderInfo(fileMetadataInfo)
@@ -895,7 +910,8 @@ class HomeActivity : BaseActivity(),
     </FolderItem> */
     private fun getIdxOfClickedFolderItem(position: Int): Int {
 //        val folderArrayAdapter = listAdapter as FolderArrayAdapter<*>
-        return folderArrayAdapter!!.getFolderItem(position).itemIdxInList
+//        return folderArrayAdapter!!.getFolderItem(position).itemIdxInList
+        return folderFragmentNew!!.getFolderItem(position).itemIdxInList
     }
 
     private fun handleMenuHideTrashed() {
@@ -918,9 +934,13 @@ class HomeActivity : BaseActivity(),
         val currFragment = FragmentsStack.getCurrFragment()
         if (currFragment == FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
             FragmentsStack.replaceCurrFragment(
-                    "handleMenuShowTrashed", currFragment, FragmentsEnum.FOLDER_FRAGMENT)
+                    "handleMenuShowTrashed",
+                    currFragment,
+//                    FragmentsEnum.FOLDER_FRAGMENT)
+                    FragmentsEnum.FOLDER_FRAGMENT_NEW)
             setFragment(
-                    FragmentsEnum.FOLDER_FRAGMENT,
+//                    FragmentsEnum.FOLDER_FRAGMENT,
+                    FragmentsEnum.FOLDER_FRAGMENT_NEW,
                     mTitle.toString(),
                     false,
                     null,

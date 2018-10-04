@@ -60,7 +60,7 @@ class FolderEventsHandler(private val listener: OnFolderEventsHandlerInteraction
                     FragmentsStack.replaceCurrFragment (
                             "onMessageEvent FoldersEvents FOLDER_CREATED" +
                                     event.request,
-                            currFolder, HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)
+                            currFolder, HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW)
 
                     listener.setFragment(
 //                            HomeActivity.FragmentsEnum.FOLDER_FRAGMENT,
