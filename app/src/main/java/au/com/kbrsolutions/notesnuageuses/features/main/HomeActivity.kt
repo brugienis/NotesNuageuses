@@ -353,12 +353,6 @@ class HomeActivity : BaseActivity(),
                     }
                 }
 
-                Log.v("HomeActivity", """setFragment -
-                    |list.size:       ${list.size}
-                    |list:            ${list}
-                    |folderItemsList: ${folderItemsList}
-                    | """.trimMargin())
-
                 if (folderFragmentNew == null) {
                     folderFragmentNew = FolderFragmentNew.newInstance(
                             folderItemsList,
@@ -521,13 +515,8 @@ class HomeActivity : BaseActivity(),
                     }
                 }
 
-        // fixLater: Oct 03, 2018 - folderArrayAdapter is not in use anymore - add code in
-        // fixLater: Oct 03, 2018 - FolderFragmentNew setNewFolderItemsList(...) and remove
-        // fixLater: Oct 03, 2018 - folderArrayAdapter
-//        folderArrayAdapter!!.clear()
-//        folderArrayAdapter!!.addAll(folderItemsList)
-        if (folderFragmentNew != null) {
-            folderFragmentNew!!.setNewValues(
+        folderFragmentNew?.let {
+            it.setNewValues(
                     folderItemsList,
                     FoldersData.getCurrFolderData().trashedFilesCnt)
         }

@@ -287,6 +287,9 @@ class FolderFragmentNew : Fragment(), OnClickListener {
     fun setNewValues(folderItemsList: ArrayList<FolderItem>, trashedFilesCnt: Int) {
         this.mTrashedFilesCnt = trashedFilesCnt
         mFolderItemsList = folderItemsList
+
+        mFolderArrayAdapter.clear()
+        mFolderArrayAdapter!!.addAll(folderItemsList)
     }
 
     /**
