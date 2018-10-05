@@ -8,6 +8,7 @@ import android.view.*
 import android.view.View.OnClickListener
 import android.widget.AdapterView
 import android.widget.ListView
+import android.widget.TextView
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
@@ -21,6 +22,7 @@ class FolderFragmentNew : Fragment(), OnClickListener {
     private lateinit var mFolderArrayAdapter: FolderArrayAdapter<FolderItem>
     private var mFolderItemsList = ArrayList<FolderItem>()
     private lateinit var mFolderListView: ListView
+    private lateinit var mFolderEmptyView: TextView
 
     private var listener: FolderFragment.OnFolderFragmentInteractionListener? = null
 
@@ -59,29 +61,41 @@ class FolderFragmentNew : Fragment(), OnClickListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_folder, container, false)
+        val rootView: View = inflater.inflate(R.layout.fragment_folder, container, false)
 
         mFolderArrayAdapter = FolderArrayAdapter(
                 listener as Context,
                 listener as FolderArrayAdapter.OnFolderArrayAdapterInteractionListener,
                 mFolderItemsList)
+
+        mFolderEmptyView = rootView.emptyFolderInfoId
+        updateEmptyFolderInfo()
+
         Log.v("FolderFragmentNew", """onCreateView -
             |mFolderItemsList: ${mFolderItemsList}
             |""".trimMargin())
-        mFolderListView = view.folderListView as NestedScrollingListView
+        mFolderListView = rootView.folderListView as NestedScrollingListView
 
         mFolderListView.setAdapter(mFolderArrayAdapter)
 //        mFolderListView.setNestedScrollingEnabled(true)
         mFolderListView.setItemsCanFocus(true)
 
         mFolderListView.setOnItemClickListener { adapterView: AdapterView<*>?,
-                                                view: View?,
-                                                position: Int,
-                                                l: Long ->
+                                                 view: View?,
+                                                 position: Int,
+                                                 l: Long ->
             handleRowSelected(adapterView, position)
         }
 
-        return view
+        return rootView
+    }
+
+    private fun updateEmptyFolderInfo() {
+        listener?.let {
+            mFolderEmptyView.text = (listener as Context).getString(
+                    R.string.empty_folder,
+                    mTrashedFilesCnt)
+        }
     }
 
     /*
@@ -290,6 +304,7 @@ class FolderFragmentNew : Fragment(), OnClickListener {
 
         mFolderArrayAdapter.clear()
         mFolderArrayAdapter!!.addAll(folderItemsList)
+        updateEmptyFolderInfo()
     }
 
     /**

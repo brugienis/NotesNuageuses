@@ -4,6 +4,15 @@
     android:layout_height="match_parent"
     tools:context=".features.main.fragments.FolderFragmentNew">
 
+    <TextView
+        android:id="@+id/emptyFolderInfoId"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal|center_vertical"
+        tools:text="empty_folder"
+        android:textAlignment="gravity"
+        android:textColor="@android:color/black" />
+
     <au.com.kbrsolutions.notesnuageuses.features.main.fragments.NestedScrollingListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

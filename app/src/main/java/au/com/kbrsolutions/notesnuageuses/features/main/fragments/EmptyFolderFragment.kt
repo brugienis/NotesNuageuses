@@ -1,9 +1,9 @@
 package au.com.kbrsolutions.notesnuageuses.features.main.fragments
 
 //import android.app.Fragment
-import android.support.v4.app.Fragment
 import android.content.Context
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.*
 import au.com.kbrsolutions.notesnuageuses.R
@@ -25,10 +25,11 @@ class EmptyFolderFragment : Fragment() {
         super.onAttach(context)
         if (context is OnEmptyFolderFragmentInteractionListener) {
             listener = context
-        } else {
-            throw RuntimeException(context.toString() +
-                    " must implement OnListFragmentInteractionListener")
         }
+//        else {
+//            throw RuntimeException(context.toString() +
+//                    " must implement OnListFragmentInteractionListener")
+//        }
     }
 
     override fun onDetach() {
@@ -56,7 +57,9 @@ class EmptyFolderFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_empty_folder, container, false)
 
-        rootView.emptyFragmentInfoId.text = resources.getString(R.string.empty_folder, mTrashedFilesCnt)
+        rootView.emptyFragmentInfoId.text = resources.getString(
+                R.string.empty_folder,
+                mTrashedFilesCnt)
         return rootView
     }
 

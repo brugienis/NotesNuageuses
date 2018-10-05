@@ -37,52 +37,39 @@ class FolderArrayAdapter<T>(
         return objects[idx]
     }
 
-    // fixLater: Sep 28, 2018 - remove findViewById<View>(...) calls
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        Log.v("FolderArrayAdapter", """getView - position: $position """)
         var view = convertView
         if (view == null) {
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)
                     as LayoutInflater
             view = inflater.inflate(R.layout.fragment_folder_list_screen, parent, false)
         }
-//        fileImage = view!!.findViewById<View>(R.id.folderFileImageId) as ImageView
         fileImage = view!!.folderFileImageId as ImageView
 
-//        infoImage = view.findViewById<View>(R.id.infoImageId) as ImageView
         infoImage = view.infoImageId as ImageView
-//        infoImage!!.setOnClickListener(folderOnClickListener)
-        infoImage!!.setOnClickListener { view ->
+        infoImage!!.setOnClickListener { _ ->
             handleClickOnInfoImage(position)
         }
 
-//        fileNameTv = view.findViewById<View>(R.id.fileNameId) as TextView
         fileNameTv = view.fileNameId as TextView
-        fileUpdateTsTv = view.findViewById<View>(R.id.fileUpdateTsId) as TextView
+        fileUpdateTsTv = view.fileUpdateTsId
 
         val folderItem = objects[position]
-        val mimeType: String?
-        if (folderItem != null) {
-            if (fileNameTv != null) {
-                fileNameTv!!.text = folderItem.fileName
-                //				fileUpdateTsTv.setText(context.getString(R.string.folder_array_adapter_updated) + "  " + dateFormat.format(folderItem.fileUpdateTime));
-                fileUpdateTsTv!!.setText(mContext.getString(R.string.folder_array_adapter_updated) + "  " + DateFormat.getDateTimeInstance().format(folderItem.fileUpdateTime))
-            }
-            mimeType = folderItem.mimeType
-            if (mimeType != null) {
-                if (folderItem.isTrashed) {        //context.foldersData.getCurrFolderMetadataInfo().get(position).mIsTrashed) {
-                    fileImage!!.setBackgroundColor(Color.LTGRAY)
-                    //					Log.i(TAG, "getView - will  grey name/mIsTrashed: " + folderItem.fileName + "/" + folderItem.mIsTrashed);
-                } else {
-                    fileImage!!.setBackgroundColor(mContext.getResources().getColor(R.color.view_not_in_focus))
-                    //					Log.i(TAG, "getView - won't grey name/mIsTrashed: " + folderItem.fileName + "/" + folderItem.mIsTrashed);
-                }
-                when (mimeType) {
-                    BaseActivity.MIME_TYPE_FOLDER -> fileImage!!.setImageResource(R.mipmap.ic_type_folder)
-                    BaseActivity.MIME_TYPE_PNG_FILE -> fileImage!!.setImageResource(R.mipmap.ic_type_image)
-                    else -> fileImage!!.setImageResource(R.mipmap.ic_type_file)
-                }
-            }
+        if (fileNameTv != null) {
+            fileNameTv!!.text = folderItem.fileName
+            //				fileUpdateTsTv.setText(context.getString(R.string.folder_array_adapter_updated) + "  " + dateFormat.format(folderItem.fileUpdateTime));
+            fileUpdateTsTv!!.setText(mContext.getString(R.string.folder_array_adapter_updated) + "  " + DateFormat.getDateTimeInstance().format(folderItem.fileUpdateTime))
+        }
+        val mimeType = folderItem.mimeType
+        if (folderItem.isTrashed) {        //context.foldersData.getCurrFolderMetadataInfo().get(position).mIsTrashed) {
+            fileImage!!.setBackgroundColor(Color.LTGRAY)
+        } else {
+            fileImage!!.setBackgroundColor(mContext.getResources().getColor(R.color.view_not_in_focus))
+        }
+        when (mimeType) {
+            BaseActivity.MIME_TYPE_FOLDER -> fileImage!!.setImageResource(R.mipmap.ic_type_folder)
+            BaseActivity.MIME_TYPE_PNG_FILE -> fileImage!!.setImageResource(R.mipmap.ic_type_image)
+            else -> fileImage!!.setImageResource(R.mipmap.ic_type_file)
         }
 
         return view
