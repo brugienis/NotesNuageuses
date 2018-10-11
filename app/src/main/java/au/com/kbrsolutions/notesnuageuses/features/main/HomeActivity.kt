@@ -198,25 +198,26 @@ class HomeActivity : BaseActivity(),
             |folderData.isEmptyOrAllFilesTrashed: ${folderData.isEmptyOrAllFilesTrashed}
             |showTrashedFiles:                    $showTrashedFiles
             |""".trimMargin())
-        if (folderData.isEmptyOrAllFilesTrashed && !showTrashedFiles) {
-            setFragment(
-                    FragmentsEnum.EMPTY_FOLDER_FRAGMENT,
-                    folderData.newFolderTitle,
-                    true,
-                    folderData,
-                    null)
-        } else {
+//        if (folderData.isEmptyOrAllFilesTrashed && !showTrashedFiles) {
+//            setFragment(
+//                    FragmentsEnum.EMPTY_FOLDER_FRAGMENT,
+//                    folderData.newFolderTitle,
+//                    true,
+//                    folderData,
+//                    null)
+//        } else {
+
             setFragment(
                     FragmentsEnum.FOLDER_FRAGMENT_NEW,
                     folderData.newFolderTitle,
                     true,
                     folderData,
                     null)
-        }
+//        }
     }
 
     override fun setFragment(
-            fragmentId: FragmentsEnum,
+            fragmentId: HomeActivity.FragmentsEnum,
             titleText: String,
             addFragmentToStack: Boolean,
             foldersAddData: FolderData?,
@@ -230,6 +231,7 @@ class HomeActivity : BaseActivity(),
         when (fragmentId) {
 
             FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
+                if (true) throw java.lang.RuntimeException("BR EMPTY_FOLDER_FRAGMENT should not be used.")
                 val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: 0
                 if (emptyFolderFragment == null) {
                     emptyFolderFragment = EmptyFolderFragment.newInstance(trashFilesCnt)
@@ -384,6 +386,7 @@ class HomeActivity : BaseActivity(),
         }
         setCurrFragment(fragmentId)
         setNewFragmentSet(true)
+        Log.v("HomeActivity", """setFragment - FragmentsStack: ${FragmentsStack} """)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -690,12 +693,14 @@ class HomeActivity : BaseActivity(),
                 showTrashedFiles = true
                 handleMenuShowTrashed()
                 invalidateOptionsMenu()
+                folderFragmentNew!!.showTrashedFiles(true)
             }
             R.id.menuHideTrashed -> {
                 showTrashedFiles = false
                 //                if (filesMetadataInfo.size() != FoldersData.getCurrentFolderTrashedFilesCnt()) {
                 handleMenuHideTrashed()
                 invalidateOptionsMenu()
+                folderFragmentNew!!.showTrashedFiles(false)
             }
 
             else -> return super.onOptionsItemSelected(item)
@@ -775,6 +780,11 @@ class HomeActivity : BaseActivity(),
                 args)
 
         setActionBarTitle(fileName)
+
+        android.util.Log.v("HomeActivity", """createTextNote -
+            |FragmentsStack: $FragmentsStack
+            |
+        """.trimMargin())
     }
 
     /*
@@ -814,10 +824,6 @@ class HomeActivity : BaseActivity(),
     override fun handleOnFolderOrFileClick(position: Int) {
         val idxInTheFolderFilesList = getIdxOfClickedFolderItem(position)
         val folderMetadataArrayInfo = FoldersData.getCurrFolderMetadataInfo()
-        Log.v("HomeActivity", """handleOnFolderOrFileClick -
-            |idxInTheFolderFilesList: ${idxInTheFolderFilesList}
-            |folderMetadataArrayInfo: ${folderMetadataArrayInfo}
-            |""".trimMargin())
         val fileMetadataInfo: FileMetadataInfo = folderMetadataArrayInfo!![idxInTheFolderFilesList]
         if (fileMetadataInfo.isFolder) {
             startDownloadFolderInfo(fileMetadataInfo)
@@ -877,10 +883,27 @@ class HomeActivity : BaseActivity(),
         args.putString(RETRIEVING_FOLDER_TITLE_KEY, fileName)
         setFragment(
                 FragmentsEnum.DOWNLOAD_FRAGMENT,
-                getString(R.string.retrieving_folder_title),
+//                getString(R.string.retrieving_folder_title),
+                fileName,
                 true,
                 null,
                 args)
+    }
+
+    // fixLater: Oct 10, 2018 - possible problem - before file is downloaded, user clicked
+    //                          back, and on another folder - the top would not be a Download
+    //                          fragment
+    // fixLater: Oct 11, 2018 - rethink how the tasks results are handled, especially when cancelled
+    override fun removeDownloadFragment() {
+        Log.v("HomeActivity", """removeDownloadFragment - before
+            |FragmentsStack: $FragmentsStack """.trimMargin())
+//        FragmentsStack.removeTopFragment("removeDownloadFragment", false)
+        FragmentsStack.removeSpecificTopFragment(
+                FragmentsEnum.DOWNLOAD_FRAGMENT,
+                "removeDownloadFragment",
+                false)
+        Log.v("HomeActivity", """removeDownloadFragment - after
+            |FragmentsStack: $FragmentsStack """.trimMargin())
     }
 
     override fun onUpButtonPressedInFragment() {

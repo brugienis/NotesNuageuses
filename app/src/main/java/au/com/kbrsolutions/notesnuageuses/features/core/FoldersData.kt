@@ -1,6 +1,5 @@
 package au.com.kbrsolutions.notesnuageuses.features.core
 
-import android.util.Log
 import com.google.android.gms.drive.DriveId
 import java.util.*
 
@@ -266,10 +265,6 @@ object FoldersData {
     @Synchronized
     fun getCurrFolderMetadataInfo(): ArrayList<FileMetadataInfo>? {
         // added check for 'currFolderLevel == -1' because it crashed monkey test
-        Log.v("FoldersData", """getCurrFolderMetadataInfo -
-            |currFolderLevel: ${currFolderLevel}
-            |currFolderLevel: ${foldersMetadataArrayInfoList[currFolderLevel]}
-            |""".trimMargin())
         return if (currFolderLevel == -1) null else foldersMetadataArrayInfoList[currFolderLevel]
     }
 

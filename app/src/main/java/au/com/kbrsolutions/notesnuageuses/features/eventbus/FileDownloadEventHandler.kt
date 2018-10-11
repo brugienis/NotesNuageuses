@@ -34,6 +34,9 @@ class FileDownloadEventHandler(
             idxInTheFolderFilesList
 
             listener.setActionBarTitle(fileTitle)
+            listener.removeDownloadFragment()
+            // fixLater: Oct 10, 2018 - show the downloaded file only if parent folder is the
+            //                          same as the current one
             listener.setFragment(
                     HomeActivity.FragmentsEnum.FILE_FRAGMENT,
                     event.fileName,
@@ -66,5 +69,6 @@ class FileDownloadEventHandler(
         fun removeTopFragment(source: String, actionCancelled: Boolean): Boolean
         fun setActionBarTitle(title: CharSequence)
         fun setFolderFragment(folderData: FolderData)
+        fun removeDownloadFragment()
     }
 }

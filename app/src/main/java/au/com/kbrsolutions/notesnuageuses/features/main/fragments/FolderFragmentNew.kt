@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.*
-import android.view.View.OnClickListener
 import android.widget.AdapterView
 import android.widget.ListView
 import android.widget.TextView
@@ -15,9 +14,10 @@ import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import kotlinx.android.synthetic.main.fragment_folder.view.*
 import java.util.*
 
-class FolderFragmentNew : Fragment(), OnClickListener {
+class FolderFragmentNew : Fragment() {
 
     private var mTrashedFilesCnt: Int = 0
+    private var mShowTrashedFiles: Boolean = false
     private var mArgsProcessed = false
     private lateinit var mFolderArrayAdapter: FolderArrayAdapter<FolderItem>
     private var mFolderItemsList = ArrayList<FolderItem>()
@@ -87,12 +87,14 @@ class FolderFragmentNew : Fragment(), OnClickListener {
             handleRowSelected(adapterView, position)
         }
 
+        showTrashedFiles(false)
+
         return rootView
     }
 
     private fun updateEmptyFolderInfo() {
         listener?.let {
-            mFolderEmptyView.text = (listener as Context).getString(
+            mFolderEmptyView.text = (it as Context).getString(
                     R.string.empty_folder,
                     mTrashedFilesCnt)
         }
@@ -157,13 +159,13 @@ class FolderFragmentNew : Fragment(), OnClickListener {
 
     }*/
 
-    override fun onClick(v: View) {
-        val position = mFolderListView.getPositionForView(v)
-        if (position != ListView.INVALID_POSITION) {
-            v.setBackgroundColor(resources.getColor(R.color.action_view_clicked))
-            listener!!.showSelectedFileDetails(position)
-        }
-    }
+//    override fun onClick(v: View) {
+//        val position = mFolderListView.getPositionForView(v)
+//        if (position != ListView.INVALID_POSITION) {
+//            v.setBackgroundColor(resources.getColor(R.color.action_view_clicked))
+//            listener!!.showSelectedFileDetails(position)
+//        }
+//    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.folder_fragment_menu, menu)
@@ -264,33 +266,37 @@ class FolderFragmentNew : Fragment(), OnClickListener {
         val refreshDelayExpired = refreshElapsedTime > mRefreshDelayNanos
 
         when (touchedObject) {
-            TouchedObject.MENU_QUICK_PHOTO -> if (quickCameraDelayExpired) {
-                delaysExpired = true
-                diff = currTimeNonos - mPrevQuickCameraTouchTimeNonos
-                delayNonos = mQuickCameraDelayNanos
-                mPrevQuickCameraTouchTimeNonos = currTimeNonos
-            }
+            TouchedObject.MENU_QUICK_PHOTO ->
+                if (quickCameraDelayExpired) {
+                    delaysExpired = true
+                    diff = currTimeNonos - mPrevQuickCameraTouchTimeNonos
+                    delayNonos = mQuickCameraDelayNanos
+                    mPrevQuickCameraTouchTimeNonos = currTimeNonos
+                }
 
-            TouchedObject.MENU_CREATE_FILE -> if (quickCameraDelayExpired && createFileDelayExpired) {
-                delaysExpired = true
-                diff = currTimeNonos - mPrevCreateFileTouchTimeNonos
-                delayNonos = mCreateFileDelayNanos
-                mPrevCreateFileTouchTimeNonos = currTimeNonos
-            }
+            TouchedObject.MENU_CREATE_FILE ->
+                if (quickCameraDelayExpired && createFileDelayExpired) {
+                    delaysExpired = true
+                    diff = currTimeNonos - mPrevCreateFileTouchTimeNonos
+                    delayNonos = mCreateFileDelayNanos
+                    mPrevCreateFileTouchTimeNonos = currTimeNonos
+                }
 
-            TouchedObject.FILE_OR_FOLDER -> if (quickCameraDelayExpired && createFileDelayExpired && fileOrFolderDelayExpired) {
-                delaysExpired = true
-                diff = currTimeNonos - mPrevFileOrFolderTouchTimeNonos
-                delayNonos = mFileOrFolderDelayNanos
-                mPrevFileOrFolderTouchTimeNonos = currTimeNonos
-            }
+            TouchedObject.FILE_OR_FOLDER ->
+                if (quickCameraDelayExpired && createFileDelayExpired && fileOrFolderDelayExpired) {
+                    delaysExpired = true
+                    diff = currTimeNonos - mPrevFileOrFolderTouchTimeNonos
+                    delayNonos = mFileOrFolderDelayNanos
+                    mPrevFileOrFolderTouchTimeNonos = currTimeNonos
+                }
 
-            TouchedObject.MENU_REFRESH -> if (quickCameraDelayExpired && createFileDelayExpired && fileOrFolderDelayExpired && refreshDelayExpired) {
-                delaysExpired = true
-                diff = currTimeNonos - mPrevRefreshTouchTimeNonos
-                delayNonos = mRefreshDelayNanos
-                mPrevRefreshTouchTimeNonos = currTimeNonos
-            }
+            TouchedObject.MENU_REFRESH ->
+                if (quickCameraDelayExpired && createFileDelayExpired && fileOrFolderDelayExpired && refreshDelayExpired) {
+                    delaysExpired = true
+                    diff = currTimeNonos - mPrevRefreshTouchTimeNonos
+                    delayNonos = mRefreshDelayNanos
+                    mPrevRefreshTouchTimeNonos = currTimeNonos
+                }
 
 //            else -> throw RuntimeException("delaysExpired - no code to handle case: $touchedObject")
         }
@@ -298,12 +304,33 @@ class FolderFragmentNew : Fragment(), OnClickListener {
         return delaysExpired
     }
 
+    fun showTrashedFiles(showTrashedFiles: Boolean) {
+        Log.v("FolderFragmentNew", """showTrashedFiles -
+            |showTrashedFiles: $showTrashedFiles
+            |mFolderItemsList.size: ${mFolderItemsList.size}
+            |mTrashedFilesCnt == mFolderItemsList.size: ${mTrashedFilesCnt == mFolderItemsList.size}
+            |""".trimMargin())
+        mShowTrashedFiles = showTrashedFiles
+        if ((mFolderItemsList.size == 0 || mTrashedFilesCnt == mFolderItemsList.size) &&
+                !showTrashedFiles) {
+            Log.v("FolderFragmentNew", """showTrashedFiles -
+                |showing empty view """.trimMargin())
+            mFolderEmptyView.visibility = View.VISIBLE
+            mFolderListView.visibility = View.INVISIBLE
+        } else {
+            Log.v("FolderFragmentNew", """showTrashedFiles -
+                |showing list view """.trimMargin())
+            mFolderEmptyView.visibility = View.INVISIBLE
+            mFolderListView.visibility = View.VISIBLE
+        }
+    }
+
     fun setNewValues(folderItemsList: ArrayList<FolderItem>, trashedFilesCnt: Int) {
         this.mTrashedFilesCnt = trashedFilesCnt
         mFolderItemsList = folderItemsList
 
         mFolderArrayAdapter.clear()
-        mFolderArrayAdapter!!.addAll(folderItemsList)
+        mFolderArrayAdapter.addAll(folderItemsList)
         updateEmptyFolderInfo()
     }
 
