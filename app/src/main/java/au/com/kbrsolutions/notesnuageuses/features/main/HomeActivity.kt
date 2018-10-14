@@ -232,7 +232,8 @@ class HomeActivity : BaseActivity(),
 
             FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
                 if (true) throw java.lang.RuntimeException("BR EMPTY_FOLDER_FRAGMENT should not be used.")
-                val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: 0
+
+                /*val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: 0
                 if (emptyFolderFragment == null) {
                     emptyFolderFragment = EmptyFolderFragment.newInstance(trashFilesCnt)
                 } else {
@@ -241,7 +242,7 @@ class HomeActivity : BaseActivity(),
                 fragmentTransaction = fragmentManager.beginTransaction()
                 fragmentTransaction.replace(R.id.fragments_frame, emptyFolderFragment,
                         EMPTY_FOLDER_TAG)
-                fragmentTransaction.commit()
+                fragmentTransaction.commit()*/
             }
 
             FragmentsEnum.FILE_FRAGMENT -> {
@@ -927,39 +928,39 @@ class HomeActivity : BaseActivity(),
     }
 
     private fun handleMenuHideTrashed() {
-        if (FoldersData.currFolderIsEmptyOrAllFilesAreTrashed()) {
-            val currFragment = FragmentsStack.getCurrFragment()
-            FragmentsStack.replaceCurrFragment(
-                    "handleMenuHideTrashed", currFragment, FragmentsEnum.EMPTY_FOLDER_FRAGMENT)
-            setFragment(
-                    FragmentsEnum.EMPTY_FOLDER_FRAGMENT,
-                    mTitle.toString(),
-                    false,
-                    null,
-                    null)
-        } else {
+//        if (FoldersData.currFolderIsEmptyOrAllFilesAreTrashed()) {
+//            val currFragment = FragmentsStack.getCurrFragment()
+//            FragmentsStack.replaceCurrFragment(
+//                    "handleMenuHideTrashed", currFragment, FragmentsEnum.EMPTY_FOLDER_FRAGMENT)
+//            setFragment(
+//                    FragmentsEnum.EMPTY_FOLDER_FRAGMENT,
+//                    mTitle.toString(),
+//                    false,
+//                    null,
+//                    null)
+//        } else {
             updateFolderListAdapter()
-        }
+//        }
     }
 
     private fun handleMenuShowTrashed() {
-        val currFragment = FragmentsStack.getCurrFragment()
-        if (currFragment == FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
-            FragmentsStack.replaceCurrFragment(
-                    "handleMenuShowTrashed",
-                    currFragment,
-//                    FragmentsEnum.FOLDER_FRAGMENT)
-                    FragmentsEnum.FOLDER_FRAGMENT_NEW)
-            setFragment(
-//                    FragmentsEnum.FOLDER_FRAGMENT,
-                    FragmentsEnum.FOLDER_FRAGMENT_NEW,
-                    mTitle.toString(),
-                    false,
-                    null,
-                    null)
-        } else {
+//        val currFragment = FragmentsStack.getCurrFragment()
+//        if (currFragment == FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
+//            FragmentsStack.replaceCurrFragment(
+//                    "handleMenuShowTrashed",
+//                    currFragment,
+////                    FragmentsEnum.FOLDER_FRAGMENT)
+//                    FragmentsEnum.FOLDER_FRAGMENT_NEW)
+//            setFragment(
+////                    FragmentsEnum.FOLDER_FRAGMENT,
+//                    FragmentsEnum.FOLDER_FRAGMENT_NEW,
+//                    mTitle.toString(),
+//                    false,
+//                    null,
+//                    null)
+//        } else {
             updateFolderListAdapter()
-        }
+//        }
     }
 
 //    private fun ResendFileToGoogleDriveCallable(): Callable<String> {

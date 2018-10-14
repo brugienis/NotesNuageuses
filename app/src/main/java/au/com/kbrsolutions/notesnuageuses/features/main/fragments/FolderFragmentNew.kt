@@ -76,9 +76,9 @@ class FolderFragmentNew : Fragment() {
             |""".trimMargin())
         mFolderListView = rootView.folderListView as NestedScrollingListView
 
-        mFolderListView.setAdapter(mFolderArrayAdapter)
+        mFolderListView.adapter = mFolderArrayAdapter
 //        mFolderListView.setNestedScrollingEnabled(true)
-        mFolderListView.setItemsCanFocus(true)
+        mFolderListView.itemsCanFocus = true
 
         mFolderListView.setOnItemClickListener { adapterView: AdapterView<*>?,
                                                  view: View?,
@@ -87,7 +87,7 @@ class FolderFragmentNew : Fragment() {
             handleRowSelected(adapterView, position)
         }
 
-        showTrashedFiles(false)
+        showTrashedFiles(mShowTrashedFiles)
 
         return rootView
     }
@@ -306,22 +306,31 @@ class FolderFragmentNew : Fragment() {
 
     fun showTrashedFiles(showTrashedFiles: Boolean) {
         Log.v("FolderFragmentNew", """showTrashedFiles -
-            |showTrashedFiles: $showTrashedFiles
-            |mFolderItemsList.size: ${mFolderItemsList.size}
+            |showTrashedFiles:                          $showTrashedFiles
+            |mTrashedFilesCnt:                          $mTrashedFilesCnt
+            |mFolderItemsList.size:                     ${mFolderItemsList.size}
             |mTrashedFilesCnt == mFolderItemsList.size: ${mTrashedFilesCnt == mFolderItemsList.size}
             |""".trimMargin())
         mShowTrashedFiles = showTrashedFiles
-        if ((mFolderItemsList.size == 0 || mTrashedFilesCnt == mFolderItemsList.size) &&
-                !showTrashedFiles) {
-            Log.v("FolderFragmentNew", """showTrashedFiles -
+        refreshUi()
+    }
+// fixLater: Oct 13, 2018 - at one point when in YYY folder, the trash count was -1. Investigate. 
+    private fun refreshUi() {
+        when {
+            mFolderItemsList.size == 0 ||
+                    (!mShowTrashedFiles && mTrashedFilesCnt == mFolderItemsList.size) -> {
+                Log.v("FolderFragmentNew", """showTrashedFiles -
                 |showing empty view """.trimMargin())
-            mFolderEmptyView.visibility = View.VISIBLE
-            mFolderListView.visibility = View.INVISIBLE
-        } else {
-            Log.v("FolderFragmentNew", """showTrashedFiles -
+                mFolderEmptyView.visibility = View.VISIBLE
+                mFolderListView.visibility = View.INVISIBLE
+            }
+
+            else -> {
+                Log.v("FolderFragmentNew", """showTrashedFiles -
                 |showing list view """.trimMargin())
-            mFolderEmptyView.visibility = View.INVISIBLE
-            mFolderListView.visibility = View.VISIBLE
+                mFolderEmptyView.visibility = View.INVISIBLE
+                mFolderListView.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -332,6 +341,7 @@ class FolderFragmentNew : Fragment() {
         mFolderArrayAdapter.clear()
         mFolderArrayAdapter.addAll(folderItemsList)
         updateEmptyFolderInfo()
+        refreshUi()
     }
 
     /**
