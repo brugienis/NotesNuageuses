@@ -68,7 +68,7 @@ class FileDownloadEventHandler(
         fun updateFolderListAdapter()
         fun removeTopFragment(source: String, actionCancelled: Boolean): Boolean
         fun setActionBarTitle(title: CharSequence)
-        fun setFolderFragment(folderData: FolderData)
+//        fun setFolderFragment(folderData: FolderData)
         fun removeDownloadFragment()
     }
 }

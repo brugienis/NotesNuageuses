@@ -21,7 +21,7 @@ object FragmentsStack {
 //        allFoldersFragmentsEnumTypesSet = mutableSetOf(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)
         allFoldersFragmentsEnumTypesSet = mutableSetOf(FOLDER_FRAGMENT_NEW)
 //        allFoldersFragmentsEnumTypesSet.add(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)
-        allFoldersFragmentsEnumTypesSet.add(EMPTY_FOLDER_FRAGMENT)
+//        allFoldersFragmentsEnumTypesSet.add(EMPTY_FOLDER_FRAGMENT)
         
 //        notEmptyFolderHomeActivity = mutableSetOf(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)
         notEmptyFolderHomeActivity = mutableSetOf(FOLDER_FRAGMENT_NEW)
@@ -178,7 +178,7 @@ object FragmentsStack {
                         }
                     }
 
-                    EMPTY_FOLDER_FRAGMENT -> {
+                    /*EMPTY_FOLDER_FRAGMENT -> {
                         folderFragmentsCnt--
                         foldersData.removeMostRecentFolderData()
                         if (currTopFragmentJustPeeked === FOLDER_FRAGMENT_NEW) {    // impossible case
@@ -195,7 +195,7 @@ object FragmentsStack {
                                 callFinishRequired = true
                             }
                         }
-                    }
+                    }*/
 
                     ACTIVITY_LOG_FRAGMENT ->
                         when {
@@ -204,10 +204,10 @@ object FragmentsStack {
                                 fragmentToSet = FOLDER_FRAGMENT_NEW
                             }
 
-                            currTopFragmentJustPeeked === EMPTY_FOLDER_FRAGMENT -> {
+                            /*currTopFragmentJustPeeked === EMPTY_FOLDER_FRAGMENT -> {
                                 updateFolderListAdapterRequired = true
                                 fragmentToSet = EMPTY_FOLDER_FRAGMENT
-                            }
+                            }*/
 
                             fragmentsArrayDeque.size > 0 -> fragmentToSet = getCurrFragment()
 
@@ -227,7 +227,8 @@ object FragmentsStack {
                         if (currTopFragmentJustPeeked == DOWNLOAD_FRAGMENT) {
                             removeLastFragment()            // remove placeholder DOWNLOAD_FRAGMENT
                             fragmentToSet = FOLDER_FRAGMENT_NEW
-                        } else if (currTopFragmentJustPeeked == EMPTY_FOLDER_FRAGMENT) {
+                        }
+                        /*else if (currTopFragmentJustPeeked == EMPTY_FOLDER_FRAGMENT) {
                             if (actionCancelled) {
                                 updateFolderListAdapterRequired = true
                                 fragmentToSet = EMPTY_FOLDER_FRAGMENT
@@ -237,7 +238,8 @@ object FragmentsStack {
                                 fragmentsArrayDeque.addLast(FOLDER_FRAGMENT_NEW) // add FOLDER_FRAGMENT
                                 fragmentToSet = FOLDER_FRAGMENT_NEW
                             }
-                        } else if (currTopFragmentJustPeeked == FOLDER_FRAGMENT_NEW) {
+                        } */
+                        else if (currTopFragmentJustPeeked == FOLDER_FRAGMENT_NEW) {
                             fragmentToSet = FOLDER_FRAGMENT_NEW
                         } else {
                             updateFolderListAdapterRequired = true
@@ -270,7 +272,8 @@ object FragmentsStack {
                             throw RuntimeException("$TAG-FragmentStack - we should never be here - prevTopFragment/currTopFragment: $startingTopFragmentRemoved/$currTopFragmentJustPeeked")
                         }
                         when (currTopFragmentJustPeeked) {
-                            EMPTY_FOLDER_FRAGMENT, FOLDER_FRAGMENT_NEW -> fragmentToSet = currTopFragmentJustPeeked            // HomeActivity.FragmentsEnum.FOLDER_FRAGMENT;
+//                            EMPTY_FOLDER_FRAGMENT, FOLDER_FRAGMENT_NEW -> fragmentToSet = currTopFragmentJustPeeked            // HomeActivity.FragmentsEnum.FOLDER_FRAGMENT;
+                            FOLDER_FRAGMENT_NEW -> fragmentToSet = currTopFragmentJustPeeked            // HomeActivity.FragmentsEnum.FOLDER_FRAGMENT;
 
                             else -> if (currTopFragmentJustPeeked === FOLDER_FRAGMENT_NEW) { // ??? it would be handled in the case above - probably remove it
                                 updateFolderListAdapterRequired = true

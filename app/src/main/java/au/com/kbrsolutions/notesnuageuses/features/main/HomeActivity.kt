@@ -192,7 +192,7 @@ class HomeActivity : BaseActivity(),
      * Empty Folder.
      *
      */
-    override fun setFolderFragment(folderData: FolderData) {
+    /*override fun setFolderFragment(folderData: FolderData) {
 //        if (folderData.isEmptyOrAllFilesTrashed && !showTrashedFiles) {
         Log.v("HomeActivity", """setFolderFragment -
             |folderData.isEmptyOrAllFilesTrashed: ${folderData.isEmptyOrAllFilesTrashed}
@@ -214,7 +214,7 @@ class HomeActivity : BaseActivity(),
                     folderData,
                     null)
 //        }
-    }
+    }*/
 
     override fun setFragment(
             fragmentId: HomeActivity.FragmentsEnum,
@@ -222,7 +222,7 @@ class HomeActivity : BaseActivity(),
             addFragmentToStack: Boolean,
             foldersAddData: FolderData?,
             fragmentArgs: Bundle?) {
-        Log.v("HomeActivity", """setFragment - fragmentId: ${fragmentId} """)
+        Log.v("HomeActivity", """setFragment - fragmentId: $fragmentId """)
 //        val fragmentManager = fragmentManager
         val fragmentManager = supportFragmentManager
 //        val fragmentTransaction: FragmentTransaction
@@ -230,8 +230,8 @@ class HomeActivity : BaseActivity(),
 
         when (fragmentId) {
 
-            FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
-                if (true) throw java.lang.RuntimeException("BR EMPTY_FOLDER_FRAGMENT should not be used.")
+//            FragmentsEnum.EMPTY_FOLDER_FRAGMENT -> {
+//                if (true) throw java.lang.RuntimeException("BR EMPTY_FOLDER_FRAGMENT should not be used.")
 
                 /*val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: 0
                 if (emptyFolderFragment == null) {
@@ -243,7 +243,7 @@ class HomeActivity : BaseActivity(),
                 fragmentTransaction.replace(R.id.fragments_frame, emptyFolderFragment,
                         EMPTY_FOLDER_TAG)
                 fragmentTransaction.commit()*/
-            }
+//            }
 
             FragmentsEnum.FILE_FRAGMENT -> {
                 val fileName = fragmentArgs!!.getString(FILE_NAME_KEY)
@@ -443,7 +443,7 @@ class HomeActivity : BaseActivity(),
             updateFolderListAdapter()
         }
         val fragmentToSet = fragmentsStackResponse.fragmentToSet
-        if (fragmentToSet != FragmentsEnum.NONE) {
+        if (fragmentToSet != HomeActivity.FragmentsEnum.NONE) {
             setFragment(
                     fragmentToSet,
                     fragmentsStackResponse.titleToSet!!,
@@ -472,13 +472,13 @@ class HomeActivity : BaseActivity(),
     }
 
     // fixLater: Sep 16, 2018 - do I need it?
-    private fun retrievingAppFolderDriveInfoTaskDone(folderData: FolderData?) {
+    /*private fun retrievingAppFolderDriveInfoTaskDone(folderData: FolderData?) {
         if (folderData != null && folderData.newFolderData) {   // folder info not in FoldersData
             setFolderFragment(folderData)
         } else {
             updateFolderListAdapter()
         }
-    }
+    }*/
 
     override fun trashOrDeleteFile(
             selectedFileDriveId: DriveId,
@@ -574,7 +574,7 @@ class HomeActivity : BaseActivity(),
         this.newFragmentSet = newFragmentSet
     }
 
-    private fun setCurrFragment(currFragment: FragmentsEnum) {
+    private fun setCurrFragment(currFragment: HomeActivity.FragmentsEnum) {
         this.currFragment = currFragment
     }
 //        fixme: method isFinishing() does not exist - it should be part of Activity
@@ -633,8 +633,10 @@ class HomeActivity : BaseActivity(),
             menuItem.isEnabled = false
         } else if (
 //                FragmentsStack.getCurrFragment() !== FragmentsEnum.FOLDER_FRAGMENT &&
-                FragmentsStack.getCurrFragment() !== FragmentsEnum.FOLDER_FRAGMENT_NEW &&
-                FragmentsStack.getCurrFragment() !== FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {
+                FragmentsStack.getCurrFragment() !== HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW
+//                &&
+//                FragmentsStack.getCurrFragment() !== HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT
+        ) {
             menuItem = menu.findItem(R.id.menuShowTrashed)
             menuItem.isVisible = false
             menuItem.isEnabled = false
@@ -774,7 +776,7 @@ class HomeActivity : BaseActivity(),
         args.putLong(FILE_ITEM_ID_KEY, System.currentTimeMillis())
 
         setFragment(
-                FragmentsEnum.FILE_FRAGMENT,
+                HomeActivity.FragmentsEnum.FILE_FRAGMENT,
                 fileName.toString(),
                 true,
                 null,
@@ -815,7 +817,7 @@ class HomeActivity : BaseActivity(),
         setActionBarTitle(folderMetadataInfo.fileTitle)
 
         setFragment(
-                FragmentsEnum.FILE_DETAILS_FRAGMENT,
+                HomeActivity.FragmentsEnum.FILE_DETAILS_FRAGMENT,
                 folderMetadataInfo.fileTitle,
                 true,
                 null,
@@ -883,7 +885,7 @@ class HomeActivity : BaseActivity(),
         val args = Bundle()
         args.putString(RETRIEVING_FOLDER_TITLE_KEY, fileName)
         setFragment(
-                FragmentsEnum.DOWNLOAD_FRAGMENT,
+                HomeActivity.FragmentsEnum.DOWNLOAD_FRAGMENT,
 //                getString(R.string.retrieving_folder_title),
                 fileName,
                 true,
@@ -900,7 +902,7 @@ class HomeActivity : BaseActivity(),
             |FragmentsStack: $FragmentsStack """.trimMargin())
 //        FragmentsStack.removeTopFragment("removeDownloadFragment", false)
         FragmentsStack.removeSpecificTopFragment(
-                FragmentsEnum.DOWNLOAD_FRAGMENT,
+                HomeActivity.FragmentsEnum.DOWNLOAD_FRAGMENT,
                 "removeDownloadFragment",
                 false)
         Log.v("HomeActivity", """removeDownloadFragment - after
