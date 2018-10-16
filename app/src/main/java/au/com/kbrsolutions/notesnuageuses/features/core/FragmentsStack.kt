@@ -18,12 +18,8 @@ object FragmentsStack {
     private var notEmptyFolderHomeActivity: MutableSet<FragmentsEnum>
 
     init {
-//        allFoldersFragmentsEnumTypesSet = mutableSetOf(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)
         allFoldersFragmentsEnumTypesSet = mutableSetOf(FOLDER_FRAGMENT_NEW)
-//        allFoldersFragmentsEnumTypesSet.add(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)
-//        allFoldersFragmentsEnumTypesSet.add(EMPTY_FOLDER_FRAGMENT)
-        
-//        notEmptyFolderHomeActivity = mutableSetOf(HomeActivity.FragmentsEnum.FOLDER_FRAGMENT)
+
         notEmptyFolderHomeActivity = mutableSetOf(FOLDER_FRAGMENT_NEW)
     }
 

@@ -14,7 +14,7 @@ import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import kotlinx.android.synthetic.main.fragment_folder.view.*
 import java.util.*
 
-class FolderFragmentNew : Fragment() {
+class FolderFragment : Fragment() {
 
     private var mTrashedFilesCnt: Int = 0
     private var mShowTrashedFiles: Boolean = false
@@ -265,14 +265,14 @@ class FolderFragmentNew : Fragment() {
         when {
             mFolderItemsList.size == 0 ||
                     (!mShowTrashedFiles && mTrashedFilesCnt == mFolderItemsList.size) -> {
-                Log.v("FolderFragmentNew", """showTrashedFiles -
+                Log.v("FolderFragment", """showTrashedFiles -
                 |showing empty view """.trimMargin())
                 mFolderEmptyView.visibility = View.VISIBLE
                 mFolderListView.visibility = View.INVISIBLE
             }
 
             else -> {
-                Log.v("FolderFragmentNew", """showTrashedFiles -
+                Log.v("FolderFragment", """showTrashedFiles -
                 |showing list view """.trimMargin())
                 mFolderEmptyView.visibility = View.INVISIBLE
                 mFolderListView.visibility = View.VISIBLE
@@ -306,13 +306,13 @@ class FolderFragmentNew : Fragment() {
     }
 
     companion object {
-        private val TAG = FolderFragmentNew::class.java.simpleName
+        private val TAG = FolderFragment::class.java.simpleName
         private const val ARG_TRASH_FILES_CNT_KEY = "arg_trash_files_cnt_key"
         private const val ARG_FOLDER_ITEMS_LIST_KEY = "arg_folder_items_list_key"
 
         @JvmStatic
         fun newInstance(folderItemsList: ArrayList<FolderItem>, trashFilesCnt: Int) =
-                FolderFragmentNew().apply {
+                FolderFragment().apply {
                     arguments = Bundle().apply {
                         putParcelableArrayList(ARG_FOLDER_ITEMS_LIST_KEY, folderItemsList)
                         putInt(ARG_TRASH_FILES_CNT_KEY, trashFilesCnt)

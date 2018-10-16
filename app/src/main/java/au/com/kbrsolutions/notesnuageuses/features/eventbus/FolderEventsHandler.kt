@@ -12,10 +12,6 @@ class FolderEventsHandler(private val listener: OnFolderEventsHandlerInteraction
     fun onMessageEvent(event: FoldersEvents) {
         val request = event.request
         val msgContents = event.msgContents
-        Log.v("FolderEventsHandler", """  onMessageEvent.FoldersEvents -
-                    |request: $request
-                    |msgContents: $msgContents
-                    |""".trimMargin())
 
         when (request) {
 
@@ -34,15 +30,12 @@ class FolderEventsHandler(private val listener: OnFolderEventsHandlerInteraction
                 listener.setActionBarTitle(folderName)
 
                 if (folderData != null && folderData.isEmptyOrAllFilesTrashed) {
-//                    listener.setFolderFragment(folderData) // empty folder
                     listener.setFragment(
                             HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW,
                             folderData.newFolderTitle,
                             true,
                             folderData,
                             null)
-                    Log.v("FolderEventsHandler", "EventBusEventsHandler - " +
-                            "fragmentsStack: $FragmentsStack ")
                 } else {
                     retrievingAppFolderDriveInfoTaskDone(folderData)
                 }
@@ -57,28 +50,7 @@ class FolderEventsHandler(private val listener: OnFolderEventsHandlerInteraction
             FoldersEvents.Events.FOLDER_CREATED -> {
                 val folderName = event.newFileName ?: "undefined"
                 listener.setActionBarTitle(folderName)
-                val stackFragmentsAfterAdd = FragmentsStack.getFragmentsList()
-                Log.v("FolderEventsHandler", " - " +
-                        "actualStackFragmentsAfterAdd: " +
-                        "${printCollection("after fragments added", stackFragmentsAfterAdd)}")
-                val currFolder = FragmentsStack . getCurrFragment ()
-
-                /*if (currFolder == HomeActivity.FragmentsEnum.EMPTY_FOLDER_FRAGMENT) {    // folder is no longer empty
-                    FragmentsStack.replaceCurrFragment (
-                            "onMessageEvent FoldersEvents FOLDER_CREATED" +
-                                    event.request,
-                            currFolder, HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW)
-
-                    listener.setFragment(
-//                            HomeActivity.FragmentsEnum.FOLDER_FRAGMENT,
-                            HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW,
-                            folderName,
-                            false,
-                            null,
-                            null)
-                } else {*/
-                    listener.updateFolderListAdapter()
-//                }
+                listener.updateFolderListAdapter()
             }
             else -> throw RuntimeException(
                     "${FolderEventsHandler::class.simpleName} - onMessageEvent.FoldersEvents - " +
@@ -88,7 +60,6 @@ class FolderEventsHandler(private val listener: OnFolderEventsHandlerInteraction
 
     private fun retrievingAppFolderDriveInfoTaskDone(folderData: FolderData?) {
         if (folderData != null && folderData.newFolderData) {   // folder info not in FoldersData
-//            listener.setFolderFragment(folderData)
             listener.setFragment(
                     HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW,
                     folderData.newFolderTitle,
@@ -122,6 +93,5 @@ class FolderEventsHandler(private val listener: OnFolderEventsHandlerInteraction
         fun showMessage(message: String)
         fun updateFolderListAdapter()
         fun setActionBarTitle(title: CharSequence)
-//        fun setFolderFragment(folderData: FolderData)
     }
 }

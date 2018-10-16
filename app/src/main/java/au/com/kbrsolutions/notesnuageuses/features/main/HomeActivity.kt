@@ -22,7 +22,7 @@ import au.com.kbrsolutions.notesnuageuses.features.main.dialogs.RenameFileDialog
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.DownloadFragment
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FileDetailsFragment
 import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FileFragment
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FolderFragmentNew
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FolderFragment
 import au.com.kbrsolutions.notesnuageuses.features.tasks.*
 import com.google.android.gms.drive.DriveId
 import kotlinx.android.synthetic.main.activity_main.*
@@ -40,8 +40,7 @@ import java.util.concurrent.Future
 //          https://developers.google.com/drive/android/examples/
 
 class HomeActivity : BaseActivity(),
-//        EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
-        FolderFragmentNew.OnFolderFragmentNewInteractionListener,
+        FolderFragment.OnFolderFragmentNewInteractionListener,
         FolderArrayAdapter.OnFolderArrayAdapterInteractionListener,
         CreateFileDialog.OnCreateFileDialogInteractionListener,
         DriveAccessEventsHandler.OnDriveAccessEventsHandlerInteractionListener,
@@ -68,7 +67,7 @@ class HomeActivity : BaseActivity(),
     private var isAppFinishing = false
     private var mTitle: CharSequence? = null
 
-    private var folderFragmentNew: FolderFragmentNew? = null
+    private var folderFragment: FolderFragment? = null
     private var fileDetailsFragment: FileDetailsFragment? = null
     private var downloadFragment: DownloadFragment? = null
     private var fileFragment: FileFragment? = null
@@ -252,18 +251,18 @@ class HomeActivity : BaseActivity(),
                     }
                 }
 
-                if (folderFragmentNew == null) {
-                    folderFragmentNew = FolderFragmentNew.newInstance(
+                if (folderFragment == null) {
+                    folderFragment = FolderFragment.newInstance(
                             folderItemsList,
                             trashFilesCnt)
                 } else {
-                    folderFragmentNew!!.setNewValues(
+                    folderFragment!!.setNewValues(
                             folderItemsList,
                             trashFilesCnt)
                 }
 
                 fragmentTransaction = fragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.fragments_frame, folderFragmentNew, FOLDER_TAG)
+                fragmentTransaction.replace(R.id.fragments_frame, folderFragment, FOLDER_TAG)
                 fragmentTransaction.commit()
             }
 
@@ -406,7 +405,7 @@ class HomeActivity : BaseActivity(),
                     }
                 }
 
-        folderFragmentNew?.let {
+        folderFragment?.let {
             it.setNewValues(
                     folderItemsList,
                     FoldersData.getCurrFolderData().trashedFilesCnt)
@@ -560,14 +559,14 @@ class HomeActivity : BaseActivity(),
                 showTrashedFiles = true
                 handleMenuShowTrashed()
                 invalidateOptionsMenu()
-                folderFragmentNew!!.showTrashedFiles(true)
+                folderFragment!!.showTrashedFiles(true)
             }
             R.id.menuHideTrashed -> {
                 showTrashedFiles = false
                 //                if (filesMetadataInfo.size() != FoldersData.getCurrentFolderTrashedFilesCnt()) {
                 handleMenuHideTrashed()
                 invalidateOptionsMenu()
-                folderFragmentNew!!.showTrashedFiles(false)
+                folderFragment!!.showTrashedFiles(false)
             }
 
             else -> return super.onOptionsItemSelected(item)
@@ -771,7 +770,7 @@ class HomeActivity : BaseActivity(),
     private fun getIdxOfClickedFolderItem(position: Int): Int {
 //        val folderArrayAdapter = listAdapter as FolderArrayAdapter<*>
 //        return folderArrayAdapter!!.getFolderItem(position).itemIdxInList
-        return folderFragmentNew!!.getFolderItem(position).itemIdxInList
+        return folderFragment!!.getFolderItem(position).itemIdxInList
     }
 
     private fun handleMenuHideTrashed() {
