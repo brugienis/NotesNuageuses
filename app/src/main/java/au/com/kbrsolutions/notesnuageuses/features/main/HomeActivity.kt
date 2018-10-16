@@ -38,7 +38,7 @@ import java.util.concurrent.Future
 
 class HomeActivity : BaseActivity(),
         EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
-        FolderFragment.OnFolderFragmentInteractionListener,
+        FolderFragmentNew.OnFolderFragmentNewInteractionListener,
         FolderArrayAdapter.OnFolderArrayAdapterInteractionListener,
         CreateFileDialog.OnCreateFileDialogInteractionListener,
         DriveAccessEventsHandler.OnDriveAccessEventsHandlerInteractionListener,

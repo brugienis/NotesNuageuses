@@ -24,7 +24,7 @@ class FolderFragmentNew : Fragment() {
     private lateinit var mFolderListView: ListView
     private lateinit var mFolderEmptyView: TextView
 
-    private var listener: FolderFragment.OnFolderFragmentInteractionListener? = null
+    private var listener: OnFolderFragmentNewInteractionListener? = null
 
     private enum class TouchedObject {
         MENU_QUICK_PHOTO, MENU_CREATE_FILE, MENU_REFRESH, FILE_OR_FOLDER
@@ -32,7 +32,7 @@ class FolderFragmentNew : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is FolderFragment.OnFolderFragmentInteractionListener) {
+        if (context is OnFolderFragmentNewInteractionListener) {
             listener = context
         } else {
             throw RuntimeException(context.toString() +
@@ -71,9 +71,6 @@ class FolderFragmentNew : Fragment() {
         mFolderEmptyView = rootView.emptyFolderInfoId
         updateEmptyFolderInfo()
 
-        Log.v("FolderFragmentNew", """onCreateView -
-            |mFolderItemsList: ${mFolderItemsList}
-            |""".trimMargin())
         mFolderListView = rootView.folderListView as NestedScrollingListView
 
         mFolderListView.adapter = mFolderArrayAdapter
@@ -104,34 +101,12 @@ class FolderFragmentNew : Fragment() {
         List's view row was clicked - download folder or file details
      */
     private fun handleRowSelected(adapterView: AdapterView<*>?, position: Int) {
-        Log.v("FolderFragmentNew", """handleRowSelected - position: ${position} """)
         listener!!.handleOnFolderOrFileClick(position)
     }
 
     fun getFolderItem(idx: Int): FolderItem {
         return mFolderItemsList[idx]
     }
-
-    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val listView = listView
-        listView.setOnTouchListener { _, m ->
-            handleTouch(m)
-            false
-        }
-    }*/
-
-    private fun handleTouch(m: MotionEvent) {
-//        mContext!!.handleTouchEvent(m, listView)
-    }
-
-    /*override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        listView.onItemLongClickListener = OnItemLongClickListener { parent, view, position, id ->
-//            mContext!!.showSelectedFileDetails(position)
-            true
-        }
-    }*/
 
     private fun handleCreateFileOptionSelected() {
 //        if (isAppFinishing) {
@@ -143,29 +118,6 @@ class FolderFragmentNew : Fragment() {
             listener!!.showFileDialog()
         }
     }
-
-   /* override fun onListItemClick(l: ListView, v: View, position: Int, id: Long) {
-        super.onListItemClick(l, v, position, id)
-        // fixLater: Aug 24, 2018 - uncomment below - isAppFinishing is set up in removeTopFragment(...)
-//        if (isAppFinishing) {
-//            return
-//        } else
-            synchronized(this) {
-                if (!delaysExpired(TouchedObject.FILE_OR_FOLDER)) {
-                    return
-                }
-            }
-        listener!!.handleOnFolderOrFileClick(position)
-
-    }*/
-
-//    override fun onClick(v: View) {
-//        val position = mFolderListView.getPositionForView(v)
-//        if (position != ListView.INVALID_POSITION) {
-//            v.setBackgroundColor(resources.getColor(R.color.action_view_clicked))
-//            listener!!.showSelectedFileDetails(position)
-//        }
-//    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.folder_fragment_menu, menu)
@@ -305,16 +257,10 @@ class FolderFragmentNew : Fragment() {
     }
 
     fun showTrashedFiles(showTrashedFiles: Boolean) {
-        Log.v("FolderFragmentNew", """showTrashedFiles -
-            |showTrashedFiles:                          $showTrashedFiles
-            |mTrashedFilesCnt:                          $mTrashedFilesCnt
-            |mFolderItemsList.size:                     ${mFolderItemsList.size}
-            |mTrashedFilesCnt == mFolderItemsList.size: ${mTrashedFilesCnt == mFolderItemsList.size}
-            |""".trimMargin())
         mShowTrashedFiles = showTrashedFiles
         refreshUi()
     }
-// fixLater: Oct 13, 2018 - at one point when in YYY folder, the trash count was -1. Investigate. 
+
     private fun refreshUi() {
         when {
             mFolderItemsList.size == 0 ||
@@ -353,10 +299,10 @@ class FolderFragmentNew : Fragment() {
      *
      * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
-    interface OnFolderFragmentInteractionListener {
+    interface OnFolderFragmentNewInteractionListener {
         fun showFileDialog()
         fun handleOnFolderOrFileClick(position: Int)
-        fun showSelectedFileDetails(position: Int)
+//        fun showSelectedFileDetails(position: Int)
     }
 
     companion object {

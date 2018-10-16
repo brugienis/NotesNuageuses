@@ -11,7 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.base.BaseActivity
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FolderFragment
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FolderFragmentNew
 import kotlinx.android.synthetic.main.fragment_folder_list_screen.view.*
 import java.text.DateFormat
 
@@ -22,7 +22,7 @@ class FolderArrayAdapter<T>(
         mContext, -1, objects) {
 
     init {
-        if (mOnClickListener !is FolderFragment.OnFolderFragmentInteractionListener) {
+        if (mOnClickListener !is FolderFragmentNew.OnFolderFragmentNewInteractionListener) {
             throw RuntimeException(mOnClickListener.toString() +
                     " must implement OnFolderArrayAdapterInteractionListener")
         }
@@ -89,7 +89,7 @@ class FolderArrayAdapter<T>(
      * for more information.
      */
     interface OnFolderArrayAdapterInteractionListener {
-        // TODO: Update argument type and name
+
         fun showSelectedFileDetails(position: Int)
     }
 }
