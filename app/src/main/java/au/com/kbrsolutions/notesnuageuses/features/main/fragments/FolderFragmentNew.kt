@@ -53,7 +53,7 @@ class FolderFragmentNew : Fragment() {
         if (!mArgsProcessed) {
             arguments?.let {
                 mFolderItemsList = it.getParcelableArrayList(ARG_FOLDER_ITEMS_LIST_KEY)
-                mTrashedFilesCnt = it.getInt(EmptyFolderFragment.ARG_TRASH_FILES_CNT_KEY)
+                mTrashedFilesCnt = it.getInt(ARG_TRASH_FILES_CNT_KEY)
             }
             mArgsProcessed = true
         }

@@ -19,7 +19,10 @@ import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdap
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import au.com.kbrsolutions.notesnuageuses.features.main.dialogs.CreateFileDialog
 import au.com.kbrsolutions.notesnuageuses.features.main.dialogs.RenameFileDialog
-import au.com.kbrsolutions.notesnuageuses.features.main.fragments.*
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.DownloadFragment
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FileDetailsFragment
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FileFragment
+import au.com.kbrsolutions.notesnuageuses.features.main.fragments.FolderFragmentNew
 import au.com.kbrsolutions.notesnuageuses.features.tasks.*
 import com.google.android.gms.drive.DriveId
 import kotlinx.android.synthetic.main.activity_main.*
@@ -37,7 +40,7 @@ import java.util.concurrent.Future
 //          https://developers.google.com/drive/android/examples/
 
 class HomeActivity : BaseActivity(),
-        EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
+//        EmptyFolderFragment.OnEmptyFolderFragmentInteractionListener,
         FolderFragmentNew.OnFolderFragmentNewInteractionListener,
         FolderArrayAdapter.OnFolderArrayAdapterInteractionListener,
         CreateFileDialog.OnCreateFileDialogInteractionListener,
