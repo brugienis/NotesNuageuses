@@ -62,7 +62,7 @@ class FileDeleteEventsHandler(
 
                 val folderData = FoldersData.getCurrFolderData()
                 if (FoldersData.currFolderIsEmptyOrAllFilesAreTrashed()) {
-                    FragmentsStack.removeTopFragment("onEventMainThread-REMOVE_FILE_FINISHED",
+                    FragmentsStack.removeTopFragment("FileDeleteEventsHandler-REMOVE_FILE_FINISHED",
                             false)
                     listener.setFragment(
                             HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW,

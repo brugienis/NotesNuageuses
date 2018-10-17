@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
 import au.com.kbrsolutions.notesnuageuses.R
-import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.ActivitiesEvents
+import au.com.kbrsolutions.notesnuageuses.features.eventbus.events.DriveAccessEvents
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -233,8 +233,10 @@ abstract class BaseActivity: AppCompatActivity() {
                         submittedFutures.remove(cancellableFuture!!)
                     } catch (e: ExecutionException) {
                         submittedFutures.remove(cancellableFuture)
-                        eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents.SHOW_MESSAGE)
-                                .msgContents("Problems with access to Google Drive - try again")
+                        eventBus!!.post(DriveAccessEvents.Builder(DriveAccessEvents.Events.MESSAGE)
+                                .msgContents(
+                                        getString
+                                        (R.string.drive_access_problem))
                                 .build())
                     }
 
@@ -288,8 +290,10 @@ abstract class BaseActivity: AppCompatActivity() {
                     try {
                         cancellableFuture!!.get()
                     } catch (e: ExecutionException) {
-                        eventBus!!.post(ActivitiesEvents.Builder(ActivitiesEvents.HomeEvents.SHOW_MESSAGE)
-                                .msgContents("Problems with access to Google Drive - try again")
+                        eventBus!!.post(DriveAccessEvents.Builder(DriveAccessEvents.Events.MESSAGE)
+                                .msgContents(
+                                        getString
+                                        (R.string.drive_access_problem))
                                 .build())
                     }
 

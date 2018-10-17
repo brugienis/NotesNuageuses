@@ -1,7 +1,6 @@
 package au.com.kbrsolutions.notesnuageuses.features.eventbus
 
 import android.content.Context
-import android.util.Log
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.core.FileMetadataInfo
 import au.com.kbrsolutions.notesnuageuses.features.core.FoldersData
@@ -14,11 +13,6 @@ class FileUploadEventsHandler(
         val msgContents = event.msgContents
         val context = listener as Context
 
-        Log.v("EventBusEventsHandler", """onMessageEvent.FilesUploadEvents -
-            |request: $request
-            |msgContents: $msgContents"
-            |""".trimMargin())
-
         when (request) {
 
             FilesUploadEvents.Events.TEXT_UPLOADING -> {
@@ -30,7 +24,7 @@ class FileUploadEventsHandler(
                     updateFolderItem(event)
                 }
                 listener.removeTopFragment(
-                        "onEventMainThread - $request",
+                        "FileUploadEventsHandler - $request",
                         false)
             }
 
@@ -40,26 +34,6 @@ class FileUploadEventsHandler(
 
                 updateFolderItem(event)
 
-                /*
-                foldersData.updateFolderItemView(
-                        event.fileItemId,
-                        event.folderLevel,
-                        event.currFolderDriveId,
-                        FileMetadataInfo(
-                                event.parentFileName,
-                                event.fileName,
-                                event.thisFileDriveId ,
-                                false,
-                                event.mimeType,
-                                event.createDt,
-                                event.updateDt,
-                                event.fileItemId,
-                                true,
-                                false
-                        )
-                )
-                        */
-
                 listener.updateFolderListAdapter()
             }
 
@@ -68,7 +42,7 @@ class FileUploadEventsHandler(
             }
 
             else -> throw RuntimeException(
-                    "${this.javaClass.simpleName} - onMessageEvent.FilesDownloadEvents - " +
+                    "${this.javaClass.simpleName} - FileUploadEventsHandler.onMessageEvent - " +
                             "no code to handle " +
                             "request: $request")
         }

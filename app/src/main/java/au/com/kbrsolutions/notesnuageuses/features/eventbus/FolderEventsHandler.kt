@@ -18,7 +18,7 @@ class FolderEventsHandler(private val listener: OnFolderEventsHandlerInteraction
             // fixLater: Sep 09, 2018 - below not tested
             FoldersEvents.Events.CREATE_FILE_DIALOG_CANCELLED -> {
                 FragmentsStack.removeTopFragment(
-                        "onMessageEvent.FoldersEvents-CREATE_FILE_DIALOG_CANCELLED",
+                        "FolderEventsHandler.onMessageEvent-CREATE_FILE_DIALOG_CANCELLED",
                         true
                 )
             }
@@ -53,7 +53,7 @@ class FolderEventsHandler(private val listener: OnFolderEventsHandlerInteraction
                 listener.updateFolderListAdapter()
             }
             else -> throw RuntimeException(
-                    "${FolderEventsHandler::class.simpleName} - onMessageEvent.FoldersEvents - " +
+                    "${FolderEventsHandler::class.simpleName} - FolderEventsHandler.onMessageEvent - " +
                             "no code to handle request: $request")
         }
     }

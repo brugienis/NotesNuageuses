@@ -31,8 +31,6 @@ S
 #app/src/main/res/values/strings.xml,d/2/d2281fbb3027de2722081a53408dd77628bf080e
 ~
 Napp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/tasks/Address.kt,6/9/6922c1435661fcedcf177ce52d402255f4e9885f
-“
-capp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/EmptyFolderFragment.kt,4/6/46353d5889a51c02b168199ebaf7fe47863d59a8
 a
 1app/src/main/res/layout/fragment_empty_folder.xml,1/9/19fc1e708a9c73aba37bd1d765e98e4dc4af2974
 ^
@@ -133,5 +131,3 @@ P
 gapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/NestedScrollingListView.kt,f/9/f920ff4b18651c67c25f8409cf8843d209ea18ec
 [
 +app/src/main/res/layout/fragment_folder.xml,8/7/873dd83ac4e25275ba4fd2e8d9e5d12b3a9ff52d
-‘
-aapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/FolderFragmentNew.kt,d/5/d5fbd2b3f16c6f339a02ae080ab2e2351942a0fc
