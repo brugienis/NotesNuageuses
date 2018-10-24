@@ -93,8 +93,6 @@ f
 aapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/eventbus/events/RenameFileEvents.kt,5/3/5370e4afe2c90d3cd51c7fa9cd92dc418f552f1d
 ê
 `app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/eventbus/RenameFileEventHandler.kt,4/7/47f93853b4025060cb99fa514374157056ac695d
-ë
-aapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/eventbus/events/ActivitiesEvents.kt,b/4/b438741da78e7463ad1b4abea4e9ddba8c5309cd
 í
 bapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/eventbus/events/DriveAccessEvents.kt,0/3/0310f4ed45719d8e26ad36078cd477345283eb2f
 ë
@@ -131,3 +129,5 @@ P
 gapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/NestedScrollingListView.kt,f/9/f920ff4b18651c67c25f8409cf8843d209ea18ec
 [
 +app/src/main/res/layout/fragment_folder.xml,8/7/873dd83ac4e25275ba4fd2e8d9e5d12b3a9ff52d
+ã
+[app/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/espresso/MenuItemsVerifier.java,e/9/e90eab321c947fec3897b77bdc9fc23992ceefdf

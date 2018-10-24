@@ -276,12 +276,13 @@ class FragmentsStackTest {
         val expectedFragmentsStackResponse = FragmentsStackResponse(
                 false,
                 FragmentsEnum.NONE,
-                "A",
+                "Ab",
                 true,
                 false,
                 true)
         val errMsg = validateFragmentsStackResponse(expectedFragmentsStackResponse,
                 actualFragmentsStackResponse)
+        Assert.assertEquals("wrong fragmentsStackResponse element", expectedFragmentsStackResponse, actualFragmentsStackResponse)
         Assert.assertEquals("wrong fragmentsStackResponse", titleToSetAfterTopRemoved, actualFragmentsStackResponse.titleToSet)
     }
 

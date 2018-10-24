@@ -490,16 +490,7 @@ class HomeActivity : BaseActivity(),
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         var menuItem: MenuItem
-        if (!mTestMode) {
-            menuItem = menu.findItem(R.id.action_resend_file)
-            menuItem.isVisible = false
-            menuItem.isEnabled = false
-            menuItem = menu.findItem(R.id.action_show_root_folder)
-            menuItem.isVisible = false
-            menuItem.isEnabled = false
-        } else if (
-                FragmentsStack.getCurrFragment() !== HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW
-        ) {
+        if (FragmentsStack.getCurrFragment() !== HomeActivity.FragmentsEnum.FOLDER_FRAGMENT_NEW) {
             menuItem = menu.findItem(R.id.menuShowTrashed)
             menuItem.isVisible = false
             menuItem.isEnabled = false
@@ -529,31 +520,12 @@ class HomeActivity : BaseActivity(),
                     FoldersData.getCurrentFolderTrashedFilesCnt())
         }
 
-        menuItem = menu.findItem(R.id.action_show_root_folder)
-        menuItem.isVisible = true
-        menuItem.isEnabled = true
         return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Pass the event to ActionBarDrawerToggle, if it returns
-        // true, then it has handled the app icon touch event
 
         when (item.itemId) {
-//            R.id.action_connect_to_google_drive ->
-//                sendTextFileToDrive(null,"test1.txt",
-//                        "Hello Drive".toByteArray(Charsets.UTF_8), -1)
-            R.id.menuQuickPhoto -> handleCameraOptionSelected()
-            R.id.menuRefresh -> handleRefreshOptionSelected()
-//            R.id.menuCreateFile -> handleCreateFileOptionSelected()
-//            R.id.activity_log_clearActivityLog -> actvityListAdapter.clear()
-            R.id.action_settings -> handleSettings()
-            R.id.action_about -> handleAbout()
-            R.id.action_legal_notices -> handleLegalNotices()
-            R.id.action_show_root_folder -> handleShowRootFolder()
-//            R.id.action_resend_file -> {
-//                val resendPhotoToGoogleDriveCallable = ResendFileToGoogleDriveCallable()
-//                handleNonCancellableFuturesCallable.submitCallable(resendPhotoToGoogleDriveCallable)
 
             R.id.menuShowTrashed -> {
                 showTrashedFiles = true
@@ -561,6 +533,7 @@ class HomeActivity : BaseActivity(),
                 invalidateOptionsMenu()
                 folderFragment!!.showTrashedFiles(true)
             }
+
             R.id.menuHideTrashed -> {
                 showTrashedFiles = false
                 //                if (filesMetadataInfo.size() != FoldersData.getCurrentFolderTrashedFilesCnt()) {
@@ -779,30 +752,6 @@ class HomeActivity : BaseActivity(),
 
     private fun handleMenuShowTrashed() {
         updateFolderListAdapter()
-    }
-
-    private fun handleLegalNotices() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    private fun handleAbout() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    private fun handleSettings() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    private fun handleCreateFileOptionSelected() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    private fun handleRefreshOptionSelected() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    private fun handleCameraOptionSelected() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     // fixLater: Aug 27, 2018 - used for debugging. Remove later

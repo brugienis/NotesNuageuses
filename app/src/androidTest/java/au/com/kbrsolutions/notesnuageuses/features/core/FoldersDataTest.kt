@@ -641,9 +641,11 @@ class FoldersDataTest {
 
     @Test
     fun testGetCurrFolderLevel() {
+//    fun `initial currFolderLevel must be -1`() {
         val currFolderLevel = FoldersData.getCurrFolderLevel()
         val expectedMinCurrFolderLevel = -1
-        Assert.assertTrue("currFolderLevel must be > : $currFolderLevel", currFolderLevel >= expectedMinCurrFolderLevel)
+        Assert.assertTrue("currFolderLevel must be > $currFolderLevel",
+                currFolderLevel == expectedMinCurrFolderLevel)
     }
 
     @Test

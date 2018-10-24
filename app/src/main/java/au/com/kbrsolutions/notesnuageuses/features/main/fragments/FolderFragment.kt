@@ -121,38 +121,13 @@ class FolderFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.folder_fragment_menu, menu)
-        //		this.mMenu = menu;
         return
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        var menuItem: MenuItem
-        // TOP: why mContext.appIsFinishing() below?
-//        if (mContext!!.isGoogleApiClientConnected() && !mContext!!.appIsFinishing()) {
-//        if (!mContext!!.appIsFinishing()) {
-//            if (!mContext!!.isCameraIsAvailable()) {
-//                menuItem = menu.findItem(R.id.menuQuickPhoto)
-//                menuItem.isVisible = false                                // do both to hide a menu item
-//                menuItem.isEnabled = false
-//            }
-//            menuItem = menu.findItem(R.id.menuCreateFile)
-//            menuItem.isVisible = true
-//            menuItem.isEnabled = true
-//            menuItem = menu.findItem(R.id.menuRefresh)
-//            menuItem.isVisible = true
-//            menuItem.isEnabled = true
-//        } else {
-
-            menuItem = menu.findItem(R.id.menuQuickPhoto)
-            menuItem.isVisible = false                                    // do both to hide a menu item
-            menuItem.isEnabled = false
-            menuItem = menu.findItem(R.id.menuCreateFile)
-            menuItem.isVisible = true
-            menuItem.isEnabled = true
-            menuItem = menu.findItem(R.id.menuRefresh)
-            menuItem.isVisible = true
-            menuItem.isEnabled = true
-//        }
+        var menuItem: MenuItem = menu.findItem(R.id.menuCreateFile)
+        menuItem.isVisible = true
+        menuItem.isEnabled = true
         return
     }
 
@@ -161,29 +136,7 @@ class FolderFragment : Fragment() {
         // true, then it has handled the app icon touch event
 
         when (item.itemId) {
-//            R.id.menuQuickPhoto -> handleCameraOptionSelected()
-//            R.id.menuRefresh -> handleRefreshOptionSelected()
             R.id.menuCreateFile -> handleCreateFileOptionSelected()
-//            R.id.activity_log_clearActivityLog -> actvityListAdapter.clear()
-//            R.id.action_settings -> handleSettings()
-//            R.id.action_about -> handleAbout()
-//            R.id.action_legal_notices -> handleLegalNotices()
-//            R.id.action_show_root_folder -> handleShowRootFolder()
-//            R.id.action_resend_file -> {
-//                val resendPhotoToGoogleDriveCallable = ResendFileToGoogleDriveCallable()
-//                handleNonCancellableFuturesCallable.submitCallable(resendPhotoToGoogleDriveCallable)
-
-//            R.id.menuShowTrashed -> {
-//                showTrashedFiles = true
-//                handleMenuShowTrashed()
-//                invalidateOptionsMenu()
-//            }
-//            R.id.menuHideTrashed -> {
-//                showTrashedFiles = false
-//                //                if (filesMetadataInfo.size() != foldersData.getCurrentFolderTrashedFilesCnt()) {
-//                handleMenuHideTrashed()
-//                invalidateOptionsMenu()
-//            }
 
             else -> return super.onOptionsItemSelected(item)
         }
