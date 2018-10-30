@@ -1,8 +1,10 @@
 package au.com.kbrsolutions.notesnuageuses.features.core
 
+// the import below is using AssertJ as described in
+//      https://joel-costigliola.github.io/assertj/assertj-core-quick-start.html
 import android.util.Log
-import au.com.kbrsolutions.notesnuageuses.features.main.dialogs.RenameFileDialog.Companion.LOC_CAT_TAG
 import com.google.android.gms.drive.DriveId
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -10,6 +12,8 @@ import org.junit.Test
 import java.util.*
 
 class FoldersDataTest {
+
+    private val TAG = FoldersDataTest::class.java.simpleName
 
     @Before
     fun setUp() {
@@ -29,6 +33,16 @@ class FoldersDataTest {
         val currFolderLevel = FoldersData.getCurrFolderLevel()
         val expectedCurrFolderLevel = -1
         Assert.assertEquals("incorrect currFolderLevel", expectedCurrFolderLevel, currFolderLevel)
+        // failing assertion, remember to call as() before the assertion, not after !
+//        assertThat(expectedCurrFolderLevel)).as("expectedCurrFolderLevel", currFolderLevel).isEqualTo(expectedCurrFolderLevel)
+        verifyDataStructure()
+    }
+
+    @Test
+    fun testInitUsingAssertJ() {
+        val currFolderLevel = FoldersData.getCurrFolderLevel()
+        val expectedCurrFolderLevel = -1
+        assertThat(expectedCurrFolderLevel).isEqualTo(currFolderLevel)
         verifyDataStructure()
     }
 
@@ -418,14 +432,14 @@ class FoldersDataTest {
         val foldersMetadatasInfoListSizeBeforeInsert = FoldersData.getFoldersMetadatasInfoList().size
         val currFolderMetadataInfoBeforeInsert = FoldersData.getCurrFolderMetadataInfo()
         val currFolderMetadataInfoBeforeInsertSize = currFolderMetadataInfoBeforeInsert!!.size
-        Log.i(LOC_CAT_TAG, "@@testInsertFolderItemView - currFolderMetadataInfoBeforeInsert: $currFolderMetadataInfoBeforeInsert")
+        Log.i(TAG, "@@testInsertFolderItemView - currFolderMetadataInfoBeforeInsert: $currFolderMetadataInfoBeforeInsert")
         // . . . .
         val folderMetadataInfo = FileMetadataInfo(parentTitle, title, fileDriveId, isFolder, mimeType, Date(), Date(), System.currentTimeMillis(), true, false)
         FoldersData.insertFolderItemView(fileItemId, folderLevel, fileParentFolderDriveId, position, folderMetadataInfo)
         // . . . .
         val foldersMetadatasInfoListSizeAfterInsert = FoldersData.getFoldersMetadatasInfoList().size
         val currFolderMetadataInfoAfterInsert = FoldersData.getCurrFolderMetadataInfo()
-        Log.i(LOC_CAT_TAG, "@@testInsertFolderItemView - currFolderMetadataInfoAfterInsert: $currFolderMetadataInfoAfterInsert")
+        Log.i(TAG, "@@testInsertFolderItemView - currFolderMetadataInfoAfterInsert: $currFolderMetadataInfoAfterInsert")
         Assert.assertEquals("foldersMetadatasInfoList size must be: $expectedContainerSize", expectedContainerSize, foldersMetadatasInfoListSizeBeforeInsert)
         Assert.assertEquals("foldersMetadatasInfoList size must be: $expectedContainerSize", foldersMetadatasInfoListSizeAfterInsert, foldersMetadatasInfoListSizeBeforeInsert)
         // below DO NOT try to compare currFolderMetadataInfoBeforeInsert.size() with currFolderMetadataInfoAfterInsert.size() - they point to exactly the same container
@@ -452,11 +466,11 @@ class FoldersDataTest {
             var i = 0
             val cnt = folderMetadataInfoArrayBefore.size
             while (i < cnt) {
-                Log.i(LOC_CAT_TAG, "@@testUpdateFolderItemView:    " + i + ": " + folderMetadataInfoArrayBefore[i].fileTitle + "/" + folderMetadataInfoArrayBefore[i].isFolder)
+                Log.i(TAG, "@@testUpdateFolderItemView:    " + i + ": " + folderMetadataInfoArrayBefore[i].fileTitle + "/" + folderMetadataInfoArrayBefore[i].isFolder)
                 i++
             }
         }
-        Log.i(LOC_CAT_TAG, "@@testUpdateFolderItemView:    -------------")
+        Log.i(TAG, "@@testUpdateFolderItemView:    -------------")
 
         fileDriveId = DriveId.decodeFromString("DriveId:CAESBHJvb3QYpFUg-sbQ7YpR")
         title = "File0 updating"
@@ -476,22 +490,22 @@ class FoldersDataTest {
             val cnt = folderMetadataInfoArrayAfter.size
             while (i < cnt) {
                 Assert.assertEquals("i: $i", title, folderMetadataInfoArrayAfter[i].fileTitle)
-                Log.i(LOC_CAT_TAG, "@@testUpdateFolderItemView:    " + i + ": " + folderMetadataInfoArrayBefore[i].fileTitle + "/" + folderMetadataInfoArrayAfter[i].fileTitle)
+                Log.i(TAG, "@@testUpdateFolderItemView:    " + i + ": " + folderMetadataInfoArrayBefore[i].fileTitle + "/" + folderMetadataInfoArrayAfter[i].fileTitle)
                 i++
             }
         }
         val currFoldersFilesArrayAfter = FoldersData.getCurrFoldersFilesList().toArray(arrayOfNulls<String>(0))
-        Log.i(LOC_CAT_TAG, "@@testUpdateFolderItemView: " + currFoldersFilesArrayAfter.size + " files in folder")
+        Log.i(TAG, "@@testUpdateFolderItemView: " + currFoldersFilesArrayAfter.size + " files in folder")
         var i = 0
         val cnt = currFoldersFilesArrayAfter.size
         while (i < cnt) {
-            Log.i(LOC_CAT_TAG, "i/fileTitle: " + title + "/" + currFoldersFilesArrayAfter.size + " files in folder")
+            Log.i(TAG, "i/fileTitle: " + title + "/" + currFoldersFilesArrayAfter.size + " files in folder")
             if (i == position) {
                 Assert.assertEquals("i: $i", title, currFoldersFilesArrayAfter[i])
             } else {
                 Assert.assertEquals("i: $i", currFoldersFilesArrayBefore[i], currFoldersFilesArrayAfter[i])
             }
-            Log.i(LOC_CAT_TAG, "@@testUpdateFolderItemView:    " + i + ": " + folderMetadataInfoArrayBefore[i] + "/" + currFoldersFilesArrayAfter[i])
+            Log.i(TAG, "@@testUpdateFolderItemView:    " + i + ": " + folderMetadataInfoArrayBefore[i] + "/" + currFoldersFilesArrayAfter[i])
             i++
         }
         // . . . .
@@ -544,7 +558,7 @@ class FoldersDataTest {
         var i = 0
         val cnt = folderMetadataInfoArrayAfter.size
         while (i < cnt) {
-            Log.i(LOC_CAT_TAG, "sequential_01 - i/fstFileTitle/scndFileTitle/fileTitle: " + i + " : " + fstFileTitle + "/" + scndFileTitle + "/" + folderMetadataInfoArrayAfter[i].fileTitle)
+            Log.i(TAG, "sequential_01 - i/fstFileTitle/scndFileTitle/fileTitle: " + i + " : " + fstFileTitle + "/" + scndFileTitle + "/" + folderMetadataInfoArrayAfter[i].fileTitle)
             when (i) {
                 0 -> Assert.assertEquals("i: $i", scndFileTitle, folderMetadataInfoArrayAfter[i].fileTitle)
                 1 -> Assert.assertEquals("i: $i", fstFileTitle, folderMetadataInfoArrayAfter[i].fileTitle)
@@ -628,7 +642,7 @@ class FoldersDataTest {
         val cnt = currFolderMetadataInfo!!.size
         while (i < cnt) {
             folderMetadataInfo = currFolderMetadataInfo.get(i)
-            Log.i(LOC_CAT_TAG, "interwoven_02 - i/fstFileTitle/scndFileTitle-fileItemId/fileTitle: " + i + " : " + fstFileTitle + "/" + scndFileTitle + " - " + folderMetadataInfo.fileItemId + "/" + folderMetadataInfo.fileTitle)
+            Log.i(TAG, "interwoven_02 - i/fstFileTitle/scndFileTitle-fileItemId/fileTitle: " + i + " : " + fstFileTitle + "/" + scndFileTitle + " - " + folderMetadataInfo.fileItemId + "/" + folderMetadataInfo.fileTitle)
             when (i) {
                 0 -> Assert.assertEquals("i: $i", scndFileTitle, folderMetadataInfo.fileTitle)
                 1 -> Assert.assertEquals("i: $i", fstFileTitle, folderMetadataInfo.fileTitle)
@@ -669,7 +683,7 @@ class FoldersDataTest {
         val cnt = currFolderMetadataInfo!!.size
         while (i < cnt) {
             folderMetadataInfo = currFolderMetadataInfo.get(i)
-            Log.i(LOC_CAT_TAG, "refresh_030 - i/fileTitle: " + i + " : " + folderMetadataInfo.fileTitle)
+            Log.i(TAG, "refresh_030 - i/fileTitle: " + i + " : " + folderMetadataInfo.fileTitle)
             //			assertEquals("folderFile" + i, folderMetadataInfo.fileTitle);
             Assert.assertEquals("incorrect file fileTitle at idx: $i", foldersMetadatasInfo[i].fileTitle, folderMetadataInfo.fileTitle)
             i++
@@ -699,7 +713,7 @@ class FoldersDataTest {
         val cnt = currFolderMetadataInfo!!.size
         while (i < cnt) {
             folderMetadataInfo = currFolderMetadataInfo.get(i)
-            Log.i(LOC_CAT_TAG, "refresh_031 - i/fileTitle: " + i + " : " + folderMetadataInfo.fileTitle)
+            Log.i(TAG, "refresh_031 - i/fileTitle: " + i + " : " + folderMetadataInfo.fileTitle)
             Assert.assertEquals("incorrect file fileTitle at idx: $i", foldersMetadatasInfo[i].fileTitle, folderMetadataInfo.fileTitle)
             i++
         }

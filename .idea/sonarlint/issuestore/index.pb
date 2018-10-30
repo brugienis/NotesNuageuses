@@ -131,3 +131,7 @@ gapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/Ne
 +app/src/main/res/layout/fragment_folder.xml,8/7/873dd83ac4e25275ba4fd2e8d9e5d12b3a9ff52d
 ‹
 [app/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/espresso/MenuItemsVerifier.java,e/9/e90eab321c947fec3897b77bdc9fc23992ceefdf
+Œ
+\app/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/espresso/CreateTestFolderTest.kt,4/d/4d25cb55dddf44c726d8a38d085a98e3d5bfc0f5
+ 
+papp/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/espresso/helpers/WaitForFolderIsActiveInstruction.kt,f/0/f09ff973ac56f98fa81239c6e91744abf07a913c
