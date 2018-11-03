@@ -9,6 +9,7 @@ import android.widget.AdapterView
 import android.widget.ListView
 import android.widget.TextView
 import au.com.kbrsolutions.notesnuageuses.R
+import au.com.kbrsolutions.notesnuageuses.features.espresso.ActiveFlagsController
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderArrayAdapter
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import kotlinx.android.synthetic.main.fragment_folder.view.*
@@ -87,6 +88,13 @@ class FolderFragment : Fragment() {
         showTrashedFiles(mShowTrashedFiles)
 
         return rootView
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.v("FolderFragment", """onResume - start""")
+        ActiveFlagsController.setEspressoFolderFragmentActiveFlag("$TAG.onResume",
+                true)
     }
 
     private fun updateEmptyFolderInfo() {

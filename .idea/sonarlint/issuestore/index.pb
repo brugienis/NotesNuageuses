@@ -135,3 +135,7 @@ gapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/main/fragments/Ne
 \app/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/espresso/CreateTestFolderTest.kt,4/d/4d25cb55dddf44c726d8a38d085a98e3d5bfc0f5
 †
 papp/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/espresso/helpers/WaitForFolderIsActiveInstruction.kt,f/0/f09ff973ac56f98fa81239c6e91744abf07a913c
+™
+zapp/build/generated/not_namespaced_r_class_sources/debug/processDebugResources/r/au/com/kbrsolutions/notesnuageuses/R.java,4/a/4a674e97404e5f31fce546b2fb403692e5754bbe
+è
+_app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/espresso/ActiveFlagsController.kt,6/d/6d1dab701bd434386ea902c2054f8114b0a7acf3

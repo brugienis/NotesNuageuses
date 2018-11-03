@@ -760,27 +760,6 @@ class HomeActivity : BaseActivity(),
         coll.forEach { Log.i(TAG, it.toString()) }
         Log.i(TAG, "\nend")
     }
-    //---------------- About -----------------------------
-
-    private var mIsEspressoTestRunning: Boolean = false
-
-    fun setEspressoTestRunning() {
-        mIsEspressoTestRunning = true
-    }
-
-    private var mIsFolderFragmentActive: Boolean = false
-
-    fun setEspressoAboutFragmentActiveFlag(source: String, active: Boolean) {
-        if (!mIsEspressoTestRunning) {
-            return
-        }
-        mIsFolderFragmentActive = active
-//        updateActiveFlagsSet("mIsFolderFragmentActive", active)
-    }
-
-    fun isAboutFragmentFragmentActive(): Boolean {
-        return mIsFolderFragmentActive
-    }
 
     companion object {
         private val TAG = HomeActivity::class.java.simpleName
