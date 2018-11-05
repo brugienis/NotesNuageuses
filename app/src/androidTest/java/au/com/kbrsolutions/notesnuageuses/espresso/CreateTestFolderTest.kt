@@ -1,18 +1,17 @@
 package au.com.kbrsolutions.notesnuageuses.espresso
 
-import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.action.ViewActions
-import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.matcher.ViewMatchers
-import android.support.test.espresso.matcher.ViewMatchers.*
-import android.support.test.filters.LargeTest
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.filters.LargeTest
+import androidx.test.rule.ActivityTestRule
+import androidx.test.runner.AndroidJUnit4
 import au.com.kbrsolutions.notesnuageuses.R
-import au.com.kbrsolutions.notesnuageuses.espresso.helpers.WaitForFolderIsActiveInstruction
 import au.com.kbrsolutions.notesnuageuses.features.espresso.ActiveFlagsController
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
 import com.azimolabs.conditionwatcher.ConditionWatcher
@@ -21,6 +20,7 @@ import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 import org.hamcrest.TypeSafeMatcher
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,13 +29,21 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class CreateTestFolderTest {
 
-    init {
-        ActiveFlagsController.setEspressoTestRunning()
-    }
+//    init {
+//        ActiveFlagsController.setEspressoTestRunning()
+//    }
 
     @Rule
     @JvmField
     var mActivityTestRule = ActivityTestRule(HomeActivity::class.java)
+
+    @Before
+    fun launchActivity() {
+        Log.v("CreateTestFolderTest", """launchActivity - start""")
+        ActiveFlagsController.setEspressoTestRunning()
+//        ActivityScenario.launch(HomeActivity::class.java)
+        Log.v("CreateTestFolderTest", """launchActivity - end""")
+    }
 
     @Test
     fun createNewFolderInRootFolder() {
@@ -44,7 +52,7 @@ class CreateTestFolderTest {
 
         ConditionWatcher.setTimeoutLimit(15 * 1000)
 
-        ConditionWatcher.waitForCondition(WaitForFolderIsActiveInstruction())
+//        ConditionWatcher.waitForCondition(WaitForFolderIsActiveInstruction())
 
         validateActionbarTitle("App folder")
 
@@ -65,7 +73,7 @@ class CreateTestFolderTest {
 
         delay(3000)
 
-        ActiveFlagsController.performEndOfTestMethodValidation("createNewFolderInRootFolder")
+//        ActiveFlagsController.performEndOfTestMethodValidation("createNewFolderInRootFolder")
 
     }
 

@@ -2,9 +2,10 @@ package au.com.kbrsolutions.notesnuageuses.features.core
 
 // the import below is using AssertJ as described in
 //      https://joel-costigliola.github.io/assertj/assertj-core-quick-start.html
+//import org.hamcrest.MatcherAssert.assertThat
+//import org.assertj.core.api.Assertions.assertThat
 import android.util.Log
 import com.google.android.gms.drive.DriveId
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -38,13 +39,13 @@ class FoldersDataTest {
         verifyDataStructure()
     }
 
-    @Test
-    fun testInitUsingAssertJ() {
-        val currFolderLevel = FoldersData.getCurrFolderLevel()
-        val expectedCurrFolderLevel = -1
-        assertThat(expectedCurrFolderLevel).isEqualTo(currFolderLevel)
-        verifyDataStructure()
-    }
+//    @Test
+//    fun testInitUsingAssertJ() {
+//        val currFolderLevel = FoldersData.getCurrFolderLevel()
+//        val expectedCurrFolderLevel = -1
+//        assertThat(expectedCurrFolderLevel).isEqualTo(currFolderLevel)
+//        verifyDataStructure()
+//    }
 
     @Test
     fun testAddFolderData_fstTime() {
@@ -61,6 +62,8 @@ class FoldersDataTest {
 
         // this should be OK
         folderLevel = 2            // folderLevel is ignored the first time the 'add is executed - it doesn't matter what value will be passed
+
+
         parentDriveId = null        //DriveId.decodeFromString("DriveId:CAESHDBCN3VRMnJDUU0wZVFUV3R6VDFNeWVEWkhXbFUYxFUg-sbQ7YpR");
         thisDriveId = DriveId.decodeFromString("DriveId:CAESBHJvb3QYpFUg-sbQ7YpR")
         parentTitle = "parT"

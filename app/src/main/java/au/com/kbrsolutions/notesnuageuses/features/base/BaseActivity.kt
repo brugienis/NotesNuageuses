@@ -75,7 +75,7 @@ abstract class BaseActivity: AppCompatActivity() {
     /**
      * Handles resolution callbacks.
      */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_CODE_SIGN_IN -> {
@@ -98,7 +98,7 @@ abstract class BaseActivity: AppCompatActivity() {
                 }
             }
             REQUEST_CODE_OPEN_ITEM -> if (resultCode == Activity.RESULT_OK) {
-                val driveId: DriveId = data.getParcelableExtra(
+                val driveId: DriveId = data!!.getParcelableExtra(
                         OpenFileActivityOptions.EXTRA_RESPONSE_DRIVE_ID)
                 mOpenItemTaskSource!!.setResult(driveId)
             } else {

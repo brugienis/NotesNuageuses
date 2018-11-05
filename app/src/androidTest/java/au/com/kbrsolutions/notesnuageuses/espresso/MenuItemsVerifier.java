@@ -1,9 +1,6 @@
 package au.com.kbrsolutions.notesnuageuses.espresso;
 
 import android.content.res.Resources;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
-import android.support.test.espresso.FailureHandler;
 import android.util.Log;
 import android.view.View;
 
@@ -16,17 +13,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import androidx.test.InstrumentationRegistry;
+import androidx.test.espresso.Espresso;
+import androidx.test.espresso.FailureHandler;
 import au.com.kbrsolutions.notesnuageuses.R;
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
-import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.anyOf;
+
+//import android.support.test.InstrumentationRegistry;
 
 /**
  * Verify menu items that should be or should be not available at the time when the

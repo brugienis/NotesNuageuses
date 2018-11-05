@@ -209,7 +209,7 @@ class HomeActivity : BaseActivity(),
                 }
 
                 fragmentTransaction = fragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.fragments_frame, fileFragment, FILE_FRAGMENT_TAG)
+                fragmentTransaction.replace(R.id.fragments_frame, fileFragment!!, FILE_FRAGMENT_TAG)
                 fragmentTransaction.commit()
             }
 
@@ -226,7 +226,7 @@ class HomeActivity : BaseActivity(),
                         .beginTransaction()
                         .replace(
                                 R.id.fragments_frame,
-                                downloadFragment,
+                                downloadFragment!!,
                                 RETRIEVE_FOLDER_PROGRESS_TAG)
                         .commit()
             }
@@ -241,15 +241,15 @@ class HomeActivity : BaseActivity(),
 
                 list!!.withIndex()
                         .forEach { (itemIdxInList, folderMetadataInfo) ->
-                    if (!folderMetadataInfo.isTrashed || folderMetadataInfo.isTrashed && showTrashedFiles) {
-                        folderItemsList.add(FolderItem(
-                                folderMetadataInfo.fileTitle,
-                                folderMetadataInfo.updateDt,
-                                folderMetadataInfo.mimeType,
-                                folderMetadataInfo.isTrashed,
-                                itemIdxInList))
-                    }
-                }
+                            if (!folderMetadataInfo.isTrashed || folderMetadataInfo.isTrashed && showTrashedFiles) {
+                                folderItemsList.add(FolderItem(
+                                        folderMetadataInfo.fileTitle,
+                                        folderMetadataInfo.updateDt,
+                                        folderMetadataInfo.mimeType,
+                                        folderMetadataInfo.isTrashed,
+                                        itemIdxInList))
+                            }
+                        }
 
                 if (folderFragment == null) {
                     folderFragment = FolderFragment.newInstance(
@@ -262,14 +262,20 @@ class HomeActivity : BaseActivity(),
                 }
 
                 fragmentTransaction = fragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.fragments_frame, folderFragment, FOLDER_TAG)
+                fragmentTransaction.replace(R.id.fragments_frame, folderFragment!!, FOLDER_TAG)
                 fragmentTransaction.commit()
             }
 
-            FragmentsEnum.FILE_DETAILS_FRAGMENT ->
-                fragmentManager.beginTransaction().replace(
+            FragmentsEnum.FILE_DETAILS_FRAGMENT -> {
+
+                fragmentTransaction = fragmentManager.beginTransaction()
+                fragmentTransaction . replace (
                         R.id.fragments_frame,
-                        fileDetailsFragment).commit()
+                        fileDetailsFragment!!,
+                        FILE_DETAILS_TAG
+                )
+                fragmentTransaction.commit()
+            }
 
 //            HomeActivity.FragmentsEnum.LEGAL_NOTICES -> fragmentManager.beginTransaction().replace(R.id.fragments_frame, legalNoticesFragment).commit()
 
@@ -764,8 +770,9 @@ class HomeActivity : BaseActivity(),
     companion object {
         private val TAG = HomeActivity::class.java.simpleName
 
-        const val EMPTY_FOLDER_TAG = "empty_folder_tag"
+//        const val EMPTY_FOLDER_TAG = "empty_folder_tag"
         const val FILE_FRAGMENT_TAG = "file_fragment_tag"
+        const val FILE_DETAILS_TAG = "file_details_tag"
         const val FOLDER_TAG = "folder_tag"
         const val RETRIEVE_FOLDER_PROGRESS_TAG = "retrieve_folder_progress_tag"
 

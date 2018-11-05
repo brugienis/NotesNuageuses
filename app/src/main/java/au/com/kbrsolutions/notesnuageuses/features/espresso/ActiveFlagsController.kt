@@ -46,6 +46,10 @@ object ActiveFlagsController {
     private var mIsFolderFragmentActive: Boolean = false
 
     fun setEspressoFolderFragmentActiveFlag(source: String, active: Boolean) {
+        Log.v("ActiveFlagsController", """setEspressoFolderFragmentActiveFlag -
+            | mIsEspressoTestRunning: $mIsEspressoTestRunning
+            | active:                 $active
+            | """.trimMargin())
         if (!mIsEspressoTestRunning) {
             return
         }
