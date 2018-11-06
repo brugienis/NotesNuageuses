@@ -5,6 +5,8 @@ import java.util.*
 
 object ActiveFlagsController {
 
+    var isEspressoTestRunning: Boolean = false
+
     private val mActiveFlagsSet = TreeSet<String>()
 
     private val TAG = ActiveFlagsController::class.java.simpleName
@@ -20,16 +22,6 @@ object ActiveFlagsController {
             }
         }
     }
-
-//    var prop = false
-
-    var isEspressoTestRunning: Boolean = false
-
-//    fun setEspressoTestRunning() {
-//        isEspressoTestRunning = true
-//        Log.v("ActiveFlagsController", """setEspressoTestRunning -
-//            |XXX-after start """.trimMargin())
-//    }
 
     fun performEndOfTestMethodValidation(source: String) {
         if (mActiveFlagsSet.size != 1) {

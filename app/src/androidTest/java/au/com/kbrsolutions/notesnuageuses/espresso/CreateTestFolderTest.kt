@@ -46,13 +46,9 @@ class CreateTestFolderTest {
         val device = UiDevice.getInstance(getInstrumentation())
         device.pressHome()
 
-// Bring up the default launcher by searching for a UI component
-// that matches the content description for the launcher button.
-//        val allAppsButton: UIObject = device.findObject(
-        val allAppsButton = device.findObject(
-                UiSelector().description("NotesNuageuses"))
-        Log.v("CreateTestFolderTest", """launchActivity - XXX-allAppsButton: $allAppsButton """)
-        Log.v("CreateTestFolderTest", """launchActivity - XXX-allAppsButton: ${allAppsButton.className} """)
+// Bring up the default launcher by searching for a UI component that matches the content
+// description for the launcher button.
+        val allAppsButton = device.findObject(UiSelector().description("NotesNuageuses"))
 
 // Perform a click on the button to load the app launcher.
         allAppsButton.clickAndWaitForNewWindow()
@@ -147,7 +143,5 @@ class CreateTestFolderTest {
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }
-
-        //        Log.v(TAG, "delay - sleep stop");
     }
 }
