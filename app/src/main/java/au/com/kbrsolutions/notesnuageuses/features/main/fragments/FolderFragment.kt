@@ -92,9 +92,11 @@ class FolderFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        Log.v("FolderFragment", """onResume - start""")
-        ActiveFlagsController.setEspressoFolderFragmentActiveFlag("$TAG.onResume",
-                true)
+        if (ActiveFlagsController.isEspressoTestRunning) {
+            Log.v("FolderFragment", """onResume - XXX-start """)
+            ActiveFlagsController.setEspressoFolderFragmentActiveFlag("$TAG.onResume",
+                    true)
+        }
     }
 
     private fun updateEmptyFolderInfo() {

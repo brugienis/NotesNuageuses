@@ -11,7 +11,6 @@ import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import au.com.kbrsolutions.notesnuageuses.R
-import au.com.kbrsolutions.notesnuageuses.features.espresso.ActiveFlagsController
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
@@ -31,7 +30,7 @@ class HomeActivityTest {
 
     @Before
     fun launchActivity() {
-        ActiveFlagsController.setEspressoTestRunning()
+//        ActiveFlagsController.setEspressoTestRunning()
 //        ActivityScenario.launch(HomeActivity::class.java)
     }
 

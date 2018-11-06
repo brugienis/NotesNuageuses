@@ -9,8 +9,6 @@ Rapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/base/BaseActivity
 app/build.gradle,f/4/f4a01d6a4fcb971362ec00a83903fd3902f52164
 Y
 )app/src/main/res/layout/activity_main.xml,7/6/76b07e40f24cce093536731477540f12e7da3cb6
-Ü
-Vapp/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/ExampleInstrumentedTest.kt,5/a/5a5cd447f8bd68231aaa38e90ca6417fb06559e0
 Å
 Qapp/src/main/java/au/com/kbrsolutions/notesnuageuses/features/core/FoldersData.kt,e/3/e34a95a776b9e28be8b90b4d758e174b441cdf76
 Ñ
@@ -139,3 +137,5 @@ papp/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/espresso/helpers/Wa
 zapp/build/generated/not_namespaced_r_class_sources/debug/processDebugResources/r/au/com/kbrsolutions/notesnuageuses/R.java,4/a/4a674e97404e5f31fce546b2fb403692e5754bbe
 è
 _app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/espresso/ActiveFlagsController.kt,6/d/6d1dab701bd434386ea902c2054f8114b0a7acf3
+?
+settings.gradle,0/5/05efc8b1657769a27696d478ded1e95f38737233

@@ -21,13 +21,15 @@ object ActiveFlagsController {
         }
     }
 
-    private var mIsEspressoTestRunning: Boolean = false
+//    var prop = false
 
-    fun setEspressoTestRunning() {
-        mIsEspressoTestRunning = true
-        Log.v("ActiveFlagsController", """setEspressoTestRunning -
-            |after start """.trimMargin())
-    }
+    var isEspressoTestRunning: Boolean = false
+
+//    fun setEspressoTestRunning() {
+//        isEspressoTestRunning = true
+//        Log.v("ActiveFlagsController", """setEspressoTestRunning -
+//            |XXX-after start """.trimMargin())
+//    }
 
     fun performEndOfTestMethodValidation(source: String) {
         if (mActiveFlagsSet.size != 1) {
@@ -38,7 +40,7 @@ object ActiveFlagsController {
                             mActiveFlagsSet.size + "; " +
                             mActiveFlagsSet)
         }
-        mIsEspressoTestRunning = false
+        isEspressoTestRunning = false
     }
 
     //---------------- FolderFragment -----------------------------
@@ -47,10 +49,10 @@ object ActiveFlagsController {
 
     fun setEspressoFolderFragmentActiveFlag(source: String, active: Boolean) {
         Log.v("ActiveFlagsController", """setEspressoFolderFragmentActiveFlag -
-            | mIsEspressoTestRunning: $mIsEspressoTestRunning
+            | isEspressoTestRunning: $isEspressoTestRunning
             | active:                 $active
             | """.trimMargin())
-        if (!mIsEspressoTestRunning) {
+        if (!isEspressoTestRunning) {
             return
         }
         mIsFolderFragmentActive = active

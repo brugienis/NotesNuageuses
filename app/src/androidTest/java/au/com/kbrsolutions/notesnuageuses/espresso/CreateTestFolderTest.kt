@@ -3,6 +3,7 @@ package au.com.kbrsolutions.notesnuageuses.espresso
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import androidx.test.InstrumentationRegistry.getInstrumentation
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -11,7 +12,10 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiSelector
 import au.com.kbrsolutions.notesnuageuses.R
+import au.com.kbrsolutions.notesnuageuses.espresso.helpers.WaitForFolderIsActiveInstruction
 import au.com.kbrsolutions.notesnuageuses.features.espresso.ActiveFlagsController
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
 import com.azimolabs.conditionwatcher.ConditionWatcher
@@ -39,24 +43,35 @@ class CreateTestFolderTest {
 
     @Before
     fun launchActivity() {
-        Log.v("CreateTestFolderTest", """launchActivity - start""")
-        ActiveFlagsController.setEspressoTestRunning()
-//        ActivityScenario.launch(HomeActivity::class.java)
-        Log.v("CreateTestFolderTest", """launchActivity - end""")
+        val device = UiDevice.getInstance(getInstrumentation())
+        device.pressHome()
+
+// Bring up the default launcher by searching for a UI component
+// that matches the content description for the launcher button.
+//        val allAppsButton: UIObject = device.findObject(
+        val allAppsButton = device.findObject(
+                UiSelector().description("NotesNuageuses"))
+        Log.v("CreateTestFolderTest", """launchActivity - XXX-allAppsButton: $allAppsButton """)
+        Log.v("CreateTestFolderTest", """launchActivity - XXX-allAppsButton: ${allAppsButton.className} """)
+
+// Perform a click on the button to load the app launcher.
+        allAppsButton.clickAndWaitForNewWindow()
+        Log.v("CreateTestFolderTest", """XXX-launchActivity - start""")
+        ActiveFlagsController.isEspressoTestRunning = true
+        Log.v("CreateTestFolderTest", """XXX-launchActivity - end""")
     }
 
     @Test
     fun createNewFolderInRootFolder() {
-//        ActiveFlagsController.setEspressoTestRunning()
-        Log.v("CreateTestFolderTest", """createNewFolderInRootFolder - start""")
+        Log.v("CreateTestFolderTest", """XXX-createNewFolderInRootFolder - start""")
 
         ConditionWatcher.setTimeoutLimit(15 * 1000)
 
-//        ConditionWatcher.waitForCondition(WaitForFolderIsActiveInstruction())
+        ConditionWatcher.waitForCondition(WaitForFolderIsActiveInstruction())
 
         validateActionbarTitle("App folder")
 
-        val actionMenuItemView = onView(
+        val actionMenuItemCreateView = onView(
                 Matchers.allOf(
                         ViewMatchers.withId(R.id.menuCreateFile),
                         ViewMatchers.withContentDescription("Create"),
@@ -69,11 +84,26 @@ class CreateTestFolderTest {
                         ViewMatchers.isDisplayed()
                 ))
 
-        actionMenuItemView.perform(ViewActions.click())
+        actionMenuItemCreateView.perform(ViewActions.click())
+
+//        delay(3000)
+
+        val actionCreateFolderView = onView(
+                Matchers.allOf(
+//                        ViewMatchers.withId(R.id.locationDialogRootViewId),
+                        ViewMatchers.withId(R.id.createDialogFileNameId),
+//                        childAtPosition( ViewMatchers.withId(R.id.createDialogFileNameId), 2),
+                        ViewMatchers.isDisplayed()
+                        ))
+
+        Log.v("CreateTestFolderTest", """XXX-createNewFolderInRootFolder -
+            |actionCreateFolderView: $actionCreateFolderView """.trimMargin())
+
+        actionCreateFolderView.perform(ViewActions.typeText("Espresso folder"))
 
         delay(3000)
 
-//        ActiveFlagsController.performEndOfTestMethodValidation("createNewFolderInRootFolder")
+        ActiveFlagsController.performEndOfTestMethodValidation("createNewFolderInRootFolder")
 
     }
 
