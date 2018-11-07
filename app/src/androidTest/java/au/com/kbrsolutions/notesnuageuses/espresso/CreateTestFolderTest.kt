@@ -3,6 +3,7 @@ package au.com.kbrsolutions.notesnuageuses.espresso
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.test.InstrumentationRegistry.getInstrumentation
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
@@ -14,12 +15,15 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
+//import androidx.test.ui.app.LongListMatchers.withItemContent
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.espresso.helpers.WaitForFolderIsActiveInstruction
 import au.com.kbrsolutions.notesnuageuses.features.espresso.ActiveFlagsController
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
+import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import com.azimolabs.conditionwatcher.ConditionWatcher
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
@@ -84,20 +88,27 @@ class CreateTestFolderTest {
 
 //        delay(3000)
 
-        val actionCreateFolderView = onView(
+        val createDialogFileNameTestView = onView(
                 Matchers.allOf(
-//                        ViewMatchers.withId(R.id.locationDialogRootViewId),
                         ViewMatchers.withId(R.id.createDialogFileNameId),
-//                        childAtPosition( ViewMatchers.withId(R.id.createDialogFileNameId), 2),
                         ViewMatchers.isDisplayed()
                         ))
 
-        Log.v("CreateTestFolderTest", """XXX-createNewFolderInRootFolder -
-            |actionCreateFolderView: $actionCreateFolderView """.trimMargin())
+        createDialogFileNameTestView.perform(ViewActions.typeText("Espresso folder"))
 
-        actionCreateFolderView.perform(ViewActions.typeText("Espresso folder"))
+        delay(2000)
 
-        delay(3000)
+        val createDialogFolderButtonView = onView(
+                Matchers.allOf(
+                        ViewMatchers.withId(R.id.createDialogFolderId),
+                        ViewMatchers.isDisplayed()
+                        ))
+
+        createDialogFolderButtonView.perform(ViewActions.click())
+
+        delay(2000)
+
+        testItemAgainstAdapterData("Espresso folder", true)
 
         ActiveFlagsController.performEndOfTestMethodValidation("createNewFolderInRootFolder")
 
@@ -114,6 +125,76 @@ class CreateTestFolderTest {
                                 0),
                         isDisplayed()))
         activityTitleTextView.check(matches(withText(expectedTitle)))
+    }
+
+    private fun testItemAgainstAdapterData(item: String, isInAdapter: Boolean) {
+        if (isInAdapter) {
+            onView(withId(R.id.folderListView))
+                    .check(matches(withAdaptedData(withItemContent(
+                            item))))
+        } else {
+            onView(withId(R.id.folderListView))
+                    .check(matches(not(withAdaptedData(withItemContent(
+                            item)))))
+        }
+    }
+
+    private fun withItemContent(itemTextMatcher: String): Matcher<Any> {
+        return object : TypeSafeMatcher<Any>() {
+
+            override fun describeTo(description: Description) {
+                description.appendText("with class name: ")
+//                itemTextMatcher.describeTo(description)
+            }
+
+            override fun matchesSafely(item: Any?): Boolean {
+                Log.v("CreateTestFolderTest.withItemContent", """matchesSafely -
+                    |item: $itemTextMatcher
+                    |item: $item
+                    |""".trimMargin())
+                if (item !is String) {
+                    Log.v("CreateTestFolderTest.withItemContent", """matchesSafely -
+                    |returns: false ; item is not String""".trimMargin())
+                    return false
+                }
+
+                Log.v("CreateTestFolderTest.withItemContent", """matchesSafely -
+                    |returns: ${itemTextMatcher == item} """.trimMargin())
+                return itemTextMatcher == item
+            }
+        }
+    }
+
+    private fun withAdaptedData(dataMatcher: Matcher<Any>): Matcher<View> {
+        return object : TypeSafeMatcher<View>() {
+
+            override fun describeTo(description: Description) {
+                description.appendText("with class name: ")
+                dataMatcher.describeTo(description)
+            }
+
+            public override fun matchesSafely(view: View) : Boolean {
+                if (view !is AdapterView<*>) {
+                    return false
+                }
+
+                val adapter = view.adapter
+                var cnt = 0
+                var folderIitem: FolderItem? = null
+                for (i in 0 until adapter.count) {
+                    folderIitem = adapter.getItem(i) as FolderItem
+                    Log.v("CreateTestFolderTest.withAdaptedData", """matchesSafely -
+                        |file name:    $cnt ${folderIitem.fileName}
+                        |""".trimMargin())
+                    cnt++
+                    if (dataMatcher.matches(folderIitem.fileName)) {
+                        return true
+                    }
+                }
+
+                return false
+            }
+        }
     }
 
     private fun childAtPosition(parentMatcher: Matcher<View>, position: Int): Matcher<View> {
