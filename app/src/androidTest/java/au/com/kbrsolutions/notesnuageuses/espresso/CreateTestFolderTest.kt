@@ -115,8 +115,8 @@ class CreateTestFolderTest {
         delay(2000)
 
         val removeIconImage = onView(infoImageOnRowWithFileName(
-//                ViewMatchers.withId(R.id.folderListView) ,folderName))
-                ViewMatchers.withId(R.id.folderFragmentLayoutId) ,folderName))
+                ViewMatchers.withId(R.id.folderFragmentLayoutId) ,folderName)
+        )
 
         Log.v("CreateTestFolderTest", """createNewFolderInRootFolder -
             |removeIconImage: $removeIconImage """.trimMargin())
@@ -124,54 +124,6 @@ class CreateTestFolderTest {
         removeIconImage.perform(ViewActions.click())
 
         delay(3000)
-
-
-        /*val removeIconImage = onView(
-                Matchers.allOf(
-                        ViewMatchers.withId(R.id.folderListView),
-                        withChild(ViewMatchers.withText(folderName)),
-                        allOf(
-                                withChild(ViewMatchers.withId(R.id.folderFragmentLayoutId)),
-                                allOf(
-                                        withChild(ViewMatchers.withId(R.id.fileNameId)),
-
-
-                                )
-                        )
-                        childAtPosition(
-                                ViewMatchers.withId(R.id.infoImageId),
-                                3)
-                )
-        )*/
-
-//        removeIconImage.perform(ViewActions.clearText())
-
-//        val fileInfoImageView = onView(
-//                Matchers.allOf(
-////                        ViewMatchers.withId(R.id.fileNameId),
-////                        ViewMatchers.withText(folderName),
-//                        withChild(ViewMatchers.withId(R.id.infoImageId)),
-//                        hasSibling(withText(folderName))
-////                                ViewMatchers.perform(click())
-//                ))
-//
-//        fileInfoImageView.perform(ViewActions.click())
-
-        /* ----------------------- Test 'garbage' icon click - start ---------------------------- */
-
-        /* The row in the FavoriteStopsFragment should still be in a magnified state.             */
-
-        /* Find the same row again and its child view. Find the 'garbage' image in the child view */
-        /* and click on it to remove the favorite stop.                                           */
-        /* It will make sure the next run of this test will start with empty list.                */
-//        onData(Matchers.allOf(
-//                Matchers.instanceOf(Cursor::class.java),
-//                CursorMatchers.withRowString(MptContract.StopDetailEntry.COLUMN_LOCATION_NAME,
-//                        "Carrum Station")))
-//                .inAdapterView(withId(R.id.favoriteStopsListView))
-//                .onChildView(withId(R.id.infoImageId))
-//                .perform(click())
-//        delay(1000);
 
         ActiveFlagsController.performEndOfTestMethodValidation("createNewFolderInRootFolder")
 
@@ -262,7 +214,13 @@ class CreateTestFolderTest {
         }
     }
 
-    private fun infoImageOnRowWithFileName(parentMatcher: Matcher<View>, fileName: String): Matcher<View> {
+    /*
+        matchesSafely(...) will return true on a first list view row, containing 'infoImageId' view
+        and a 'fileNameId' with text equal to 'fileName'.
+     */
+    private fun infoImageOnRowWithFileName(
+            parentMatcher: Matcher<View>,
+            fileName: String): Matcher<View> {
 
         return object : TypeSafeMatcher<View>() {
 
@@ -276,32 +234,19 @@ class CreateTestFolderTest {
 
             public override fun matchesSafely(view: View): Boolean {
                 if (rowFound) return false
-                Log.v("CreateTestFolderTest", """infoImageOnRowWithFileName.matchesSafely.VV -
-                    |view: $view """.trimMargin())
                 if (view.id != R.id.infoImageId) return false
                 val parent = view.parent
-                Log.v("CreateTestFolderTest", """infoImageOnRowWithFileName.matchesSafely.PP -
-                    |parent: $parent """.trimMargin())
                 if (parent == null || parent !is View) return false
                 val fileNameView = parent.findViewById<View>(R.id.fileNameId)
-                Log.v("CreateTestFolderTest", """infoImageOnRowWithFileName.matchesSafely.CC -
-                    |fileNameView: ${fileNameView} """.trimMargin())
                 if (fileNameView == null || fileNameView !is TextView) return false
                 val contentText = fileNameView.text
-                Log.v("CreateTestFolderTest", """infoImageOnRowWithFileName.matchesSafely.CCont -
-                    |content: $contentText """.trimMargin())
                 if (contentText == null) return false
-                Log.v("CreateTestFolderTest", """infoImageOnRowWithFileName.matchesSafely.XX -
-                    |content: $contentText
-                    |""".trimMargin())
 
                 if (
                         !rowFound &&
                         parent is ViewGroup &&
                         parentMatcher.matches(parent) &&
                         contentText == fileName) {
-                    Log.v("CreateTestFolderTest", """infoImageOnRowWithFileName.matchesSafely.VF-
-                        |view: $view """.trimMargin())
                     foundFirstInfoImageView = view
                     rowFound = true
                     return true
