@@ -139,3 +139,5 @@ zapp/build/generated/not_namespaced_r_class_sources/debug/processDebugResources/
 _app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/espresso/ActiveFlagsController.kt,6/d/6d1dab701bd434386ea902c2054f8114b0a7acf3
 ?
 settings.gradle,0/5/05efc8b1657769a27696d478ded1e95f38737233
+g
+7app/src/main/res/layout/fragment_folder_list_screen.xml,b/8/b8f85a43b0fd2d12bfe0618bd09972155371bb82

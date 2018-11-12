@@ -1,9 +1,11 @@
 package au.com.kbrsolutions.notesnuageuses.espresso
 
+//import androidx.test.ui.app.LongListMatchers.withItemContent
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.TextView
 import androidx.test.InstrumentationRegistry.getInstrumentation
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
@@ -15,7 +17,6 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
-//import androidx.test.ui.app.LongListMatchers.withItemContent
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.espresso.helpers.WaitForFolderIsActiveInstruction
 import au.com.kbrsolutions.notesnuageuses.features.espresso.ActiveFlagsController
@@ -94,7 +95,8 @@ class CreateTestFolderTest {
                         ViewMatchers.isDisplayed()
                         ))
 
-        createDialogFileNameTestView.perform(ViewActions.typeText("Espresso folder"))
+        val folderName = "Espresso folder"
+        createDialogFileNameTestView.perform(ViewActions.typeText(folderName))
 
         delay(2000)
 
@@ -108,7 +110,68 @@ class CreateTestFolderTest {
 
         delay(2000)
 
-        testItemAgainstAdapterData("Espresso folder", true)
+        testItemAgainstAdapterData(folderName, true)
+
+        delay(2000)
+
+        val removeIconImage = onView(infoImageOnRowWithFileName(
+//                ViewMatchers.withId(R.id.folderListView) ,folderName))
+                ViewMatchers.withId(R.id.folderFragmentLayoutId) ,folderName))
+
+        Log.v("CreateTestFolderTest", """createNewFolderInRootFolder -
+            |removeIconImage: $removeIconImage """.trimMargin())
+
+        removeIconImage.perform(ViewActions.click())
+
+        delay(3000)
+
+
+        /*val removeIconImage = onView(
+                Matchers.allOf(
+                        ViewMatchers.withId(R.id.folderListView),
+                        withChild(ViewMatchers.withText(folderName)),
+                        allOf(
+                                withChild(ViewMatchers.withId(R.id.folderFragmentLayoutId)),
+                                allOf(
+                                        withChild(ViewMatchers.withId(R.id.fileNameId)),
+
+
+                                )
+                        )
+                        childAtPosition(
+                                ViewMatchers.withId(R.id.infoImageId),
+                                3)
+                )
+        )*/
+
+//        removeIconImage.perform(ViewActions.clearText())
+
+//        val fileInfoImageView = onView(
+//                Matchers.allOf(
+////                        ViewMatchers.withId(R.id.fileNameId),
+////                        ViewMatchers.withText(folderName),
+//                        withChild(ViewMatchers.withId(R.id.infoImageId)),
+//                        hasSibling(withText(folderName))
+////                                ViewMatchers.perform(click())
+//                ))
+//
+//        fileInfoImageView.perform(ViewActions.click())
+
+        /* ----------------------- Test 'garbage' icon click - start ---------------------------- */
+
+        /* The row in the FavoriteStopsFragment should still be in a magnified state.             */
+
+        /* Find the same row again and its child view. Find the 'garbage' image in the child view */
+        /* and click on it to remove the favorite stop.                                           */
+        /* It will make sure the next run of this test will start with empty list.                */
+//        onData(Matchers.allOf(
+//                Matchers.instanceOf(Cursor::class.java),
+//                CursorMatchers.withRowString(MptContract.StopDetailEntry.COLUMN_LOCATION_NAME,
+//                        "Carrum Station")))
+//                .inAdapterView(withId(R.id.favoriteStopsListView))
+//                .onChildView(withId(R.id.infoImageId))
+//                .perform(click())
+//        delay(1000);
 
         ActiveFlagsController.performEndOfTestMethodValidation("createNewFolderInRootFolder")
 
@@ -118,12 +181,14 @@ class CreateTestFolderTest {
         val activityTitleTextView = onView(
                 allOf(
                         childAtPosition(
-                                allOf(withId(R.id.action_bar),
+                                allOf(
+                                        withId(R.id.action_bar),
                                         childAtPosition(
                                                 withId(R.id.action_bar_container),
                                                 0)),
                                 0),
-                        isDisplayed()))
+                        isDisplayed())
+        )
         activityTitleTextView.check(matches(withText(expectedTitle)))
     }
 
@@ -197,6 +262,55 @@ class CreateTestFolderTest {
         }
     }
 
+    private fun infoImageOnRowWithFileName(parentMatcher: Matcher<View>, fileName: String): Matcher<View> {
+
+        return object : TypeSafeMatcher<View>() {
+
+            var rowFound = false
+            var foundFirstInfoImageView: View? = null
+
+            override fun describeTo(description: Description) {
+                description.appendText("FileName with text $fileName in parent ")
+                parentMatcher.describeTo(description)
+            }
+
+            public override fun matchesSafely(view: View): Boolean {
+                if (rowFound) return false
+                Log.v("CreateTestFolderTest", """infoImageOnRowWithFileName.matchesSafely.VV -
+                    |view: $view """.trimMargin())
+                if (view.id != R.id.infoImageId) return false
+                val parent = view.parent
+                Log.v("CreateTestFolderTest", """infoImageOnRowWithFileName.matchesSafely.PP -
+                    |parent: $parent """.trimMargin())
+                if (parent == null || parent !is View) return false
+                val fileNameView = parent.findViewById<View>(R.id.fileNameId)
+                Log.v("CreateTestFolderTest", """infoImageOnRowWithFileName.matchesSafely.CC -
+                    |fileNameView: ${fileNameView} """.trimMargin())
+                if (fileNameView == null || fileNameView !is TextView) return false
+                val contentText = fileNameView.text
+                Log.v("CreateTestFolderTest", """infoImageOnRowWithFileName.matchesSafely.CCont -
+                    |content: $contentText """.trimMargin())
+                if (contentText == null) return false
+                Log.v("CreateTestFolderTest", """infoImageOnRowWithFileName.matchesSafely.XX -
+                    |content: $contentText
+                    |""".trimMargin())
+
+                if (
+                        !rowFound &&
+                        parent is ViewGroup &&
+                        parentMatcher.matches(parent) &&
+                        contentText == fileName) {
+                    Log.v("CreateTestFolderTest", """infoImageOnRowWithFileName.matchesSafely.VF-
+                        |view: $view """.trimMargin())
+                    foundFirstInfoImageView = view
+                    rowFound = true
+                    return true
+                }
+                return false
+            }
+        }
+    }
+
     private fun childAtPosition(parentMatcher: Matcher<View>, position: Int): Matcher<View> {
 
         return object : TypeSafeMatcher<View>() {
@@ -207,8 +321,9 @@ class CreateTestFolderTest {
 
             public override fun matchesSafely(view: View): Boolean {
                 val parent = view.parent
-                return parent is ViewGroup && parentMatcher.matches(parent)
-                        && view == parent.getChildAt(position)
+                return parent is ViewGroup &&
+                        parentMatcher.matches(parent) &&
+                        view == parent.getChildAt(position)
             }
         }
     }
