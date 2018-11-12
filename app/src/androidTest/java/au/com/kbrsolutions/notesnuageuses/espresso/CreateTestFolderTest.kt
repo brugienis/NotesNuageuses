@@ -1,14 +1,17 @@
 package au.com.kbrsolutions.notesnuageuses.espresso
 
-//import androidx.test.ui.app.LongListMatchers.withItemContent
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.TextView
+import androidx.test.InstrumentationRegistry
 import androidx.test.InstrumentationRegistry.getInstrumentation
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
+import androidx.test.espresso.FailureHandler
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -51,11 +54,11 @@ class CreateTestFolderTest {
         val device = UiDevice.getInstance(getInstrumentation())
         device.pressHome()
 
-// Bring up the default launcher by searching for a UI component that matches the content
-// description for the launcher button.
+        // Bring up the default launcher by searching for a UI component that matches the content
+        // description for the launcher button.
         val allAppsButton = device.findObject(UiSelector().description("NotesNuageuses"))
 
-// Perform a click on the button to load the app launcher.
+        // Perform a click on the button to load the app launcher.
         allAppsButton.clickAndWaitForNewWindow()
         Log.v("CreateTestFolderTest", """XXX-launchActivity - start""")
         ActiveFlagsController.isEspressoTestRunning = true
@@ -80,7 +83,6 @@ class CreateTestFolderTest {
                                 childAtPosition(
                                         ViewMatchers.withId(R.id.action_bar),
                                         2),
-//                                        0),
                                 0),
                         ViewMatchers.isDisplayed()
                 ))
@@ -118,10 +120,33 @@ class CreateTestFolderTest {
                 ViewMatchers.withId(R.id.folderFragmentLayoutId) ,folderName)
         )
 
-        Log.v("CreateTestFolderTest", """createNewFolderInRootFolder -
-            |removeIconImage: $removeIconImage """.trimMargin())
-
         removeIconImage.perform(ViewActions.click())
+
+        onView(
+                Matchers.allOf(
+                        ViewMatchers.withId(R.id.fileDetailRootViewId),
+                        ViewMatchers.isDisplayed()
+                ))
+                .check(matches(isDisplayed()))
+
+        /* Trash created folder */
+        onView(
+                Matchers.allOf(
+                        ViewMatchers.withId(R.id.fileDetailTrashDeleteLayoutId),
+                        ViewMatchers.isDisplayed()
+                ))
+                .perform(click())
+
+        delay(1000)
+
+//        clickMenuItem(R.id.menuShowTrashed)
+        clickMenuItem(R.id.title)
+
+        delay(2000)
+
+        onView(infoImageOnRowWithFileName(
+                ViewMatchers.withId(R.id.folderFragmentLayoutId), folderName))
+                .perform(click())
 
         delay(3000)
 
@@ -142,6 +167,42 @@ class CreateTestFolderTest {
                         isDisplayed())
         )
         activityTitleTextView.check(matches(withText(expectedTitle)))
+    }
+
+    private fun clickMenuItem(menuItemId: Int) {
+        /* Find 'add favorite stop' menu item and click on it, if it is displayed (is visible in  */
+        /* the ActionBar). If it is not displayed, set the isAddFavoriteStopDisplayed - false.    */
+        var isAddFavoriteStopDisplayed = false
+        onView(withId(menuItemId))
+                .withFailureHandler(object : FailureHandler {
+                    override fun handle(error: Throwable, viewMatcher: Matcher<View>) {
+                        Log.v(
+                                TAG,
+                                "MainActivityAddFirstFavoriteStop - the 'add' icon is not displayed")
+                        isAddFavoriteStopDisplayed = false
+                    }
+                })
+                .check(matches(isDisplayed()))
+                .perform(click())
+
+
+        /* If the 'add favorite stop' icon was not found in the ActionBar, try to find it in the  */
+        /* overflow view, and clicked on it.                                                      */
+        if (!isAddFavoriteStopDisplayed) {
+            try {
+                openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getTargetContext())
+            } catch (e: Exception) {
+                //This is normal. Maybe we dont have overflow menu.
+            }
+
+            //            Resources resources = mActivityTestRule.getActivity().getResources();
+//            onView(withId(R.string.menu_show_trashed_files))
+            onView(withId(menuItemId))
+                    .perform(click())
+            Log.v(TAG, "MainActivityAddFirstFavoriteStop - clicked in the overflow menu")
+        }
+
+
     }
 
     private fun testItemAgainstAdapterData(item: String, isInAdapter: Boolean) {
@@ -284,5 +345,10 @@ class CreateTestFolderTest {
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }
+    }
+
+    companion object {
+
+        private val TAG =  CreateTestFolderTest::class.simpleName
     }
 }
