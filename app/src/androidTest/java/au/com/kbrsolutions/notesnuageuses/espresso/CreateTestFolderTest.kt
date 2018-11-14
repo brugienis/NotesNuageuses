@@ -109,6 +109,7 @@ class CreateTestFolderTest {
                         ))
 
         createDialogFolderButtonView.perform(ViewActions.click())
+        /* Folder was created */
 
         delay(2000)
 
@@ -116,11 +117,12 @@ class CreateTestFolderTest {
 
         delay(2000)
 
-        val removeIconImage = onView(infoImageOnRowWithFileName(
-                ViewMatchers.withId(R.id.folderFragmentLayoutId) ,folderName)
+        val fileInfoIconImage = onView(infoImageOnRowWithFileName(
+                ViewMatchers.withId(R.id.folderFragmentLayoutId), folderName)
         )
 
-        removeIconImage.perform(ViewActions.click())
+        fileInfoIconImage.perform(ViewActions.click())
+        /* Row with the folderName is selected */
 
         onView(
                 Matchers.allOf(
@@ -128,6 +130,7 @@ class CreateTestFolderTest {
                         ViewMatchers.isDisplayed()
                 ))
                 .check(matches(isDisplayed()))
+        /* File Info screen shows */
 
         /* Trash created folder */
         onView(
@@ -135,20 +138,59 @@ class CreateTestFolderTest {
                         ViewMatchers.withId(R.id.fileDetailTrashDeleteLayoutId),
                         ViewMatchers.isDisplayed()
                 ))
+                .check(matches(isDisplayed()))
                 .perform(click())
+        Log.v("CreateTestFolderTest", """createNewFolderInRootFolder -
+            |fileDetailTrashDeleteLayoutId: after trashing folder """.trimMargin())
+
+        /* We are back to the folder layout - the trashed folder should not be visible */
 
         delay(1000)
 
 //        clickMenuItem(R.id.menuShowTrashed)
         clickMenuItem(R.id.title)
 
+        /* We are back to the folder layout - the trashed folder should be visible */
+
         delay(2000)
+
+        Log.v("CreateTestFolderTest", """createNewFolderInRootFolder -
+            |fileDetailTrashDeleteLayoutId: before deleting folder """.trimMargin())
 
         onView(infoImageOnRowWithFileName(
                 ViewMatchers.withId(R.id.folderFragmentLayoutId), folderName))
+                .perform(ViewActions.click())
+
+        /* Row with the folderName is selected */
+
+        onView(
+                Matchers.allOf(
+                        ViewMatchers.withId(R.id.fileDetailRootViewId),
+                        ViewMatchers.isDisplayed()
+                ))
+                .check(matches(isDisplayed()))
+        /* File Info screen shows */
+
+        /* Delete folder */
+        onView(
+                Matchers.allOf(
+                        ViewMatchers.withId(R.id.fileDetailTrashDeleteLayoutId),
+                        ViewMatchers.isDisplayed()
+                ))
+                .check(matches(isDisplayed()))
                 .perform(click())
 
-        delay(3000)
+        Log.v("CreateTestFolderTest", """createNewFolderInRootFolder -
+            |fileDetailTrashDeleteLayoutId: after  deleting folder """.trimMargin())
+        /*onView(infoImageOnRowWithFileName(
+                ViewMatchers.withId(R.id.folderFragmentLayoutId), folderName))
+                .perform(click())*/
+
+        delay(2000)
+
+        validateActionbarTitle("App folder")
+
+        delay(2000)
 
         ActiveFlagsController.performEndOfTestMethodValidation("createNewFolderInRootFolder")
 
@@ -258,7 +300,7 @@ class CreateTestFolderTest {
 
                 val adapter = view.adapter
                 var cnt = 0
-                var folderIitem: FolderItem? = null
+                var folderIitem: FolderItem?
                 for (i in 0 until adapter.count) {
                     folderIitem = adapter.getItem(i) as FolderItem
                     Log.v("CreateTestFolderTest.withAdaptedData", """matchesSafely -
@@ -327,10 +369,21 @@ class CreateTestFolderTest {
 
             public override fun matchesSafely(view: View): Boolean {
                 val parent = view.parent
+                /*showTextViewText(view,
+                        parent is ViewGroup &&
+                        parentMatcher.matches(parent) &&
+                        view == parent.getChildAt(position))*/
                 return parent is ViewGroup &&
                         parentMatcher.matches(parent) &&
                         view == parent.getChildAt(position)
             }
+
+            /*private fun showTextViewText(view: View, cond: Boolean) {
+                if (cond) {
+                    Log.v("CreateTestFolderTest", """childAtPosition.showTextViewText -
+                        |view: $view """.trimMargin())
+                }
+            }*/
         }
     }
 

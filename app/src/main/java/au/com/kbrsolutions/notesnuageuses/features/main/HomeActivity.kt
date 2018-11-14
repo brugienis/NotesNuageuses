@@ -379,6 +379,8 @@ class HomeActivity : BaseActivity(),
             currFolderDriveId: DriveId,
             deleteFile: Boolean) {
 
+        Log.v("HomeActivity", """trashOrDeleteFile - deleteFile: $deleteFile """)
+
         handleNonCancellableFuturesCallable.submitCallable(
                 RemoveFileFromDriveTask.Builder()
                         .context(applicationContext)
