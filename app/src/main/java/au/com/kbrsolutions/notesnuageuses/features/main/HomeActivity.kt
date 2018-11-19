@@ -235,6 +235,15 @@ class HomeActivity : BaseActivity(),
                 val trashFilesCnt = foldersAddData?.trashedFilesCnt ?: -1
                 val folderItemsList = ArrayList<FolderItem>()
 
+                if (foldersAddData == null) {
+                    Log.v("HomeActivity", """setFragment - foldersAddData == null
+                        |FoldersData.getCurrFolderMetadataInfo(): ${FoldersData.getCurrFolderMetadataInfo()!!.size}
+                        |""".trimMargin())
+                } else {
+                    Log.v("HomeActivity", """setFragment - foldersAddData != null
+                        |foldersAddData?.filesMetadataInfoList: ${foldersAddData?.filesMetadataInfoList.size}
+                        |""".trimMargin())
+                }
                 // fixLater: Sep 17, 2018 - why not the same logic as in updateFolderListAdapter()?
                 val list: ArrayList<FileMetadataInfo>? = foldersAddData?.filesMetadataInfoList
                         ?: FoldersData.getCurrFolderMetadataInfo()
@@ -242,6 +251,10 @@ class HomeActivity : BaseActivity(),
                 list!!.withIndex()
                         .forEach { (itemIdxInList, folderMetadataInfo) ->
                             if (!folderMetadataInfo.isTrashed || folderMetadataInfo.isTrashed && showTrashedFiles) {
+                                Log.v("HomeActivity", """setFragment -
+                                    |folderMetadataInfo.fileTitle: ${folderMetadataInfo.fileTitle}
+                                    |folderMetadataInfo.isTrashed: ${folderMetadataInfo.isTrashed}
+                                    |""".trimMargin())
                                 folderItemsList.add(FolderItem(
                                         folderMetadataInfo.fileTitle,
                                         folderMetadataInfo.updateDt,
@@ -250,6 +263,7 @@ class HomeActivity : BaseActivity(),
                                         itemIdxInList))
                             }
                         }
+                Log.v("HomeActivity", """setFragment - list: ${list.size} """)
 
                 if (folderFragment == null) {
                     folderFragment = FolderFragment.newInstance(

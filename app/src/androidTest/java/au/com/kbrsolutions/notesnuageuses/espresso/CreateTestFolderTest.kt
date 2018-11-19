@@ -26,7 +26,6 @@ import au.com.kbrsolutions.notesnuageuses.features.espresso.ActiveFlagsControlle
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import com.azimolabs.conditionwatcher.ConditionWatcher
-import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Description
 import org.hamcrest.Matcher
@@ -49,6 +48,14 @@ class CreateTestFolderTest {
     @JvmField
     var mActivityTestRule = ActivityTestRule(HomeActivity::class.java)
 
+    /*
+        It looks like the app starts as soon
+        as the var mActivityTestRule = ActivityTestRule(HomeActivity::class.java) is executed. That
+        makes the first test's results unpredictable - sometimes it will succeeds, other times it fails.
+
+        Before this test starts,the 'device.pressHome()' clicks on the 'home' button'. And then the
+        app is started.
+     */
     @Before
     fun launchActivity() {
         val device = UiDevice.getInstance(getInstrumentation())
@@ -77,14 +84,14 @@ class CreateTestFolderTest {
 
         val actionMenuItemCreateView = onView(
                 Matchers.allOf(
-                        ViewMatchers.withId(R.id.menuCreateFile),
-                        ViewMatchers.withContentDescription("Create"),
+                        withId(R.id.menuCreateFile),
+                        withContentDescription("Create"),
                         childAtPosition(
                                 childAtPosition(
-                                        ViewMatchers.withId(R.id.action_bar),
+                                        withId(R.id.action_bar),
                                         2),
                                 0),
-                        ViewMatchers.isDisplayed()
+                        isDisplayed()
                 ))
 
         actionMenuItemCreateView.perform(ViewActions.click())
@@ -93,8 +100,8 @@ class CreateTestFolderTest {
 
         val createDialogFileNameTestView = onView(
                 Matchers.allOf(
-                        ViewMatchers.withId(R.id.createDialogFileNameId),
-                        ViewMatchers.isDisplayed()
+                        withId(R.id.createDialogFileNameId),
+                        isDisplayed()
                         ))
 
         val folderName = "Espresso folder"
@@ -104,8 +111,8 @@ class CreateTestFolderTest {
 
         val createDialogFolderButtonView = onView(
                 Matchers.allOf(
-                        ViewMatchers.withId(R.id.createDialogFolderId),
-                        ViewMatchers.isDisplayed()
+                        withId(R.id.createDialogFolderId),
+                        isDisplayed()
                         ))
 
         createDialogFolderButtonView.perform(ViewActions.click())
@@ -126,8 +133,8 @@ class CreateTestFolderTest {
 
         onView(
                 Matchers.allOf(
-                        ViewMatchers.withId(R.id.fileDetailRootViewId),
-                        ViewMatchers.isDisplayed()
+                        withId(R.id.fileDetailRootViewId),
+                        isDisplayed()
                 ))
                 .check(matches(isDisplayed()))
         /* File Info screen shows */
@@ -135,8 +142,8 @@ class CreateTestFolderTest {
         /* Trash created folder */
         onView(
                 Matchers.allOf(
-                        ViewMatchers.withId(R.id.fileDetailTrashDeleteLayoutId),
-                        ViewMatchers.isDisplayed()
+                        withId(R.id.fileDetailTrashDeleteLayoutId),
+                        isDisplayed()
                 ))
                 .check(matches(isDisplayed()))
                 .perform(click())
@@ -145,10 +152,15 @@ class CreateTestFolderTest {
 
         /* We are back to the folder layout - the trashed folder should not be visible */
 
-        delay(1000)
+        delay(3000)
 
-//        clickMenuItem(R.id.menuShowTrashed)
-        clickMenuItem(R.id.title)
+        val resources = mActivityTestRule.activity.applicationContext.resources
+        val showTrashedFilesMenuItem = resources.getString(R.string.menu_show_trashed_files)
+        val parenStartPos = showTrashedFilesMenuItem.indexOf('(')
+        clickMenuItem(
+                R.id.menuShowTrashed,
+                showTrashedFilesMenuItem.substring(0, parenStartPos)
+        )
 
         /* We are back to the folder layout - the trashed folder should be visible */
 
@@ -165,8 +177,8 @@ class CreateTestFolderTest {
 
         onView(
                 Matchers.allOf(
-                        ViewMatchers.withId(R.id.fileDetailRootViewId),
-                        ViewMatchers.isDisplayed()
+                        withId(R.id.fileDetailRootViewId),
+                        isDisplayed()
                 ))
                 .check(matches(isDisplayed()))
         /* File Info screen shows */
@@ -174,17 +186,22 @@ class CreateTestFolderTest {
         /* Delete folder */
         onView(
                 Matchers.allOf(
-                        ViewMatchers.withId(R.id.fileDetailTrashDeleteLayoutId),
-                        ViewMatchers.isDisplayed()
+                        withId(R.id.fileDetailTrashDeleteLayoutId),
+                        isDisplayed()
                 ))
                 .check(matches(isDisplayed()))
                 .perform(click())
+
+        /* The test folder should not be in the adapter */
+        testItemAgainstAdapterData(folderName, false)
 
         Log.v("CreateTestFolderTest", """createNewFolderInRootFolder -
             |fileDetailTrashDeleteLayoutId: after  deleting folder """.trimMargin())
         /*onView(infoImageOnRowWithFileName(
                 ViewMatchers.withId(R.id.folderFragmentLayoutId), folderName))
                 .perform(click())*/
+
+//        add test to very the folder is not in the list view
 
         delay(2000)
 
@@ -196,11 +213,13 @@ class CreateTestFolderTest {
 
     }
 
+    /*                                  End of test code                                          */
+
     private fun validateActionbarTitle(expectedTitle: String) {
         val activityTitleTextView = onView(
-                allOf(
+                Matchers.allOf(
                         childAtPosition(
-                                allOf(
+                                Matchers.allOf(
                                         withId(R.id.action_bar),
                                         childAtPosition(
                                                 withId(R.id.action_bar_container),
@@ -211,7 +230,7 @@ class CreateTestFolderTest {
         activityTitleTextView.check(matches(withText(expectedTitle)))
     }
 
-    private fun clickMenuItem(menuItemId: Int) {
+    private fun clickMenuItem(menuItemId: Int, menuItemText: String) {
         /* Find 'add favorite stop' menu item and click on it, if it is displayed (is visible in  */
         /* the ActionBar). If it is not displayed, set the isAddFavoriteStopDisplayed - false.    */
         var isAddFavoriteStopDisplayed = false
@@ -231,15 +250,21 @@ class CreateTestFolderTest {
         /* If the 'add favorite stop' icon was not found in the ActionBar, try to find it in the  */
         /* overflow view, and clicked on it.                                                      */
         if (!isAddFavoriteStopDisplayed) {
+            val overflowViewId = R.id.title
             try {
                 openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getTargetContext())
             } catch (e: Exception) {
-                //This is normal. Maybe we dont have overflow menu.
+                //This is normal. Maybe we don't have overflow menu.
             }
 
             //            Resources resources = mActivityTestRule.getActivity().getResources();
 //            onView(withId(R.string.menu_show_trashed_files))
-            onView(withId(menuItemId))
+            onView(
+                    Matchers.allOf(
+                            withId(overflowViewId),
+//                            build matcher withTextStartWithString()
+                            withTextStartWithString(menuItemText)
+                            ))
                     .perform(click())
             Log.v(TAG, "MainActivityAddFirstFavoriteStop - clicked in the overflow menu")
         }
@@ -247,8 +272,8 @@ class CreateTestFolderTest {
 
     }
 
-    private fun testItemAgainstAdapterData(item: String, isInAdapter: Boolean) {
-        if (isInAdapter) {
+    private fun testItemAgainstAdapterData(item: String, itemShouldBeInAdapter: Boolean) {
+        if (itemShouldBeInAdapter) {
             onView(withId(R.id.folderListView))
                     .check(matches(withAdaptedData(withItemContent(
                             item))))
@@ -259,6 +284,35 @@ class CreateTestFolderTest {
         }
     }
 
+    // fixLater: Nov 15, 2018 - correct descriptions below
+    private fun withTextStartWithString(itemTextMatcher: String): Matcher<Any> {
+        return object : TypeSafeMatcher<Any>() {
+
+            override fun describeTo(description: Description) {
+                description.appendText("with text beginning with: $itemTextMatcher")
+//                itemTextMatcher.describeTo(description)
+            }
+
+            override fun matchesSafely(item: Any?): Boolean {
+                Log.v("CreateTestFolderTest.withTextStartWithString", """matchesSafely -
+                    |itemTextMatcher: $itemTextMatcher
+                    |item:            $item
+                    |""".trimMargin())
+                if (item !is TextView) {
+                    Log.v("CreateTestFolderTest.withTextStartWithString", """matchesSafely -
+                    |returns: false ; item is not TextView""".trimMargin())
+                    return false
+                }
+
+                Log.v("CreateTestFolderTest.withTextStartWithString", """matchesSafely -
+                    |item:            ${item.text.toString()}
+                    |returns: ${item.text.toString().startsWith(itemTextMatcher)} """.trimMargin())
+                return item.text.toString().startsWith(itemTextMatcher)
+            }
+        }
+    }
+
+    // fixLater: Nov 15, 2018 - correct descriptions below
     private fun withItemContent(itemTextMatcher: String): Matcher<Any> {
         return object : TypeSafeMatcher<Any>() {
 
@@ -387,7 +441,7 @@ class CreateTestFolderTest {
         }
     }
 
-    private val mDoNotSleep = false
+    private val mDoNotSleep = true
     private fun delay(msec: Int) {
         if (mDoNotSleep) {
             return

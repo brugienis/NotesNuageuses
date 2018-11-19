@@ -226,10 +226,13 @@ class FolderFragment : Fragment() {
 
     private fun refreshUi() {
         when {
-            mFolderItemsList.size == 0 ||
-                    (!mShowTrashedFiles && mTrashedFilesCnt == mFolderItemsList.size) -> {
+            mFolderItemsList.size == 0 -> {
+//                    (!mShowTrashedFiles && mTrashedFilesCnt == mFolderItemsList.size) -> {
                 Log.v("FolderFragment", """showTrashedFiles -
-                |showing empty view """.trimMargin())
+                |showing empty view
+                |mTrashedFilesCnt:      $mTrashedFilesCnt
+                |mFolderItemsList.size: ${mFolderItemsList.size}
+                |""".trimMargin())
                 mFolderEmptyView.visibility = View.VISIBLE
                 mFolderListView.visibility = View.INVISIBLE
             }
