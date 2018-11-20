@@ -59,7 +59,8 @@ class FolderArrayAdapter<T>(
         if (fileNameTv != null) {
             fileNameTv!!.text = folderItem.fileName
             //				fileUpdateTsTv.setText(context.getString(R.string.folder_array_adapter_updated) + "  " + dateFormat.format(folderItem.fileUpdateTime));
-            fileUpdateTsTv!!.setText(mContext.getString(R.string.folder_array_adapter_updated) + "  " + DateFormat.getDateTimeInstance().format(folderItem.fileUpdateTime))
+            fileUpdateTsTv!!.setText("${mContext.getString(R.string.folder_array_adapter_updated)}  " +
+                    "${DateFormat.getDateTimeInstance().format(folderItem.fileUpdateTime)}")
         }
         val mimeType = folderItem.mimeType
         if (folderItem.isTrashed) {        //context.foldersData.getCurrFolderMetadataInfo().get(position).mIsTrashed) {

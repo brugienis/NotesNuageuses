@@ -35,6 +35,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
@@ -77,6 +79,13 @@ class CreateTestFolderTest {
         Log.v("CreateTestFolderTest", """XXX-createNewFolderInRootFolder - start""")
         val resources = mActivityTestRule.activity.applicationContext.resources
 
+        val date: LocalDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        val formattedTimeNow = date.format(formatter)
+        val testFolderName = "Espresso test $formattedTimeNow"
+        Log.v("CreateTestFolderTest", """createNewFolderInRootFolder -
+            |testFolderName: ${testFolderName} """.trimMargin())
+
         ConditionWatcher.setTimeoutLimit(15 * 1000)
 
         ConditionWatcher.waitForCondition(WaitForFolderIsActiveInstruction())
@@ -94,8 +103,7 @@ class CreateTestFolderTest {
                         isDisplayed()
                         ))
 
-        val folderName = "Espresso folder"
-        createDialogFileNameTestView.perform(ViewActions.typeText(folderName))
+        createDialogFileNameTestView.perform(ViewActions.typeText(testFolderName))
 
         delay(2000)
 
@@ -106,16 +114,19 @@ class CreateTestFolderTest {
                         ))
 
         createDialogFolderButtonView.perform(ViewActions.click())
-        /* Folder was created */
+
+        validateActionbarTitle(testFolderName)
+
+        /*                               Folder was created                                       */
 
         delay(2000)
 
-        testItemAgainstAdapterData(folderName, true)
+        testItemAgainstAdapterData(testFolderName, true)
 
         delay(2000)
 
         val fileInfoIconImage = onView(infoImageOnRowWithFileName(
-                ViewMatchers.withId(R.id.folderFragmentLayoutId), folderName)
+                ViewMatchers.withId(R.id.folderFragmentLayoutId), testFolderName)
         )
 
         fileInfoIconImage.perform(ViewActions.click())
@@ -154,7 +165,7 @@ class CreateTestFolderTest {
         delay(2000)
 
         onView(infoImageOnRowWithFileName(
-                ViewMatchers.withId(R.id.folderFragmentLayoutId), folderName))
+                ViewMatchers.withId(R.id.folderFragmentLayoutId), testFolderName))
                 .perform(ViewActions.click())
 
         /* Row with the folderName is selected */
@@ -178,7 +189,7 @@ class CreateTestFolderTest {
                 .perform(click())
 
         /* The test folder should not be in the adapter */
-        testItemAgainstAdapterData(folderName, false)
+        testItemAgainstAdapterData(testFolderName, false)
 
 
 //        add test to very the folder is not in the list view
