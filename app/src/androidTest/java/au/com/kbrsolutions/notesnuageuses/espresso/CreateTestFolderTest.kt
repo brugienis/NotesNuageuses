@@ -75,6 +75,7 @@ class CreateTestFolderTest {
     @Test
     fun createNewFolderInRootFolder() {
         Log.v("CreateTestFolderTest", """XXX-createNewFolderInRootFolder - start""")
+        val resources = mActivityTestRule.activity.applicationContext.resources
 
         ConditionWatcher.setTimeoutLimit(15 * 1000)
 
@@ -82,21 +83,10 @@ class CreateTestFolderTest {
 
         validateActionbarTitle("App folder")
 
-        val actionMenuItemCreateView = onView(
-                Matchers.allOf(
-                        withId(R.id.menuCreateFile),
-                        withContentDescription("Create"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.action_bar),
-                                        2),
-                                0),
-                        isDisplayed()
-                ))
-
-        actionMenuItemCreateView.perform(ViewActions.click())
-
-//        delay(3000)
+        clickMenuItem(
+                R.id.menuCreateFile,
+                resources.getString(R.string.menu_create_file)
+        )
 
         val createDialogFileNameTestView = onView(
                 Matchers.allOf(
@@ -147,14 +137,11 @@ class CreateTestFolderTest {
                 ))
                 .check(matches(isDisplayed()))
                 .perform(click())
-        Log.v("CreateTestFolderTest", """createNewFolderInRootFolder -
-            |fileDetailTrashDeleteLayoutId: after trashing folder """.trimMargin())
 
         /* We are back to the folder layout - the trashed folder should not be visible */
 
         delay(3000)
 
-        val resources = mActivityTestRule.activity.applicationContext.resources
         val showTrashedFilesMenuItem = resources.getString(R.string.menu_show_trashed_files)
         val parenStartPos = showTrashedFilesMenuItem.indexOf('(')
         clickMenuItem(
@@ -165,9 +152,6 @@ class CreateTestFolderTest {
         /* We are back to the folder layout - the trashed folder should be visible */
 
         delay(2000)
-
-        Log.v("CreateTestFolderTest", """createNewFolderInRootFolder -
-            |fileDetailTrashDeleteLayoutId: before deleting folder """.trimMargin())
 
         onView(infoImageOnRowWithFileName(
                 ViewMatchers.withId(R.id.folderFragmentLayoutId), folderName))
@@ -181,6 +165,7 @@ class CreateTestFolderTest {
                         isDisplayed()
                 ))
                 .check(matches(isDisplayed()))
+
         /* File Info screen shows */
 
         /* Delete folder */
@@ -195,11 +180,6 @@ class CreateTestFolderTest {
         /* The test folder should not be in the adapter */
         testItemAgainstAdapterData(folderName, false)
 
-        Log.v("CreateTestFolderTest", """createNewFolderInRootFolder -
-            |fileDetailTrashDeleteLayoutId: after  deleting folder """.trimMargin())
-        /*onView(infoImageOnRowWithFileName(
-                ViewMatchers.withId(R.id.folderFragmentLayoutId), folderName))
-                .perform(click())*/
 
 //        add test to very the folder is not in the list view
 
@@ -231,25 +211,22 @@ class CreateTestFolderTest {
     }
 
     private fun clickMenuItem(menuItemId: Int, menuItemText: String) {
-        /* Find 'add favorite stop' menu item and click on it, if it is displayed (is visible in  */
-        /* the ActionBar). If it is not displayed, set the isAddFavoriteStopDisplayed - false.    */
-        var isAddFavoriteStopDisplayed = false
+        /* Find menuItemId and click on it, if it is displayed (is visible in the ActionBar). If it
+        is not displayed, set the isMenuItemDisplayed - false.    */
+        var isMenuItemDisplayed = true
         onView(withId(menuItemId))
                 .withFailureHandler(object : FailureHandler {
                     override fun handle(error: Throwable, viewMatcher: Matcher<View>) {
-                        Log.v(
-                                TAG,
-                                "MainActivityAddFirstFavoriteStop - the 'add' icon is not displayed")
-                        isAddFavoriteStopDisplayed = false
+                        isMenuItemDisplayed = false
                     }
                 })
                 .check(matches(isDisplayed()))
                 .perform(click())
 
 
-        /* If the 'add favorite stop' icon was not found in the ActionBar, try to find it in the  */
+        /* If the 'sMenuItemDisplayed' was not found in the ActionBar, try to find it in the      */
         /* overflow view, and clicked on it.                                                      */
-        if (!isAddFavoriteStopDisplayed) {
+        if (!isMenuItemDisplayed) {
             val overflowViewId = R.id.title
             try {
                 openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getTargetContext())
@@ -257,19 +234,13 @@ class CreateTestFolderTest {
                 //This is normal. Maybe we don't have overflow menu.
             }
 
-            //            Resources resources = mActivityTestRule.getActivity().getResources();
-//            onView(withId(R.string.menu_show_trashed_files))
             onView(
                     Matchers.allOf(
                             withId(overflowViewId),
-//                            build matcher withTextStartWithString()
                             withTextStartWithString(menuItemText)
                             ))
                     .perform(click())
-            Log.v(TAG, "MainActivityAddFirstFavoriteStop - clicked in the overflow menu")
         }
-
-
     }
 
     private fun testItemAgainstAdapterData(item: String, itemShouldBeInAdapter: Boolean) {
@@ -290,23 +261,13 @@ class CreateTestFolderTest {
 
             override fun describeTo(description: Description) {
                 description.appendText("with text beginning with: $itemTextMatcher")
-//                itemTextMatcher.describeTo(description)
             }
 
             override fun matchesSafely(item: Any?): Boolean {
-                Log.v("CreateTestFolderTest.withTextStartWithString", """matchesSafely -
-                    |itemTextMatcher: $itemTextMatcher
-                    |item:            $item
-                    |""".trimMargin())
                 if (item !is TextView) {
-                    Log.v("CreateTestFolderTest.withTextStartWithString", """matchesSafely -
-                    |returns: false ; item is not TextView""".trimMargin())
                     return false
                 }
 
-                Log.v("CreateTestFolderTest.withTextStartWithString", """matchesSafely -
-                    |item:            ${item.text.toString()}
-                    |returns: ${item.text.toString().startsWith(itemTextMatcher)} """.trimMargin())
                 return item.text.toString().startsWith(itemTextMatcher)
             }
         }
@@ -318,22 +279,13 @@ class CreateTestFolderTest {
 
             override fun describeTo(description: Description) {
                 description.appendText("with class name: ")
-//                itemTextMatcher.describeTo(description)
             }
 
             override fun matchesSafely(item: Any?): Boolean {
-                Log.v("CreateTestFolderTest.withItemContent", """matchesSafely -
-                    |item: $itemTextMatcher
-                    |item: $item
-                    |""".trimMargin())
                 if (item !is String) {
-                    Log.v("CreateTestFolderTest.withItemContent", """matchesSafely -
-                    |returns: false ; item is not String""".trimMargin())
                     return false
                 }
 
-                Log.v("CreateTestFolderTest.withItemContent", """matchesSafely -
-                    |returns: ${itemTextMatcher == item} """.trimMargin())
                 return itemTextMatcher == item
             }
         }
@@ -357,9 +309,6 @@ class CreateTestFolderTest {
                 var folderIitem: FolderItem?
                 for (i in 0 until adapter.count) {
                     folderIitem = adapter.getItem(i) as FolderItem
-                    Log.v("CreateTestFolderTest.withAdaptedData", """matchesSafely -
-                        |file name:    $cnt ${folderIitem.fileName}
-                        |""".trimMargin())
                     cnt++
                     if (dataMatcher.matches(folderIitem.fileName)) {
                         return true
@@ -431,13 +380,6 @@ class CreateTestFolderTest {
                         parentMatcher.matches(parent) &&
                         view == parent.getChildAt(position)
             }
-
-            /*private fun showTextViewText(view: View, cond: Boolean) {
-                if (cond) {
-                    Log.v("CreateTestFolderTest", """childAtPosition.showTextViewText -
-                        |view: $view """.trimMargin())
-                }
-            }*/
         }
     }
 
