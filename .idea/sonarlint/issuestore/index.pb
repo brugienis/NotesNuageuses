@@ -141,3 +141,5 @@ _app/src/main/java/au/com/kbrsolutions/notesnuageuses/features/espresso/ActiveFl
 settings.gradle,0/5/05efc8b1657769a27696d478ded1e95f38737233
 g
 7app/src/main/res/layout/fragment_folder_list_screen.xml,b/8/b8f85a43b0fd2d12bfe0618bd09972155371bb82
+‘
+aapp/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/espresso/helpers/EspressoShortcuts.kt,a/a/aa0c805e4a7d8d531bc507f05764f3f6ac64e120
