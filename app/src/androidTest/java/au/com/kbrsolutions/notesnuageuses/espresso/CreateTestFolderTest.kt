@@ -21,7 +21,9 @@ import androidx.test.runner.AndroidJUnit4
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import au.com.kbrsolutions.notesnuageuses.R
+import au.com.kbrsolutions.notesnuageuses.R.id.createDialogFolderId
 import au.com.kbrsolutions.notesnuageuses.espresso.helpers.WaitForFolderIsActiveInstruction
+import au.com.kbrsolutions.notesnuageuses.espresso.helpers.performClick
 import au.com.kbrsolutions.notesnuageuses.features.espresso.ActiveFlagsController
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
@@ -107,13 +109,15 @@ class CreateTestFolderTest {
 
         delay(2000)
 
-        val createDialogFolderButtonView = onView(
+        createDialogFolderId.performClick()
+
+        /*val createDialogFolderButtonView = onView(
                 Matchers.allOf(
                         withId(R.id.createDialogFolderId),
                         isDisplayed()
                         ))
 
-        createDialogFolderButtonView.perform(ViewActions.click())
+        createDialogFolderButtonView.perform(ViewActions.click())*/
 
         validateActionbarTitle(testFolderName)
 
