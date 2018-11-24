@@ -99,7 +99,8 @@ class HomeActivity : BaseActivity(),
         SETTINGS_FRAGMENT
     }
 
-    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+    private val mOnNavigationItemSelectedListener =
+            BottomNavigationView.OnNavigationItemSelectedListener { item ->
 
         when (item.itemId) {
 
@@ -121,6 +122,7 @@ class HomeActivity : BaseActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
@@ -133,6 +135,10 @@ class HomeActivity : BaseActivity(),
         // https://freakycoder.com/android-notes-24-how-to-add-back-button-at-toolbar-941e6577418e
 //        mToolbar = findViewById(R.id.toolbar)
 //        setSupportActionBar(mToolbar)
+
+        val mToolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(mToolbar)
+
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeButtonEnabled(true)
     }

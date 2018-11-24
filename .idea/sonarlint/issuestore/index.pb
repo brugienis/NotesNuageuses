@@ -143,3 +143,5 @@ g
 7app/src/main/res/layout/fragment_folder_list_screen.xml,b/8/b8f85a43b0fd2d12bfe0618bd09972155371bb82
 ‘
 aapp/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/espresso/helpers/EspressoShortcuts.kt,a/a/aa0c805e4a7d8d531bc507f05764f3f6ac64e120
+w
+G.idea/sonarlint/issuestore/a/a/aa0c805e4a7d8d531bc507f05764f3f6ac64e120,9/5/9544b9922906b2a10a6829110cbc267eb9e7a361

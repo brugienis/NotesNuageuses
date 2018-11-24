@@ -1,6 +1,6 @@
 package au.com.kbrsolutions.notesnuageuses.espresso
 
-import android.util.Log
+import android.util.Log.v
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -48,6 +48,12 @@ class CreateTestFolderTest {
 //        ActiveFlagsController.setEspressoTestRunning()
 //    }
 
+    // check package androidx.test.espresso.matcher
+    // public final class ViewMatchers.
+
+    // package org.hamcrest
+    // public class Matchers
+
     @Rule
     @JvmField
     var mActivityTestRule = ActivityTestRule(HomeActivity::class.java)
@@ -71,21 +77,21 @@ class CreateTestFolderTest {
 
         // Perform a click on the button to load the app launcher.
         allAppsButton.clickAndWaitForNewWindow()
-        Log.v("CreateTestFolderTest", """XXX-launchActivity - start""")
+        v("CreateTestFolderTest", """XXX-launchActivity - start""")
         ActiveFlagsController.isEspressoTestRunning = true
-        Log.v("CreateTestFolderTest", """XXX-launchActivity - end""")
+        v("CreateTestFolderTest", """XXX-launchActivity - end""")
     }
 
     @Test
     fun createNewFolderInRootFolder() {
-        Log.v("CreateTestFolderTest", """XXX-createNewFolderInRootFolder - start""")
+        v("CreateTestFolderTest", """XXX-createNewFolderInRootFolder - start""")
         val resources = mActivityTestRule.activity.applicationContext.resources
 
         val date: LocalDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         val formattedTimeNow = date.format(formatter)
         val testFolderName = "Espresso test $formattedTimeNow"
-        Log.v("CreateTestFolderTest", """createNewFolderInRootFolder -
+        v("CreateTestFolderTest", """createNewFolderInRootFolder -
             |testFolderName: ${testFolderName} """.trimMargin())
 
         ConditionWatcher.setTimeoutLimit(15 * 1000)
@@ -129,21 +135,34 @@ class CreateTestFolderTest {
 
         delay(2000)
 
-        val fileInfoIconImage = onView(infoImageOnRowWithFileName(
-                ViewMatchers.withId(R.id.folderFragmentLayoutId), testFolderName)
+        val fileInfoIconImage = onView(
+                infoImageOnRowWithFileName(
+                        ViewMatchers.withId(R.id.folderFragmentLayoutId),
+                        testFolderName)
         )
 
         fileInfoIconImage.perform(ViewActions.click())
-        /* Row with the folderName is selected */
+        v("CreateTestFolderTest", """createNewFolderInRootFolder
+            | after - fileInfoIconImage.perform(ViewActions.click())
+            | """.trimMargin())
+        /* Row with the folderName just created is now selected */
+
+        delay(3000)
 
         onView(
                 Matchers.allOf(
                         withId(R.id.fileDetailRootViewId),
+//                        hasSibling(ViewMatchers.withText("item: 0")),
                         isDisplayed()
                 ))
                 .check(matches(isDisplayed()))
-        /* File Info screen shows */
 
+        /*                            File Info screen shows                                      */
+
+        delay(3000)
+
+        v("CreateTestFolderTest", """createNewFolderInRootFolder -
+            |before click on the fileDetailTrashDeleteLayoutId """.trimMargin())
         /* Trash created folder */
         onView(
                 Matchers.allOf(
@@ -211,18 +230,38 @@ class CreateTestFolderTest {
     /*                                  End of test code                                          */
 
     private fun validateActionbarTitle(expectedTitle: String) {
-        val activityTitleTextView = onView(
+        v("CreateTestFolderTest", """validateActionbarTitle - start
+            |expectedTitle: ${expectedTitle}
+            |""".trimMargin())
+        val activityTitleTextView0 = onView(
                 Matchers.allOf(
+                        childTextViewAtPosition(
+                                withId(R.id.toolbar),
+                                expectedTitle,
+                                0),
+                        isDisplayed()))
+                .check(matches(isDisplayed()))
+        v("CreateTestFolderTest", """validateActionbarTitle - end
+            |expectedTitle: ${expectedTitle}
+            |""".trimMargin())
+        activityTitleTextView0.check(matches(withText(expectedTitle)))
+
+        /*val activityTitleTextView = onView(
+                Matchers.allOf(
+
+
                         childAtPosition(
                                 Matchers.allOf(
-                                        withId(R.id.action_bar),
+//                                        withId(R.id.action_bar),
+                                        withId(R.id.appbar),
                                         childAtPosition(
-                                                withId(R.id.action_bar_container),
+//                                                withId(R.id.action_bar_container),
+                                                withId(R.id.toolbar),
                                                 0)),
-                                0),
+                                1),
                         isDisplayed())
         )
-        activityTitleTextView.check(matches(withText(expectedTitle)))
+        activityTitleTextView.check(matches(withText(expectedTitle)))*/
     }
 
     private fun clickMenuItem(menuItemId: Int, menuItemText: String) {
@@ -360,8 +399,7 @@ class CreateTestFolderTest {
                 if (parent == null || parent !is View) return false
                 val fileNameView = parent.findViewById<View>(R.id.fileNameId)
                 if (fileNameView == null || fileNameView !is TextView) return false
-                val contentText = fileNameView.text
-                if (contentText == null) return false
+                val contentText = fileNameView.text ?: return false
 
                 if (
                         !rowFound &&
@@ -370,6 +408,8 @@ class CreateTestFolderTest {
                         contentText == fileName) {
                     foundFirstInfoImageView = view
                     rowFound = true
+                    v("CreateTestFolderTest", """matchesSafely - found view with text
+                        |contentText: ${contentText} """.trimMargin())
                     return true
                 }
                 return false
@@ -386,11 +426,27 @@ class CreateTestFolderTest {
             }
 
             public override fun matchesSafely(view: View): Boolean {
+                v("CreateTestFolderTest", """childAtPosition.matchesSafely - start
+                            |view: ${view}
+                            |""".trimMargin())
                 val parent = view.parent
-                /*showTextViewText(view,
-                        parent is ViewGroup &&
-                        parentMatcher.matches(parent) &&
-                        view == parent.getChildAt(position))*/
+                if (view is ViewGroup && view.id == R.id.appbar) {
+                    val childCount = view.childCount
+                    for (i in 0 until childCount) {
+                        view.getChildAt(i)
+                        v("CreateTestFolderTest", """childAtPosition.matchesSafely -
+                            |i:    ${i}
+                            |view: ${view}
+                            |""".trimMargin())
+                    }
+                }
+                if (parent is ViewGroup && view.id == R.id.toolbar) {
+                    val childCount = parent.childCount
+                    parent.getChildAt(position)
+                    v("CreateTestFolderTest", """childAtPosition.matchesSafely -
+                            |parent: ${parent}
+                            |""".trimMargin())
+                }
                 return parent is ViewGroup &&
                         parentMatcher.matches(parent) &&
                         view == parent.getChildAt(position)
@@ -398,7 +454,68 @@ class CreateTestFolderTest {
         }
     }
 
-    private val mDoNotSleep = true
+    private fun childTextViewAtPosition(
+            parentMatcher: Matcher<View>,
+            expectedText: String,
+            position: Int): Matcher<View> {
+        var lastExpectedString = ""
+        return object : TypeSafeMatcher<View>() {
+
+            var rowFound = false
+            override fun describeTo(description: Description) {
+                description.appendText("""Child at position: $position
+                    | with expected text: $expectedText in parent """.trimMargin())
+                parentMatcher.describeTo(description)
+            }
+
+            public override fun matchesSafely(view: View): Boolean {
+                /*v("CreateTestFolderTest", """matchesSafely -
+                    |lastExpectedString: ${lastExpectedString}
+                    |eExpectedString:    ${expectedText}
+                    |""".trimMargin())*/
+                if (lastExpectedString != expectedText) {
+                    lastExpectedString = expectedText
+                    rowFound = false
+                }
+                if (rowFound) return false
+                if (view !is TextView) {
+                    return false
+                }
+                val parent = view.parent
+
+                /*if (parent is ViewGroup && view.id == R.id.toolbar) {
+                    val childCount = parent.childCount
+                    parent.getChildAt(position)
+                    Log.v("CreateTestFolderTest", """childTextViewAtPosition.matchesSafely -
+                            |parent:   ${parent}
+                            |position: ${position}
+                            |child:    ${parent.getChildAt(position)}
+                            |""".trimMargin())
+                }*/
+                if (parent is ViewGroup &&
+                        parentMatcher.matches(parent) &&
+                        view == parent.getChildAt(position) &&
+                        view.text.toString() == expectedText) {
+
+                    val child = parent.getChildAt(position) as TextView
+                    v("CreateTestFolderTest", """childTextViewAtPosition.matchesSafely -
+                            |parent:        $parent
+                            |parentMatcher: $parentMatcher
+                            |position:      $position
+                            |child's:       ${child.text}; id: ${child.id}
+                            |view's text:   ${view.text};  id: ${view.id}
+                            |""".trimMargin())
+
+//                    rowFound = true
+                    return true
+                }
+                return false
+
+            }
+        }
+    }
+
+    private val mDoNotSleep: Boolean = false
     private fun delay(msec: Int) {
         if (mDoNotSleep) {
             return
