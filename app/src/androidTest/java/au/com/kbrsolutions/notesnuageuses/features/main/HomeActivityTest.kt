@@ -57,7 +57,7 @@ class HomeActivityTest {
         Thread.sleep(7000)
 
         val appCompatEditText = onView(
-                allOf(withId(R.id.createDialogFileNameId),
+                allOf(withId(R.id.createDialog_FileName),
                         childAtPosition(
                                 allOf(withId(R.id.locationDialogRootViewId),
                                         childAtPosition(
@@ -68,7 +68,7 @@ class HomeActivityTest {
         appCompatEditText.perform(replaceText("Melbourne"), closeSoftKeyboard())
 
         val appCompatTextView = onView(
-                allOf(withId(R.id.createDialogFolderId), withText("Folder"),
+                allOf(withId(R.id.createDialog_CreateFolder), withText("Folder"),
                         childAtPosition(
                                 allOf(withId(R.id.locationDialogRootViewId),
                                         childAtPosition(

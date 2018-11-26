@@ -71,7 +71,7 @@
             android:layout_height="36dp"/>
 
         <RelativeLayout
-            android:id="@+id/fileDetailTrashDeleteLayoutId"
+            android:id="@+id/fileDetail_TrashOrDelete"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_weight="1" >

@@ -16,7 +16,7 @@
     <View android:layout_height="1dip" android:layout_width="match_parent" android:background="#FF909090"/>
 
     <EditText
-        android:id="@+id/createDialogFileNameId"
+        android:id="@+id/createDialog_FileName"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:enabled="true"
@@ -27,7 +27,7 @@
     <View android:layout_height="3dip" android:layout_width="match_parent" android:background="#FF909090"/>
 
     <TextView
-        android:id="@+id/createDialogFolderId"
+        android:id="@+id/createDialog_CreateFolder"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:layout_weight="1"
@@ -39,7 +39,7 @@
     <View android:layout_height="1dip" android:layout_width="match_parent" android:background="#FF909090"/>
 
     <TextView
-        android:id="@+id/createDialogPhotoId"
+        android:id="@+id/createDialog_CreatePhoto"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:layout_weight="1"
@@ -51,7 +51,7 @@
     <View android:layout_height="1dip" android:layout_width="match_parent" android:background="#FF909090"/>
 
     <TextView
-        android:id="@+id/createDialogTextId"
+        android:id="@+id/createDialog_CreateTextNote"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:layout_weight="1"
@@ -63,7 +63,7 @@
     <View android:layout_height="1dip" android:layout_width="match_parent" android:background="#FF909090"/>
 
     <TextView
-        android:id="@+id/createDialogCancelId"
+        android:id="@+id/createDialog_CancelDialog"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:layout_weight="1"

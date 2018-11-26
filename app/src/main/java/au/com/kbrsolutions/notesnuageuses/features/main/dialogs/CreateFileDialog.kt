@@ -35,15 +35,15 @@ class CreateFileDialog : DialogFragment() {
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.create_file_dialog, container, false)
 
-        fileNameTv = rootView.createDialogFileNameId
+        fileNameTv = rootView.createDialog_FileName
 
-        rootView.createDialogFolderId!!.setOnClickListener { createFolder() }
+        rootView.createDialog_CreateFolder!!.setOnClickListener { createFolder() }
 
-        rootView.createDialogPhotoId!!.setOnClickListener { createPhotoNote() }
+        rootView.createDialog_CreatePhoto!!.setOnClickListener { createPhotoNote() }
 
-        rootView.createDialogTextId!!.setOnClickListener { createTextNote() }
+        rootView.createDialog_CreateTextNote!!.setOnClickListener { createTextNote() }
 
-        rootView.createDialogCancelId!!.setOnClickListener { cancelCreateFileDialog() }
+        rootView.createDialog_CancelDialog!!.setOnClickListener { cancelCreateFileDialog() }
 
         return rootView
     }

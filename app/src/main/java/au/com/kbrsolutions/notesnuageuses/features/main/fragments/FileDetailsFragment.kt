@@ -97,7 +97,7 @@ class FileDetailsFragment : Fragment() {
             fileDetailRenameUntrashImageId!!.setImageResource(R.mipmap.ic_edit_black_48dp)
         }
 
-        trashDeleteLayout = rootView.fileDetailTrashDeleteLayoutId
+        trashDeleteLayout = rootView.fileDetail_TrashOrDelete
 
         trashDeleteLayout!!.setOnClickListener {
             Log.v("FileDetailsFragment", """onCreateView - trashOrDeleteFile: trashDeleteLayout!!.setOnClickListener """)
