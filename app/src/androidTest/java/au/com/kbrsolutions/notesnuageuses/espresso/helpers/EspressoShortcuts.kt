@@ -24,6 +24,13 @@ fun Int.performClick(): ViewInteraction = matchView().performClick()
 
 //-------------------------------------------------------------------------------
 
+fun ViewInteraction.checkIsDisplayed(): ViewInteraction =
+        check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
+fun Int.isCheckDisplayed(): ViewInteraction = matchView().checkIsDisplayed()
+
+//-------------------------------------------------------------------------------
+
 fun validateActionbarTitle(expectedTitle: String) {
     Log.v("CreateTestFolderTest", """validateActionbarTitle - start
             |expectedTitle: ${expectedTitle}

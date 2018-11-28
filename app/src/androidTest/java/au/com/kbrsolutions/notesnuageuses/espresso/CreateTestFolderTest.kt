@@ -19,10 +19,7 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.R.id.*
-import au.com.kbrsolutions.notesnuageuses.espresso.helpers.WaitForFolderIsActiveInstruction
-import au.com.kbrsolutions.notesnuageuses.espresso.helpers.performClick
-import au.com.kbrsolutions.notesnuageuses.espresso.helpers.performMenuItemClick
-import au.com.kbrsolutions.notesnuageuses.espresso.helpers.validateActionbarTitle
+import au.com.kbrsolutions.notesnuageuses.espresso.helpers.*
 import au.com.kbrsolutions.notesnuageuses.features.espresso.ActiveFlagsController
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
@@ -59,12 +56,13 @@ class CreateTestFolderTest {
     var mActivityTestRule = ActivityTestRule(HomeActivity::class.java)
 
     /*
-        It looks like the app starts as soon
-        as the var mActivityTestRule = ActivityTestRule(HomeActivity::class.java) is executed. That
-        makes the first test's results unpredictable - sometimes it will succeeds, other times it fails.
+        It looks like the app starts as soon as the
+            var mActivityTestRule = ActivityTestRule(HomeActivity::class.java)
+        is executed. That makes the first test's results unpredictable - sometimes it succeeds,
+        other times it fails.
 
         Before this test starts,the 'device.pressHome()' clicks on the 'home' button'. And then the
-        app is started.
+        app is started. It makes testing predictable.
      */
     @Before
     fun launchActivity() {
@@ -97,11 +95,6 @@ class CreateTestFolderTest {
 
         menuCreateFile.performMenuItemClick(resources.getString(R.string.menu_create_file))
 
-        /*clickMenuItem(
-                R.id.menuCreateFile,
-                resources.getString(R.string.menu_create_file)
-        )*/
-
         val createDialogFileNameTestView = onView(
                 Matchers.allOf(
                         withId(R.id.createDialog_FileName),
@@ -113,14 +106,6 @@ class CreateTestFolderTest {
         delay(2000)
 
         createDialog_CreateFolder.performClick()
-
-        /*val createDialogFolderButtonView = onView(
-                Matchers.allOf(
-                        withId(R.id.createDialogFolderId),
-                        isDisplayed()
-                        ))
-
-        createDialogFolderButtonView.perform(ViewActions.click())*/
 
         validateActionbarTitle(testFolderName)
 
@@ -144,12 +129,14 @@ class CreateTestFolderTest {
 
         delay(3000)
 
-        onView(
+        fileDetailRootViewId.isCheckDisplayed()
+
+        /*onView(
                 Matchers.allOf(
                         withId(R.id.fileDetailRootViewId),
                         isDisplayed()
                 ))
-                .check(matches(isDisplayed()))
+                .check(matches(isDisplayed()))*/
 
         /*                            File Info screen shows                                      */
 
@@ -160,14 +147,6 @@ class CreateTestFolderTest {
 
         fileDetail_TrashOrDelete.performClick()
 
-        /*onView(
-                Matchers.allOf(
-                        withId(R.id.fileDetailTrashDeleteLayoutId),
-                        isDisplayed()
-                ))
-                .check(matches(isDisplayed()))
-                .perform(click())*/
-
         /* We are back to the folder layout - the trashed folder should not be visible */
 
         delay(3000)
@@ -176,11 +155,6 @@ class CreateTestFolderTest {
         val parenStartPos = showTrashedFilesMenuItem.indexOf('(')
 
         menuShowTrashed.performMenuItemClick(showTrashedFilesMenuItem.substring(0, parenStartPos))
-
-        /*clickMenuItem(
-                R.id.menuShowTrashed,
-                showTrashedFilesMenuItem.substring(0, parenStartPos)
-        )*/
 
         /* We are back to the folder layout - the trashed folder should be visible */
 
@@ -192,12 +166,14 @@ class CreateTestFolderTest {
 
         /* Row with the folderName is selected */
 
-        onView(
+
+        fileDetailRootViewId.isCheckDisplayed()
+       /* onView(
                 Matchers.allOf(
                         withId(R.id.fileDetailRootViewId),
                         isDisplayed()
                 ))
-                .check(matches(isDisplayed()))
+                .check(matches(isDisplayed()))*/
 
         /* File Info screen shows */
 
