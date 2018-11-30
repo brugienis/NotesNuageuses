@@ -1,14 +1,11 @@
 package au.com.kbrsolutions.notesnuageuses.espresso
 
-import android.util.Log.v
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.test.InstrumentationRegistry.getInstrumentation
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.filters.LargeTest
@@ -113,11 +110,6 @@ class CreateTestFolderTest {
         delay(2000)
 
         showFileDetailsViewForTestFolderName(R.id.folderFragmentLayoutId, testFolderName)
-        /*onView(
-                infoImageOnRowWithFileName(
-                        ViewMatchers.withId(R.id.folderFragmentLayoutId),
-                        testFolderName))
-                        .perform(ViewActions.click())*/
 
         /* Row with the folderName just created is now selected */
 
@@ -128,7 +120,6 @@ class CreateTestFolderTest {
         /*                            File Info screen shows                                      */
 
         delay(3000)
-
 
         /* Trash created folder */
 
@@ -147,20 +138,12 @@ class CreateTestFolderTest {
 
         delay(2000)
 
-        onView(infoImageOnRowWithFileName(
-                ViewMatchers.withId(R.id.folderFragmentLayoutId), testFolderName))
-                .perform(ViewActions.click())
+        showFileDetailsViewForTestFolderName(R.id.folderFragmentLayoutId, testFolderName)
 
         /* Row with the folderName is selected */
 
 
         fileDetailRootView.checkIsDisplayed()
-       /* onView(
-                Matchers.allOf(
-                        withId(R.id.fileDetailRootViewId),
-                        isDisplayed()
-                ))
-                .check(matches(isDisplayed()))*/
 
         /* File Info screen shows */
 
@@ -168,18 +151,9 @@ class CreateTestFolderTest {
 
         fileDetail_TrashOrDelete.performClick()
 
-        /*onView(
-                Matchers.allOf(
-                        withId(R.id.fileDetailTrashDeleteLayoutId),
-                        isDisplayed()
-                ))
-                .check(matches(isDisplayed()))
-                .perform(click())*/
-
         /* The test folder should not be in the adapter */
-        testItemAgainstAdapterData(testFolderName, false)
 
-//        add test to very the folder is not in the list view
+        testItemAgainstAdapterData(testFolderName, false)
 
         delay(2000)
 
@@ -248,86 +222,6 @@ class CreateTestFolderTest {
                 }
 
                 return false
-            }
-        }
-    }
-
-    /*
-        matchesSafely(...) will return true on a first list view row, containing 'infoImageId' view
-        and a 'fileNameId' with text equal to 'fileName'.
-     */
-    /*private fun infoImageOnRowWithFileName(
-            parentMatcher: Matcher<View>,
-            fileName: String): Matcher<View> {
-
-        return object : TypeSafeMatcher<View>() {
-
-            var rowFound = false
-            var foundFirstInfoImageView: View? = null
-
-            override fun describeTo(description: Description) {
-                description.appendText("FileName with text $fileName in parent ")
-                parentMatcher.describeTo(description)
-            }
-
-            public override fun matchesSafely(view: View): Boolean {
-                if (rowFound) return false
-                if (view.id != R.id.infoImageId) return false
-                val parent = view.parent
-                if (parent == null || parent !is View) return false
-                val fileNameView = parent.findViewById<View>(R.id.fileNameId)
-                if (fileNameView == null || fileNameView !is TextView) return false
-                val contentText = fileNameView.text ?: return false
-
-                if (
-                        !rowFound &&
-                        parent is ViewGroup &&
-                        parentMatcher.matches(parent) &&
-                        contentText == fileName) {
-                    foundFirstInfoImageView = view
-                    rowFound = true
-                    v("CreateTestFolderTest", """matchesSafely - found view with text
-                        |contentText: ${contentText} """.trimMargin())
-                    return true
-                }
-                return false
-            }
-        }
-    }*/
-
-    private fun childAtPosition(parentMatcher: Matcher<View>, position: Int): Matcher<View> {
-
-        return object : TypeSafeMatcher<View>() {
-            override fun describeTo(description: Description) {
-                description.appendText("Child at position $position in parent ")
-                parentMatcher.describeTo(description)
-            }
-
-            public override fun matchesSafely(view: View): Boolean {
-                v("CreateTestFolderTest", """childAtPosition.matchesSafely - start
-                            |view: ${view}
-                            |""".trimMargin())
-                val parent = view.parent
-                if (view is ViewGroup && view.id == R.id.appbar) {
-                    val childCount = view.childCount
-                    for (i in 0 until childCount) {
-                        view.getChildAt(i)
-                        v("CreateTestFolderTest", """childAtPosition.matchesSafely -
-                            |i:    ${i}
-                            |view: ${view}
-                            |""".trimMargin())
-                    }
-                }
-                if (parent is ViewGroup && view.id == R.id.toolbar) {
-                    val childCount = parent.childCount
-                    parent.getChildAt(position)
-                    v("CreateTestFolderTest", """childAtPosition.matchesSafely -
-                            |parent: ${parent}
-                            |""".trimMargin())
-                }
-                return parent is ViewGroup &&
-                        parentMatcher.matches(parent) &&
-                        view == parent.getChildAt(position)
             }
         }
     }

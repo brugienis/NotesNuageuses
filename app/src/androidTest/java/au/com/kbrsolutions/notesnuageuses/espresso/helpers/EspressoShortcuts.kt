@@ -1,6 +1,5 @@
 package au.com.kbrsolutions.notesnuageuses.espresso.helpers
 
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -32,9 +31,9 @@ fun Int.checkIsDisplayed(): ViewInteraction = matchView().checkIsDisplayed()
 //-------------------------------------------------------------------------------
 
 fun validateActionbarTitle(expectedTitle: String) {
-    Log.v("CreateTestFolderTest", """validateActionbarTitle - start
+    /*Log.v("CreateTestFolderTest", """validateActionbarTitle - start
             |expectedTitle: ${expectedTitle}
-            |""".trimMargin())
+            |""".trimMargin())*/
     val activityTitleTextView0 = Espresso.onView(
             Matchers.allOf(
                     childTextViewAtPosition(
@@ -43,9 +42,9 @@ fun validateActionbarTitle(expectedTitle: String) {
                             0),
                     ViewMatchers.isDisplayed()))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-    Log.v("CreateTestFolderTest", """validateActionbarTitle - end
+    /*Log.v("CreateTestFolderTest", """validateActionbarTitle - end
             |expectedTitle: ${expectedTitle}
-            |""".trimMargin())
+            |""".trimMargin())*/
     activityTitleTextView0.check(ViewAssertions.matches(ViewMatchers.withText(expectedTitle)))
 
     /*val activityTitleTextView = onView(
@@ -217,8 +216,8 @@ fun infoImageOnRowWithFileName(
                     contentText == fileName) {
                 foundFirstInfoImageView = view
                 rowFound = true
-                Log.v("CreateTestFolderTest", """matchesSafely - found view with text
-                        |contentText: ${contentText} """.trimMargin())
+                /*Log.v("CreateTestFolderTest", """matchesSafely - found view with text
+                        |contentText: ${contentText} """.trimMargin())*/
                 return true
             }
             return false
