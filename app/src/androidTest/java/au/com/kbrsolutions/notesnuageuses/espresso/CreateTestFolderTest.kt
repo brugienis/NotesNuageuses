@@ -4,9 +4,7 @@ import android.view.View
 import android.widget.AdapterView
 import androidx.test.InstrumentationRegistry.getInstrumentation
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
@@ -23,7 +21,6 @@ import com.azimolabs.conditionwatcher.ConditionWatcher
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Description
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Before
 import org.junit.Rule
@@ -87,13 +84,7 @@ class CreateTestFolderTest {
 
         menuCreateFile.performMenuItemClick(resources.getString(R.string.menu_create_file))
 
-        val createDialogFileNameTestView = onView(
-                Matchers.allOf(
-                        withId(R.id.createDialog_FileName),
-                        isDisplayed()
-                        ))
-
-        createDialogFileNameTestView.perform(ViewActions.typeText(testFolderName))
+        createDialog_FileName.performTypeText(testFolderName)
 
         delay(2000)
 
@@ -145,7 +136,7 @@ class CreateTestFolderTest {
 
         fileDetailRootView.checkIsDisplayed()
 
-        /* File Info screen shows */
+        /* File Detail screen shows */
 
         /* Delete folder */
 

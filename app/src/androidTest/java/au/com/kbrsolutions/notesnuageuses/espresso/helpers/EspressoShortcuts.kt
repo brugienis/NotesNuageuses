@@ -21,6 +21,12 @@ fun Int.matchView(): ViewInteraction = Espresso.onView(ViewMatchers.withId(this)
 
 fun Int.performClick(): ViewInteraction = matchView().performClick()
 
+fun ViewInteraction.performTypeText(stringToBeTyped: String): ViewInteraction =
+        perform(ViewActions.typeText(stringToBeTyped))
+
+fun Int.performTypeText(stringToBeTyped: String): ViewInteraction =
+        matchView().performTypeText(stringToBeTyped)
+
 //-------------------------------------------------------------------------------
 
 fun ViewInteraction.checkIsDisplayed(): ViewInteraction =
@@ -46,23 +52,6 @@ fun validateActionbarTitle(expectedTitle: String) {
             |expectedTitle: ${expectedTitle}
             |""".trimMargin())*/
     activityTitleTextView0.check(ViewAssertions.matches(ViewMatchers.withText(expectedTitle)))
-
-    /*val activityTitleTextView = onView(
-            Matchers.allOf(
-
-
-                    childAtPosition(
-                            Matchers.allOf(
-//                                        withId(R.id.action_bar),
-                                    withId(R.id.appbar),
-                                    childAtPosition(
-//                                                withId(R.id.action_bar_container),
-                                            withId(R.id.toolbar),
-                                            0)),
-                            1),
-                    isDisplayed())
-    )
-    activityTitleTextView.check(matches(withText(expectedTitle)))*/
 }
 
 //-------------------------------------------------------------------------------
