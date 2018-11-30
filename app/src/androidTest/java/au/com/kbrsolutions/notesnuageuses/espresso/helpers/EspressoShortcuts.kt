@@ -27,7 +27,7 @@ fun Int.performClick(): ViewInteraction = matchView().performClick()
 fun ViewInteraction.checkIsDisplayed(): ViewInteraction =
         check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
-fun Int.isCheckDisplayed(): ViewInteraction = matchView().checkIsDisplayed()
+fun Int.checkIsDisplayed(): ViewInteraction = matchView().checkIsDisplayed()
 
 //-------------------------------------------------------------------------------
 
@@ -73,7 +73,6 @@ fun childTextViewAtPosition(
         parentMatcher: Matcher<View>,
         expectedText: String,
         position: Int): Matcher<View> {
-    var lastExpectedString = ""
     return object : TypeSafeMatcher<View>() {
 
         var rowFound = false
@@ -92,13 +91,12 @@ fun childTextViewAtPosition(
                 lastExpectedString = expectedText
                 rowFound = false
             }*/
-            if (rowFound) return false
             if (view !is TextView) {
                 return false
             }
             val parent = view.parent
 
-            if (parent is ViewGroup && parent.id == R.id.toolbar) {
+            /*if (parent is ViewGroup && parent.id == R.id.toolbar) {
                 for (pos in 0.. parent.childCount) {
                     Log.v("CreateTestFolderTest", """childTextViewAtPosition.matchesSafely -
                             |parent:   $parent
@@ -106,22 +104,21 @@ fun childTextViewAtPosition(
                             |child:    ${parent.getChildAt(pos)}
                             |""".trimMargin())
                 }
-            }
+            }*/
             if (parent is ViewGroup &&
                     parentMatcher.matches(parent) &&
                     view == parent.getChildAt(position) &&
                     view.text.toString() == expectedText) {
 
-                val child = parent.getChildAt(position) as TextView
-                Log.v("CreateTestFolderTest", """childTextViewAtPosition.matchesSafely -
+                /*val child = parent.getChildAt(position) as TextView
+                Log.v("CreateTestFolderTest", """childTextViewAtPosition.matchesSafely - match found
                             |parent:        $parent
                             |parentMatcher: $parentMatcher
                             |position:      $position
                             |child's:       ${child.text}; id: ${child.id}
                             |view's text:   ${view.text};  id: ${view.id}
-                            |""".trimMargin())
+                            |""".trimMargin())*/
 
-//                    rowFound = true
                 return true
             }
             return false
@@ -172,6 +169,59 @@ fun withTextStartWithString(itemTextMatcher: String): Matcher<Any> {
             }
 
             return item.text.toString().startsWith(itemTextMatcher)
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------
+
+fun showFileDetailsViewForTestFolderName(id:Int, testFolderName: String) {
+    Espresso.onView(
+            infoImageOnRowWithFileName(
+                    ViewMatchers.withId(id),
+                    testFolderName))
+            .perform(ViewActions.click())
+}
+
+/*
+    matchesSafely(...) will return true on a first list view row, containing 'infoImageId' view
+    and a 'fileNameId' with text equal to 'fileName'.
+ */
+fun infoImageOnRowWithFileName(
+        parentMatcher: Matcher<View>,
+        fileName: String): Matcher<View> {
+
+    return object : TypeSafeMatcher<View>() {
+
+        var rowFound = false
+        var foundFirstInfoImageView: View? = null
+
+        override fun describeTo(description: Description) {
+            description.appendText("FileName with text $fileName in parent ")
+            parentMatcher.describeTo(description)
+        }
+
+        public override fun matchesSafely(view: View): Boolean {
+            if (rowFound) return false
+            if (view.id != R.id.infoImageId) return false
+            val parent = view.parent
+            if (parent == null || parent !is View) return false
+            val fileNameView = parent.findViewById<View>(R.id.fileNameId)
+            if (fileNameView == null || fileNameView !is TextView) return false
+            val contentText = fileNameView.text ?: return false
+
+            if (
+                    !rowFound &&
+                    parent is ViewGroup &&
+                    parentMatcher.matches(parent) &&
+                    contentText == fileName) {
+                foundFirstInfoImageView = view
+                rowFound = true
+                Log.v("CreateTestFolderTest", """matchesSafely - found view with text
+                        |contentText: ${contentText} """.trimMargin())
+                return true
+            }
+            return false
         }
     }
 }
