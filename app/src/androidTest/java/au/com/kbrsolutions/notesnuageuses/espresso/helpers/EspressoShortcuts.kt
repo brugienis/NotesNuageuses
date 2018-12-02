@@ -43,9 +43,6 @@ fun Int.checkIsDisplayed(): ViewInteraction = matchView().checkIsDisplayed()
 //-------------------------------------------------------------------------------
 
 fun validateActionbarTitle(expectedTitle: String) {
-    /*Log.v("CreateTestFolderTest", """validateActionbarTitle - start
-            |expectedTitle: ${expectedTitle}
-            |""".trimMargin())*/
     val activityTitleTextView0 = Espresso.onView(
             Matchers.allOf(
                     childTextViewAtPosition(
@@ -54,9 +51,6 @@ fun validateActionbarTitle(expectedTitle: String) {
                             0),
                     ViewMatchers.isDisplayed()))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-    /*Log.v("CreateTestFolderTest", """validateActionbarTitle - end
-            |expectedTitle: ${expectedTitle}
-            |""".trimMargin())*/
     activityTitleTextView0.check(ViewAssertions.matches(ViewMatchers.withText(expectedTitle)))
 }
 
@@ -77,14 +71,6 @@ fun childTextViewAtPosition(
         }
 
         public override fun matchesSafely(view: View): Boolean {
-            /*v("CreateTestFolderTest", """matchesSafely -
-                |lastExpectedString: ${lastExpectedString}
-                |eExpectedString:    ${expectedText}
-                |""".trimMargin())*/
-            /*if (lastExpectedString != expectedText) {
-                lastExpectedString = expectedText
-                rowFound = false
-            }*/
             if (view !is TextView) {
                 return false
             }
@@ -103,16 +89,6 @@ fun childTextViewAtPosition(
                     parentMatcher.matches(parent) &&
                     view == parent.getChildAt(position) &&
                     view.text.toString() == expectedText) {
-
-                /*val child = parent.getChildAt(position) as TextView
-                Log.v("CreateTestFolderTest", """childTextViewAtPosition.matchesSafely - match found
-                            |parent:        $parent
-                            |parentMatcher: $parentMatcher
-                            |position:      $position
-                            |child's:       ${child.text}; id: ${child.id}
-                            |view's text:   ${view.text};  id: ${view.id}
-                            |""".trimMargin())*/
-
                 return true
             }
             return false
@@ -149,7 +125,6 @@ fun Int.performMenuItemClick(menuItemText: String) {
     }
 }
 
-// fixLater: Nov 15, 2018 - correct descriptions below
 fun withTextStartWithString(itemTextMatcher: String): Matcher<Any> {
     return object : TypeSafeMatcher<Any>() {
 
@@ -211,8 +186,6 @@ fun infoImageOnRowWithFileName(
                     contentText == fileName) {
                 foundFirstInfoImageView = view
                 rowFound = true
-                /*Log.v("CreateTestFolderTest", """matchesSafely - found view with text
-                        |contentText: ${contentText} """.trimMargin())*/
                 return true
             }
             return false
