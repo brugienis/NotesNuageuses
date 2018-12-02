@@ -1,11 +1,6 @@
 package au.com.kbrsolutions.notesnuageuses.espresso
 
-import android.view.View
-import android.widget.AdapterView
 import androidx.test.InstrumentationRegistry.getInstrumentation
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
@@ -16,12 +11,7 @@ import au.com.kbrsolutions.notesnuageuses.R.id.*
 import au.com.kbrsolutions.notesnuageuses.espresso.helpers.*
 import au.com.kbrsolutions.notesnuageuses.features.espresso.ActiveFlagsController
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
-import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import com.azimolabs.conditionwatcher.ConditionWatcher
-import org.hamcrest.CoreMatchers.not
-import org.hamcrest.Description
-import org.hamcrest.Matcher
-import org.hamcrest.TypeSafeMatcher
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -112,7 +102,7 @@ class CreateTestFolderTest {
 
         delay(3000)
 
-        /* Trash created folder */
+        /* Trash test folder */
 
         fileDetail_TrashOrDelete.performClick()
 
@@ -138,7 +128,7 @@ class CreateTestFolderTest {
 
         /* File Detail screen shows */
 
-        /* Delete folder */
+        /* Delete test folder */
 
         fileDetail_TrashOrDelete.performClick()
 
@@ -157,65 +147,6 @@ class CreateTestFolderTest {
     }
 
     /*                                  End of test code                                          */
-
-    private fun testItemAgainstAdapterData(item: String, itemShouldBeInAdapter: Boolean) {
-        if (itemShouldBeInAdapter) {
-            onView(withId(R.id.folderListView))
-                    .check(matches(withAdaptedData(withItemContent(
-                            item))))
-        } else {
-            onView(withId(R.id.folderListView))
-                    .check(matches(not(withAdaptedData(withItemContent(
-                            item)))))
-        }
-    }
-
-    // fixLater: Nov 15, 2018 - correct descriptions below
-    private fun withItemContent(itemTextMatcher: String): Matcher<Any> {
-        return object : TypeSafeMatcher<Any>() {
-
-            override fun describeTo(description: Description) {
-                description.appendText("with class name: ")
-            }
-
-            override fun matchesSafely(item: Any?): Boolean {
-                if (item !is String) {
-                    return false
-                }
-
-                return itemTextMatcher == item
-            }
-        }
-    }
-
-    private fun withAdaptedData(dataMatcher: Matcher<Any>): Matcher<View> {
-        return object : TypeSafeMatcher<View>() {
-
-            override fun describeTo(description: Description) {
-                description.appendText("with class name: ")
-                dataMatcher.describeTo(description)
-            }
-
-            public override fun matchesSafely(view: View) : Boolean {
-                if (view !is AdapterView<*>) {
-                    return false
-                }
-
-                val adapter = view.adapter
-                var cnt = 0
-                var folderIitem: FolderItem?
-                for (i in 0 until adapter.count) {
-                    folderIitem = adapter.getItem(i) as FolderItem
-                    cnt++
-                    if (dataMatcher.matches(folderIitem.fileName)) {
-                        return true
-                    }
-                }
-
-                return false
-            }
-        }
-    }
 
     private val mDoNotSleep: Boolean = true
     private fun delay(msec: Int) {

@@ -1,9 +1,9 @@
 
-okotlin:S3776"RRefactor this method to reduce its Cognitive Complexity from 19 to the 15 allowed.(×ˆøÅ8ˆ—»›ô,
-Ekotlin:S1481")Remove this unused "text" local variable.(“¯Ÿ^8ˆ—»›ô,
 [kotlin:S1144"9Remove this unused private "handleShowRootFolder" method.(È¿ú±üÿÿÿÿ8ˆ—»›ô,
+Ekotlin:S1481")Remove this unused "text" local variable.(“¯Ÿ^8ˆ—»›ô,
+Qkotlin:S1144"4Remove this unused private "printCollection" method.(˜•¹Ù8ˆ—»›ô,
+nkotlin:S1134"LTake the required action to fix the issue indicated by this "FIXME" comment.(‰„ÆÂúÿÿÿÿ8ˆ—»›ô,
+okotlin:S3776"RRefactor this method to reduce its Cognitive Complexity from 19 to the 15 allowed.(×ˆøÅ8ˆ—»›ô,
+Pkotlin:S1481".Remove this unused "currTitle" local variable.(Âå‰Æÿÿÿÿÿ8ˆ—»›ô,
 @kotlin:S125"Remove this commented out code.(ÊŸ®¿øÿÿÿÿ8ˆ—»›ô,
 @kotlin:S125"Remove this commented out code.(ª£ôäüÿÿÿÿ8ˆ—»›ô,
-nkotlin:S1134"LTake the required action to fix the issue indicated by this "FIXME" comment.(‰„ÆÂúÿÿÿÿ8ˆ—»›ô,
-Qkotlin:S1144"4Remove this unused private "printCollection" method.(˜•¹Ù8ˆ—»›ô,
-Pkotlin:S1481".Remove this unused "currTitle" local variable.(Âå‰Æÿÿÿÿÿ8ˆ—»›ô,

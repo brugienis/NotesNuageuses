@@ -2,6 +2,7 @@ package au.com.kbrsolutions.notesnuageuses.espresso.helpers
 
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.TextView
 import androidx.test.InstrumentationRegistry
 import androidx.test.espresso.Espresso
@@ -10,10 +11,8 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import au.com.kbrsolutions.notesnuageuses.R
-import org.hamcrest.Description
-import org.hamcrest.Matcher
-import org.hamcrest.Matchers
-import org.hamcrest.TypeSafeMatcher
+import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
+import org.hamcrest.*
 
 fun ViewInteraction.performClick(): ViewInteraction = perform(ViewActions.click())
 
@@ -209,6 +208,65 @@ fun infoImageOnRowWithFileName(
                         |contentText: ${contentText} """.trimMargin())*/
                 return true
             }
+            return false
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------
+
+fun testItemAgainstAdapterData(item: String, itemShouldBeInAdapter: Boolean) {
+    if (itemShouldBeInAdapter) {
+        Espresso.onView(ViewMatchers.withId(R.id.folderListView))
+                .check(ViewAssertions.matches(withAdapterData(withItemContent(
+                        item))))
+    } else {
+        Espresso.onView(ViewMatchers.withId(R.id.folderListView))
+                .check(ViewAssertions.matches(CoreMatchers.not(withAdapterData(withItemContent(
+                        item)))))
+    }
+}
+
+// fixLater: Nov 15, 2018 - correct descriptions below
+private fun withItemContent(itemTextMatcher: String): Matcher<Any> {
+    return object : TypeSafeMatcher<Any>() {
+
+        override fun describeTo(description: Description) {
+            description.appendText("with class name: ")
+        }
+
+        override fun matchesSafely(item: Any?): Boolean {
+            if (item !is String) {
+                return false
+            }
+
+            return itemTextMatcher == item
+        }
+    }
+}
+
+private fun withAdapterData(dataMatcher: Matcher<Any>): Matcher<View> {
+    return object : TypeSafeMatcher<View>() {
+
+        override fun describeTo(description: Description) {
+            description.appendText("with class name: ")
+            dataMatcher.describeTo(description)
+        }
+
+        public override fun matchesSafely(view: View) : Boolean {
+            if (view !is AdapterView<*>) {
+                return false
+            }
+
+            val adapter = view.adapter
+            var folderIitem: FolderItem?
+            (0 until adapter.count).forEach { i ->
+                folderIitem = adapter.getItem(i) as FolderItem
+                if (dataMatcher.matches(folderIitem!!.fileName)) {
+                    return true
+                }
+            }
+
             return false
         }
     }
