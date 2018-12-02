@@ -14,6 +14,13 @@ import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import org.hamcrest.*
 
+/*check package androidx.test.espresso.matcher - HasSiblingMatcher
+(hasSibling(ViewMatchers.withText("some text"))), etc.
+public final class ViewMatchers.
+
+package org.hamcrest
+public class Matchers*/
+
 fun ViewInteraction.performClick(): ViewInteraction = perform(ViewActions.click())
 
 fun Int.matchView(): ViewInteraction = Espresso.onView(ViewMatchers.withId(this))
@@ -215,41 +222,49 @@ fun infoImageOnRowWithFileName(
 
 //-------------------------------------------------------------------------------
 
+/*
+    Verify that adapter contains / doesn't contain 'item'
+ */
 fun testItemAgainstAdapterData(item: String, itemShouldBeInAdapter: Boolean) {
     if (itemShouldBeInAdapter) {
         Espresso.onView(ViewMatchers.withId(R.id.folderListView))
-                .check(ViewAssertions.matches(withAdapterData(withItemContent(
+                .check(ViewAssertions.matches(withAdapterData(withFileName(
                         item))))
     } else {
         Espresso.onView(ViewMatchers.withId(R.id.folderListView))
-                .check(ViewAssertions.matches(CoreMatchers.not(withAdapterData(withItemContent(
+                .check(ViewAssertions.matches(CoreMatchers.not(withAdapterData(withFileName(
                         item)))))
     }
 }
 
-// fixLater: Nov 15, 2018 - correct descriptions below
-private fun withItemContent(itemTextMatcher: String): Matcher<Any> {
+/*
+    Returns true if passed FolderItem contains 'filerName' equal to lookupFileName
+ */
+private fun withFileName(lookupFileName: String): Matcher<Any> {
     return object : TypeSafeMatcher<Any>() {
 
         override fun describeTo(description: Description) {
-            description.appendText("with class name: ")
+            description.appendText("with file name: $lookupFileName")
         }
 
         override fun matchesSafely(item: Any?): Boolean {
-            if (item !is String) {
+            if (item !is FolderItem) {
                 return false
             }
 
-            return itemTextMatcher == item
+            return lookupFileName == item.fileName
         }
     }
 }
 
+/*
+    Returns true if adapter contains row that matched 'dataMatcher'
+ */
 private fun withAdapterData(dataMatcher: Matcher<Any>): Matcher<View> {
     return object : TypeSafeMatcher<View>() {
 
         override fun describeTo(description: Description) {
-            description.appendText("with class name: ")
+            description.appendText("adapter contains row: ")
             dataMatcher.describeTo(description)
         }
 
@@ -259,10 +274,8 @@ private fun withAdapterData(dataMatcher: Matcher<Any>): Matcher<View> {
             }
 
             val adapter = view.adapter
-            var folderIitem: FolderItem?
             (0 until adapter.count).forEach { i ->
-                folderIitem = adapter.getItem(i) as FolderItem
-                if (dataMatcher.matches(folderIitem!!.fileName)) {
+                if (dataMatcher.matches(adapter.getItem(i))) {
                     return true
                 }
             }

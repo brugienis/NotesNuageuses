@@ -106,6 +106,8 @@ class CreateTestFolderTest {
 
         fileDetail_TrashOrDelete.performClick()
 
+        validateActionbarTitle(APP_ROOT_FOLDER)
+
         /* We are back to the app root folder layout - the trashed folder should not be visible */
 
         delay(3000)
