@@ -14,12 +14,14 @@ import au.com.kbrsolutions.notesnuageuses.R
 import au.com.kbrsolutions.notesnuageuses.features.main.adapters.FolderItem
 import org.hamcrest.*
 
-/*check package androidx.test.espresso.matcher - HasSiblingMatcher
-(hasSibling(ViewMatchers.withText("some text"))), etc.
-public final class ViewMatchers.
+/*
+    check package androidx.test.espresso.matcher - HasSiblingMatcher
+    (hasSibling(ViewMatchers.withText("some text"))), etc.
+    public final class ViewMatchers.
 
-package org.hamcrest
-public class Matchers*/
+    package org.hamcrest
+    public class Matchers
+*/
 
 fun ViewInteraction.performClick(): ViewInteraction = perform(ViewActions.click())
 

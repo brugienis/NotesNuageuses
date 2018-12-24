@@ -23,12 +23,12 @@ object ActiveFlagsController {
         }
     }
 
-    fun performEndOfTestMethodValidation(source: String) {
+    fun performEndOfTestValidations(source: String) {
         if (mActiveFlagsSet.size != 1) {
             throw RuntimeException(
                     "BR - " +
                             TAG +
-                            ".performEndOfTestMethodValidation - mActiveFlagsSet size must be 1 but is: " +
+                            ".performEndOfTestValidations - mActiveFlagsSet size must be 1 but is: " +
                             mActiveFlagsSet.size + "; " +
                             mActiveFlagsSet)
         }

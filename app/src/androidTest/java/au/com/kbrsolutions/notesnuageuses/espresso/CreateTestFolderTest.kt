@@ -144,7 +144,7 @@ class CreateTestFolderTest {
 
         delay(2000)
 
-        ActiveFlagsController.performEndOfTestMethodValidation("createNewFolderInRootFolder")
+        ActiveFlagsController.performEndOfTestValidations("createNewFolderInRootFolder")
 
     }
 
