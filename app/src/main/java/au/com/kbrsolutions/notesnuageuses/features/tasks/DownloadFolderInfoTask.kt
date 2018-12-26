@@ -29,8 +29,7 @@ data class DownloadFolderInfoTask(
     override fun call(): String {
 
         try {
-            val foldersAddData: FolderData = getFolderFilesList(
-                    driveResourceClient, selectedFolderDriveId)
+            val foldersAddData: FolderData = getFolderFilesList()
 
             eventBus.post(FoldersEvents.Builder(FoldersEvents.Events.FOLDER_DATA_RETRIEVED)
                     .foldersAddData(foldersAddData)
@@ -50,9 +49,13 @@ data class DownloadFolderInfoTask(
         return "DownloadFolderInfoTask done"
     }
 
-    private fun getFolderFilesList(
-            mDriveResourceClient: DriveResourceClient?,
-            selectedFolderDriveId: DriveId?): FolderData {
+    private fun getDriveFolder(): DriveFolder {
+        val appFolderTask = driveResourceClient.rootFolder
+        Tasks.await(appFolderTask)
+        return appFolderTask.result
+    }
+
+    private fun getFolderFilesList(): FolderData {
 
         val processingNewFolder =
                 selectedFolderDriveId == null || selectedFolderDriveId != parentFolderDriveId
@@ -62,18 +65,12 @@ data class DownloadFolderInfoTask(
 
         lateinit var foldersAddData: FolderData
         try {
-            selectedDriveFolder = if (selectedFolderDriveId == null) {
-                // Task<DriveFolder> appFolderTask = driveResourceClient.getAppFolder();
-                val appFolderTask = mDriveResourceClient!!.rootFolder
-                Tasks.await(appFolderTask)
-            } else {
-                selectedFolderDriveId.asDriveFolder()
-            }
+            selectedDriveFolder = selectedFolderDriveId?.asDriveFolder() ?: getDriveFolder()
+
             val query = Query.Builder()
-                    // .addFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
                     .build()
 
-            val queryTask = mDriveResourceClient!!
+            val queryTask = driveResourceClient!!
                     .queryChildren(selectedDriveFolder, query)
 
             val metadataBuffer = Tasks.await(queryTask)

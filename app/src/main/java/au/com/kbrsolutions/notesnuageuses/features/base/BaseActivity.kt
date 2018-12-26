@@ -5,7 +5,6 @@ package au.com.kbrsolutions.notesnuageuses.features.base
 
 import android.app.Activity
 import android.content.Intent
-import android.content.IntentSender
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
@@ -16,10 +15,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
 import com.google.android.gms.drive.*
-import com.google.android.gms.drive.query.Filters
-import com.google.android.gms.drive.query.SearchableField
-import com.google.android.gms.tasks.Continuation
-import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.TaskCompletionSource
 import org.greenrobot.eventbus.EventBus
 import java.util.*
@@ -32,7 +27,7 @@ abstract class BaseActivity: AppCompatActivity() {
     /**
      * Handles high-level drive functions like sync
      */
-    private var mDriveClient: DriveClient? = null
+    private lateinit var mDriveClient: DriveClient
 
     /**
      * Handle access to Drive resources/files.
@@ -144,27 +139,27 @@ abstract class BaseActivity: AppCompatActivity() {
      *
      * @return Task that resolves with the selected item's ID.
      */
-    protected fun pickTextFile(): Task<DriveId>? {
+    /*protected fun pickTextFile(): Task<DriveId>? {
         val openOptions = OpenFileActivityOptions.Builder()
                 .setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
                 .setActivityTitle(getString(R.string.select_file))
                 .build()
         return pickItem(openOptions)
-    }
+    }*/
 
     /**
      * Prompts the user to select a folder using OpenFileActivity.
      *
      * @return Task that resolves with the selected item's ID.
      */
-    protected fun pickFolder(): Task<DriveId>? {
+    /*protected fun pickFolder(): Task<DriveId>? {
         val openOptions = OpenFileActivityOptions.Builder()
                 .setSelectionFilter(
                         Filters.eq(SearchableField.MIME_TYPE, DriveFolder.MIME_TYPE))
                 .setActivityTitle(getString(R.string.select_folder))
                 .build()
         return pickItem(openOptions)
-    }
+    }*/
 
     /**
      * Prompts the user to select a folder using OpenFileActivity.
@@ -172,7 +167,7 @@ abstract class BaseActivity: AppCompatActivity() {
      * @param openOptions Filter that should be applied to the selection
      * @return Task that resolves with the selected item's ID.
      */
-    private fun pickItem(openOptions: OpenFileActivityOptions): Task<DriveId>? {
+    /*private fun pickItem(openOptions: OpenFileActivityOptions): Task<DriveId>? {
         mOpenItemTaskSource = TaskCompletionSource()
         getDriveClient()!!
                 .newOpenFileActivityIntentSender(openOptions)
@@ -182,7 +177,7 @@ abstract class BaseActivity: AppCompatActivity() {
                     null
                 } as Continuation<IntentSender, Void>)
         return mOpenItemTaskSource!!.task
-    }
+    }*/
 
     /**
      * Shows a toast message.
@@ -194,7 +189,7 @@ abstract class BaseActivity: AppCompatActivity() {
     /**
      * Called after the user has signed in and the Drive client has been initialized.
      */
-    abstract protected fun onDriveClientReady()
+    protected abstract fun onDriveClientReady()
 
     protected fun getDriveClient(): DriveClient? {
         return mDriveClient

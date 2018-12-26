@@ -54,7 +54,6 @@ class HomeActivity : BaseActivity(),
         FileDetailsFragment.OnFileDetailsFragmentInteractionListener {
 
     private lateinit var eventBus: EventBus
-    private var mToolbar: Toolbar? = null
     private val mTestMode: Boolean = false
     private lateinit var handleCancellableFuturesCallable: HandleCancellableFuturesCallable
     private var mCancellableFuture: Future<String>? = null
@@ -63,7 +62,7 @@ class HomeActivity : BaseActivity(),
     private lateinit var mExecutorService: ExecutorService
     private var showTrashedFiles: Boolean = false
     private var newFragmentSet: Boolean = false
-    private var currFragment: FragmentsEnum? = null
+    private lateinit var currFragment: FragmentsEnum
     private var isAppFinishing = false
     private var mTitle: CharSequence? = null
 
