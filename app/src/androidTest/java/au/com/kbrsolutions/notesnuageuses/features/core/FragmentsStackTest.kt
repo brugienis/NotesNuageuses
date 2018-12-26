@@ -276,7 +276,7 @@ class FragmentsStackTest {
         val expectedFragmentsStackResponse = FragmentsStackResponse(
                 false,
                 FragmentsEnum.NONE,
-                "Ab",
+                "Folder--1",
                 true,
                 false,
                 true)
