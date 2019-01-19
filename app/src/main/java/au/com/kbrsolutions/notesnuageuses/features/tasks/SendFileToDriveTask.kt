@@ -14,9 +14,9 @@ import java.util.*
 import java.util.concurrent.Callable
 
 data class SendFileToDriveTask(
-        var context: Context,
-        var eventBus: EventBus,
-        var driveResourceClient: DriveResourceClient,
+        val context: Context,
+        val eventBus: EventBus,
+        val driveResourceClient: DriveResourceClient,
         val parentFolderLevel: Int,
         val parentFolderDriveId: DriveId,
         val existingFileDriveId: DriveId?,

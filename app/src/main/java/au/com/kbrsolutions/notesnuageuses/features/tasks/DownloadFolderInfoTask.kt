@@ -18,13 +18,13 @@ import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
 
 data class DownloadFolderInfoTask(
-        var activity: Context,
-        var eventBus: EventBus,
-        var driveResourceClient: DriveResourceClient,
-        var selectedFolderTitle: String,
-        var selectedFolderDriveId: DriveId?,
-        var parentFolderLevel: Int,
-        var parentFolderDriveId: DriveId?): Callable<String> {
+        val activity: Context,
+        val eventBus: EventBus,
+        val driveResourceClient: DriveResourceClient,
+        val selectedFolderTitle: String,
+        val selectedFolderDriveId: DriveId?,
+        val parentFolderLevel: Int,
+        val parentFolderDriveId: DriveId?): Callable<String> {
 
     override fun call(): String {
 

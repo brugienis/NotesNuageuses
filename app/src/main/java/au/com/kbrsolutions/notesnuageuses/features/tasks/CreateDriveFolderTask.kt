@@ -16,11 +16,11 @@ import java.util.*
 import java.util.concurrent.Callable
 
 data class CreateDriveFolderTask(
-        var activity: Activity,
-        var eventBus: EventBus,
-        var driveResourceClient: DriveResourceClient,
-        var parentFolderLevel: Int,
-        var parentFolderDriveId: DriveId?,
+        val activity: Activity,
+        val eventBus: EventBus,
+        val driveResourceClient: DriveResourceClient,
+        val parentFolderLevel: Int,
+        val parentFolderDriveId: DriveId?,
         val newFolderName: String?) : Callable<String> {
 
 

@@ -15,9 +15,9 @@ import java.util.*
 import java.util.concurrent.Callable
 
 data class RenameFileOnDriveTask(
-        var context: Context,
-        var eventBus: EventBus,
-        var driveResourceClient: DriveResourceClient,
+        val context: Context,
+        val eventBus: EventBus,
+        val driveResourceClient: DriveResourceClient,
         val thisFileDriveId: DriveId,
         val newFileName: String,
         val idxInTheFolderFilesList: Int,

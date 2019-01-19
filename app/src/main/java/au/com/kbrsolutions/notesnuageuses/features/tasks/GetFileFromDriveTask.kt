@@ -15,14 +15,14 @@ import java.io.InputStreamReader
 import java.util.concurrent.Callable
 
 data class GetFileFromDriveTask(
-        var context: Context,
-        var eventBus: EventBus,
-        var driveResourceClient: DriveResourceClient,
+        val context: Context,
+        val eventBus: EventBus,
+        val driveResourceClient: DriveResourceClient,
         val selectedDriveId: DriveId,
         val fileName: String,
         val mimeType: String,
         val fileItemId: Long,
-        var idxInTheFolderFilesList: Int): Callable<String> {
+        val idxInTheFolderFilesList: Int): Callable<String> {
 
     private var decryptMillis: Long = 0
 
