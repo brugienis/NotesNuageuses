@@ -40,7 +40,7 @@ import java.util.concurrent.Future
 //          https://developers.google.com/drive/android/examples/
 
 class HomeActivity : BaseActivity(),
-        FolderFragment.OnFolderFragmentNewInteractionListener,
+        FolderFragment.OnFolderFragmentInteractionListener,
         FolderArrayAdapter.OnFolderArrayAdapterInteractionListener,
         CreateFileDialog.OnCreateFileDialogInteractionListener,
         DriveAccessEventsHandler.OnDriveAccessEventsHandlerInteractionListener,

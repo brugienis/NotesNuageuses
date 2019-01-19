@@ -70,7 +70,7 @@ data class DownloadFolderInfoTask(
             val query = Query.Builder()
                     .build()
 
-            val queryTask = driveResourceClient!!
+            val queryTask = driveResourceClient
                     .queryChildren(selectedDriveFolder, query)
 
             val metadataBuffer = Tasks.await(queryTask)

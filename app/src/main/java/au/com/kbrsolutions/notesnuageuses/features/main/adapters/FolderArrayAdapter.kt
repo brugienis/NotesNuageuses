@@ -23,9 +23,9 @@ class FolderArrayAdapter<T>(
 
     init {
         // fixLater: Oct 16, 2018 - shouldn't it be OnFolderArrayAdapterInteractionListener?
-        if (mOnClickListener !is FolderFragment.OnFolderFragmentNewInteractionListener) {
+        if (mOnClickListener !is FolderFragment.OnFolderFragmentInteractionListener) {
             throw RuntimeException(mOnClickListener.toString() +
-                    " must implement OnFolderArrayAdapterInteractionListener")
+                    " must implement OnFolderFragmentInteractionListener")
         }
     }
 

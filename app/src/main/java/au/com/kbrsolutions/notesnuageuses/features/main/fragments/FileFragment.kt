@@ -26,12 +26,10 @@ class FileFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnFileFragmentInteractionListener) {
-            mListener = context
-        } else {
-            throw RuntimeException(context.toString() +
-                    " must implement OnFileFragmentInteractionListener")
-        }
+
+        mListener = context as? OnFileFragmentInteractionListener ?:
+                throw RuntimeException(context.toString() +
+                        " must implement OnFileFragmentInteractionListener")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

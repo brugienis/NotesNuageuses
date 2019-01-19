@@ -50,12 +50,10 @@ class FileDetailsFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnFileDetailsFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException(context.toString() +
-                    " must implement OnFileDetailsFragmentInteractionListener")
-        }
+        listener = context as? OnFileDetailsFragmentInteractionListener ?:
+                throw RuntimeException(context.toString() +
+                        " must implement OnFileDetailsFragmentInteractionListener")
+
     }
 
     override fun onCreateView(

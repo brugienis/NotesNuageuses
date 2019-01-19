@@ -3,7 +3,6 @@ package au.com.kbrsolutions.notesnuageuses.features.main.fragments
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ListView
@@ -25,7 +24,7 @@ class FolderFragment : Fragment() {
     private lateinit var mFolderListView: ListView
     private lateinit var mFolderEmptyView: TextView
 
-    private var listener: OnFolderFragmentNewInteractionListener? = null
+    private var listener: OnFolderFragmentInteractionListener? = null
 
     private enum class TouchedObject {
         MENU_QUICK_PHOTO, MENU_CREATE_FILE, MENU_REFRESH, FILE_OR_FOLDER
@@ -33,12 +32,14 @@ class FolderFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnFolderFragmentNewInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException(context.toString() +
-                    " must implement OnFolderFragmentInteractionListener")
-        }
+
+        listener = context as? OnFolderFragmentInteractionListener ?:
+                throw RuntimeException(context.toString() +
+                        " must implement OnFolderFragmentInteractionListener")
+
+        if (context !is FolderArrayAdapter.OnFolderArrayAdapterInteractionListener)
+                throw RuntimeException(context.toString() +
+                        " must implement FolderArrayAdapter.OnFolderArrayAdapterInteractionListener")
     }
 
     override fun onDetach() {
@@ -93,7 +94,6 @@ class FolderFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if (ActiveFlagsController.isEspressoTestRunning) {
-            Log.v("FolderFragment", """onResume - XXX-start """)
             ActiveFlagsController.setEspressoFolderFragmentActiveFlag("$TAG.onResume",
                     true)
         }
@@ -259,7 +259,7 @@ class FolderFragment : Fragment() {
      *
      * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
-    interface OnFolderFragmentNewInteractionListener {
+    interface OnFolderFragmentInteractionListener {
         fun showFileDialog()
         fun handleOnFolderOrFileClick(position: Int)
 //        fun showSelectedFileDetails(position: Int)
@@ -277,7 +277,6 @@ class FolderFragment : Fragment() {
                         putParcelableArrayList(ARG_FOLDER_ITEMS_LIST_KEY, folderItemsList)
                         putInt(ARG_TRASH_FILES_CNT_KEY, trashFilesCnt)
                     }
-//                    Log.v("FolderFragment", "newInstance - arguments: $arguments ")
                 }
 
     }
