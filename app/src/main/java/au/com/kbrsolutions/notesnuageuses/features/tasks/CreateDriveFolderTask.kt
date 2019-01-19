@@ -16,21 +16,24 @@ import java.util.*
 import java.util.concurrent.Callable
 
 data class CreateDriveFolderTask(
-        var activity: Activity?,
-        var eventBus: EventBus?,
-        var driveResourceClient: DriveResourceClient?,
+        var activity: Activity,
+        var eventBus: EventBus,
+        var driveResourceClient: DriveResourceClient,
         var parentFolderLevel: Int,
         var parentFolderDriveId: DriveId?,
         val newFolderName: String?) : Callable<String> {
 
+
+    private fun getDriveFolder(): DriveId {
+        val appFolderTask = driveResourceClient.rootFolder
+        Tasks.await(appFolderTask)
+        return appFolderTask.result.driveId
+    }
+
     override fun call(): String {
         Log.v(TAG, "call - parentFolderLevel/parentFolderDriveId: $parentFolderLevel/$parentFolderDriveId")
         try {
-            var parentFolderDriveId = parentFolderDriveId
-            if (this.parentFolderDriveId == null) {
-                val rootFolderTask = driveResourceClient!!.rootFolder
-                parentFolderDriveId = Tasks.await(rootFolderTask).driveId
-            }
+            val currFolderDriveId = parentFolderDriveId ?: getDriveFolder()
 
             val changeSet = MetadataChangeSet.Builder()
                     .setTitle(newFolderName!!)
@@ -38,8 +41,8 @@ data class CreateDriveFolderTask(
                     .setStarred(false)
                     .build()
 
-            val newDriverFolderTask = driveResourceClient!!.createFolder(
-                    parentFolderDriveId!!.asDriveFolder(), changeSet)
+            val newDriverFolderTask = driveResourceClient.createFolder(
+                    currFolderDriveId.asDriveFolder(), changeSet)
 
             val newDriveFolder = Tasks.await(newDriverFolderTask)
 
@@ -47,7 +50,7 @@ data class CreateDriveFolderTask(
             FoldersData.insertFolderItemView(
                     fileItemId,
                     parentFolderLevel,
-                    parentFolderDriveId,
+                    currFolderDriveId,
                     0,
                     FileMetadataInfo(
                             newFolderName,
@@ -61,18 +64,18 @@ data class CreateDriveFolderTask(
                             true,
                             false))
 
-            eventBus!!.post(FoldersEvents.Builder(FoldersEvents.Events.FOLDER_CREATED)
+            eventBus.post(FoldersEvents.Builder(FoldersEvents.Events.FOLDER_CREATED)
                     .newFileName(newFolderName)
                     .build())
         } catch (e: IllegalStateException) {
             postCreateFolderProblemEvent(
-                    activity!!.resources
+                    activity.resources
                             .getString(R.string.base_handler_create_folder_no_connection, newFolderName))
         } catch (e: Exception) {
             //            Log.v(TAG, "call - e: " + e);// handle any exception
             e.printStackTrace()
             postCreateFolderProblemEvent(
-                    activity!!.resources
+                    activity.resources
                             .getString(R.string.base_handler_create_folder_problems,
                                     newFolderName))
         }
@@ -81,16 +84,16 @@ data class CreateDriveFolderTask(
     }
 
     private fun postCreateFolderProblemEvent(msg: String) {
-        eventBus!!.post(FoldersEvents.Builder(FoldersEvents.Events.CREATE_FOLDER_PROBLEMS)
+        eventBus.post(FoldersEvents.Builder(FoldersEvents.Events.CREATE_FOLDER_PROBLEMS)
                 .msgContents(msg)
                 .build())
     }
 
     class Builder {
 
-        private var activity: Activity? = null
-        private var eventBus: EventBus? = null
-        private var driveResourceClient: DriveResourceClient? = null
+        private lateinit var activity: Activity
+        private lateinit var eventBus: EventBus
+        private lateinit var driveResourceClient: DriveResourceClient
         private var newFolderName: String? = null
         private var parentFolderLevel: Int = 0
         private var parentFolderDriveId: DriveId? = null

@@ -61,11 +61,10 @@ data class DownloadFolderInfoTask(
                 selectedFolderDriveId == null || selectedFolderDriveId != parentFolderDriveId
 
         // https://developers.google.com/android/guides/tasks
-        val selectedDriveFolder: DriveFolder
 
         lateinit var foldersAddData: FolderData
         try {
-            selectedDriveFolder = selectedFolderDriveId?.asDriveFolder() ?: getDriveFolder()
+            val selectedDriveFolder = selectedFolderDriveId?.asDriveFolder() ?: getDriveFolder()
 
             val query = Query.Builder()
                     .build()

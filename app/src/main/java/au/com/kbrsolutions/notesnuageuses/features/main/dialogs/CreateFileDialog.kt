@@ -1,8 +1,8 @@
 package au.com.kbrsolutions.notesnuageuses.features.main.dialogs
 
-import android.app.DialogFragment
 import android.content.Context
 import android.os.Bundle
+import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +10,7 @@ import android.widget.TextView
 import au.com.kbrsolutions.notesnuageuses.R
 import kotlinx.android.synthetic.main.create_file_dialog.view.*
 
+//class CreateFileDialog : DialogFragment() {
 class CreateFileDialog : DialogFragment() {
 
     private var fileNameTv: TextView? = null

@@ -588,13 +588,13 @@ class HomeActivity : BaseActivity(),
 
     override fun showFileDialog() {
         val dialog = CreateFileDialog.newInstance()
-        dialog.show(fragmentManager, "dialog")
+        dialog.show(supportFragmentManager, "file dialog")
     }
 
     override fun showRenameFiledialog(args: Bundle) {
         val renameFileDialog = RenameFileDialog.newInstance(args)
         renameFileDialog.isCancelable = false
-        renameFileDialog.show(fragmentManager, "rename dialog")
+        renameFileDialog.show(supportFragmentManager, "rename dialog")
     }
 
     override fun createFolder(fileName: CharSequence) {

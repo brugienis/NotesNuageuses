@@ -1,6 +1,6 @@
 package au.com.kbrsolutions.notesnuageuses.features.main.dialogs
 
-import android.app.DialogFragment
+import android.support.v4.app.DialogFragment
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
