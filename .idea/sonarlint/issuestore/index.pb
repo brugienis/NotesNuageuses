@@ -147,3 +147,7 @@ w
 G.idea/sonarlint/issuestore/a/a/aa0c805e4a7d8d531bc507f05764f3f6ac64e120,9/5/9544b9922906b2a10a6829110cbc267eb9e7a361
 X
 (gradle/wrapper/gradle-wrapper.properties,f/b/fbe448ebfc3eb2d4e308f6b8b043666f5b57235e
+‘
+aapp/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/espresso/helpers/TestFolderHandler.kt,5/0/501115f92fb60904db50b0d1ba57ad1ab75f9d6e
+Š
+Zapp/src/androidTest/java/au/com/kbrsolutions/notesnuageuses/espresso/CreateTextNoteTest.kt,0/e/0e78383c38a246cc19232eb5af63847e7a9d2354

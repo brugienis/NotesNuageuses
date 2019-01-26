@@ -9,7 +9,6 @@ import com.google.android.gms.drive.*
 import com.google.android.gms.tasks.Tasks
 import org.greenrobot.eventbus.EventBus
 import java.io.IOException
-import java.io.OutputStream
 import java.util.*
 import java.util.concurrent.Callable
 
@@ -28,21 +27,14 @@ data class SendFileToDriveTask(
         val idxInTheFolderFilesList: Int): Callable<String> {
 
     private val createDt: Date = Date()
-//    private val fileItemId = createDt.time
     private var msg: String = ""
     private var thisFileDriveId: DriveId? = null
     private var encryptMillis: Long = 0
 
     override fun call(): String {
-//        Log.v("SendFileToDriveTask", """call -
-//            |fileContents: ${String(fileContents)} """
-//                .trimMargin())
         val startMillis = System.currentTimeMillis()
-
-        var outputStream: OutputStream? = null
         val fileNameWithExtension = fileName + (context.resources
                         .getString(R.string.base_handler_encrypted_text_file_extension))
-//        msg = null
 
         try {
 
@@ -58,16 +50,9 @@ data class SendFileToDriveTask(
 
                 val driveContents: DriveContents = openTask.result
 
-                outputStream = driveContents.outputStream
-
-                // fixLater: Sep 01, 2018 - test finally
-                outputStream.write(fileContents)
-                Log.v("SendFileToDriveTask", """call before - fileContents: $fileContents """)
-                // groovyScript("_1 ?: '<top>'", kotlinClassName())
-                // groovyScript("_1.take(Math.min(23, _1.length()));", className())
-//                if (true) throw RuntimeException("BR test - after write")
-
-                Log.v("SendFileToDriveTask", """call after  - fileContents: $fileContents """)
+                driveContents.outputStream.use { outputStream ->
+                    outputStream.write(fileContents)
+                }
 
                 val commitTask = driveResourceClient.commitContents(driveContents, null)
                 Tasks.await(commitTask)
@@ -84,19 +69,9 @@ data class SendFileToDriveTask(
                 Tasks.await(createContentsTask)
 
                 val contents = createContentsTask.result
-                outputStream = contents.outputStream
-
-                outputStream.write(fileContents)
-
-                Log.v("SendFileToDriveTask", """call -
-                    |fileContents: ${String(fileContents)}
-                    | ; after write
-                    |""".trimMargin())
-
-//                OutputStreamWriter(outputStream).use {
-//                    writer -> writer.write("")
-////                    throw RuntimeException("BR - after write")
-//                }
+                contents.outputStream.use { outputStream ->
+                    outputStream.write(fileContents)
+                }
 
                 val changeSet = MetadataChangeSet.Builder()
                         .setTitle(fileName)
@@ -135,17 +110,6 @@ data class SendFileToDriveTask(
             sendProblemEvent(fileName + e)
         } catch (e: Exception) {                                    // added to handle any exception
             sendProblemEvent(fileName + e)
-        } finally {
-            Log.v("SendFileToDriveTask", """call - finally -
-                |outputStream: $outputStream """.trimMargin())
-            if (outputStream != null) {
-                try {
-                    outputStream.close()
-                } catch (e: IOException) {
-                    // nothing can be done
-                }
-
-            }
         }
         return "SendFileToDriveTask - successful end"
     }

@@ -1,13 +1,14 @@
 package au.com.kbrsolutions.notesnuageuses.espresso
 
+import android.util.Log
 import androidx.test.InstrumentationRegistry.getInstrumentation
+import androidx.test.espresso.Espresso
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import au.com.kbrsolutions.notesnuageuses.R
-import au.com.kbrsolutions.notesnuageuses.R.id.*
 import au.com.kbrsolutions.notesnuageuses.espresso.helpers.*
 import au.com.kbrsolutions.notesnuageuses.features.espresso.ActiveFlagsController
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
@@ -21,7 +22,13 @@ import java.time.format.DateTimeFormatter
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-class CreateTestFolderTest {
+class CreateTextNoteTest {
+
+    val date: LocalDateTime = LocalDateTime.now()
+    //        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+    val formatter = DateTimeFormatter.ofPattern("MM-dd HH:mm")
+    val formattedTimeNow = date.format(formatter)
+    val testFolderName = "Test $formattedTimeNow"
 
      /*check package androidx.test.espresso.matcher - HasSiblingMatcher
      (hasSibling(ViewMatchers.withText("some text"))), etc.
@@ -59,90 +66,60 @@ class CreateTestFolderTest {
 
     @Test
     fun createNewFolderInRootFolder() {
-        val resources = mActivityTestRule.activity.applicationContext.resources
-
-        val date: LocalDateTime = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("MM-dd HH:mm")
-        val formattedTimeNow = date.format(formatter)
-        val testFolderName = "Test $formattedTimeNow"
 
         ConditionWatcher.setTimeoutLimit(15 * 1000)
 
         ConditionWatcher.waitForCondition(WaitForFolderIsActiveInstruction())
 
-        validateActionbarTitle(APP_ROOT_FOLDER)
+        val resources = mActivityTestRule.activity.applicationContext.resources
 
-        menuCreateFile.performMenuItemClick(resources.getString(R.string.menu_create_file))
+        val testFolderHandler = TestFolderHandler()
 
-        createDialog_FileName.performTypeText(testFolderName)
+        testFolderHandler.createTestFolder(testFolderName, APP_ROOT_FOLDER, resources)
 
-        delay(2000)
+        /*                      Root folder files list shows                                      */
 
-        createDialog_CreateFolder.performClick()
+        showTestFolderFiles(R.id.folderFragmentLayoutId, testFolderName)
 
-        validateActionbarTitle(testFolderName)
-
-        /*                               Folder was created                                       */
-
-        delay(2000)
-
-        testItemAgainstAdapterData(testFolderName, true)
-
-        delay(2000)
-
-        showFileDetailsViewForTestFolderName(R.id.folderFragmentLayoutId, testFolderName)
+        Log.v("CreateTextNoteTest", """createNewFolderInRootFolder -
+        after click on the test folder
+        """)
 
         /* Row with the folderName just created is now selected */
 
         delay(3000)
 
-        fileDetailRootView.checkIsDisplayed()
+        Log.v("CreateTextNoteTest", """createNewFolderInRootFolder -
+        before  R.id.menuCreateFile.performMenuItemClick()
+        """)
+        delay(5000)
 
-        /*                            File Info screen shows                                      */
+        R.id.menuCreateFile.performMenuItemClick(resources.getString(R.string.menu_create_file))
 
-        delay(3000)
+        val date: LocalDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        val formattedTimeNow = date.format(formatter)
+        val testTextNoteName = "Text note $formattedTimeNow"
 
-        /* Trash test folder */
+        R.id.createDialog_FileName.performTypeText(testTextNoteName)
+        R.id.createDialog_CreateTextNote.performClick()
 
-        fileDetail_TrashOrDelete.performClick()
+        Log.v("CreateTextNoteTest", """createNewFolderInRootFolder -
+        before  R.id.menuSaveOpenedFile.performClick()
+        """)
+        delay(5000)
 
-        validateActionbarTitle(APP_ROOT_FOLDER)
+        R.id.menuSaveOpenedFile.performClick()
 
-        /* We are back to the app root folder layout - the trashed folder should not be visible */
+        Log.v("CreateTextNoteTest", """createNewFolderInRootFolder -
+        after   R.id.menuSaveOpenedFile.performClick()
+        """)
+        delay(5000)
 
-        delay(3000)
+        Espresso.pressBack()
+        delay(5000)
 
-        val showTrashedFilesMenuItem = resources.getString(R.string.menu_show_trashed_files)
-        val parenStartPos = showTrashedFilesMenuItem.indexOf('(')
-
-        menuShowTrashed.performMenuItemClick(showTrashedFilesMenuItem.substring(0, parenStartPos))
-
-        /* We are back to the folder layout - the trashed folder should be visible */
-
-        delay(2000)
-
-        showFileDetailsViewForTestFolderName(R.id.folderFragmentLayoutId, testFolderName)
-
-        /* Row with the folderName is selected */
-
-
-        fileDetailRootView.checkIsDisplayed()
-
-        /* File Detail screen shows */
-
-        /* Delete test folder */
-
-        fileDetail_TrashOrDelete.performClick()
-
-        /* The test folder should not be in the adapter */
-
-        testItemAgainstAdapterData(testFolderName, false)
-
-        delay(2000)
-
-        validateActionbarTitle(APP_ROOT_FOLDER)
-
-        delay(2000)
+        testFolderHandler.deleteTestFolder(testFolderName, APP_ROOT_FOLDER, resources)
 
         ActiveFlagsController.performEndOfTestValidations("createNewFolderInRootFolder")
 

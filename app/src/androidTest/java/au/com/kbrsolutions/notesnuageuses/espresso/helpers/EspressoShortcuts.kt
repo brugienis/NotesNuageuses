@@ -1,5 +1,6 @@
 package au.com.kbrsolutions.notesnuageuses.espresso.helpers
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -110,6 +111,11 @@ fun Int.performMenuItemClick(menuItemText: String) {
 
     /* If the 'sMenuItemDisplayed' was not found in the ActionBar, try to find it in the      */
     /* overflow view, and clicked on it.                                                      */
+    Log.v("EsspressoShortcuts <top>", """performMenuItemClick -
+        |id:                  ${this}
+        |menuItemText:        ${menuItemText}
+        |isMenuItemDisplayed: $isMenuItemDisplayed
+    """.trimMargin())
     if (!isMenuItemDisplayed) {
         val overflowViewId = R.id.title
         try {
@@ -175,6 +181,57 @@ fun infoImageOnRowWithFileName(
         public override fun matchesSafely(view: View): Boolean {
             if (rowFound) return false
             if (view.id != R.id.infoImageId) return false
+            val parent = view.parent
+            if (parent == null || parent !is View) return false
+            val fileNameView = parent.findViewById<View>(R.id.fileNameId)
+            if (fileNameView == null || fileNameView !is TextView) return false
+            val contentText = fileNameView.text ?: return false
+
+            if (
+                    !rowFound &&
+                    parent is ViewGroup &&
+                    parentMatcher.matches(parent) &&
+                    contentText == fileName) {
+                foundFirstInfoImageView = view
+                rowFound = true
+                return true
+            }
+            return false
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------
+
+fun showTestFolderFiles(id:Int, testFolderName: String) {
+    Espresso.onView(
+            listRowWithFileName(
+                    ViewMatchers.withId(id),
+                    testFolderName))
+            .perform(ViewActions.click())
+}
+
+/*
+    matchesSafely(...) will return true on a first list view row, containing 'fileNameId' with
+    text equal to 'fileName'.
+ */
+fun listRowWithFileName(
+        parentMatcher: Matcher<View>,
+        fileName: String): Matcher<View> {
+
+    return object : TypeSafeMatcher<View>() {
+
+        var rowFound = false
+        var foundFirstInfoImageView: View? = null
+
+        override fun describeTo(description: Description) {
+            description.appendText("FileName with text $fileName in parent ")
+            parentMatcher.describeTo(description)
+        }
+
+        public override fun matchesSafely(view: View): Boolean {
+            if (rowFound) return false
+            if (view.id != R.id.fileNameId) return false
             val parent = view.parent
             if (parent == null || parent !is View) return false
             val fileNameView = parent.findViewById<View>(R.id.fileNameId)
