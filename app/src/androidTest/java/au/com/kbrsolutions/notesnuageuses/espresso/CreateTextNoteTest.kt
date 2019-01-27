@@ -104,6 +104,9 @@ class CreateTextNoteTest {
         R.id.createDialog_FileName.performTypeText(testTextNoteName)
         R.id.createDialog_CreateTextNote.performClick()
 
+        // fixLater: Jan 27, 2019 - type note text
+        val testTextNoteContent = "Text note content $formattedTimeNow"
+        R.id.fileFragmentTextId.performTypeText(testTextNoteContent)
         Log.v("CreateTextNoteTest", """createNewFolderInRootFolder -
         before  R.id.menuSaveOpenedFile.performClick()
         """)
