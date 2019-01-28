@@ -1,8 +1,11 @@
 package au.com.kbrsolutions.notesnuageuses.espresso
 
-import android.util.Log
 import androidx.test.InstrumentationRegistry.getInstrumentation
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
@@ -13,6 +16,7 @@ import au.com.kbrsolutions.notesnuageuses.espresso.helpers.*
 import au.com.kbrsolutions.notesnuageuses.features.espresso.ActiveFlagsController
 import au.com.kbrsolutions.notesnuageuses.features.main.HomeActivity
 import com.azimolabs.conditionwatcher.ConditionWatcher
+import org.hamcrest.CoreMatchers.allOf
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -79,20 +83,11 @@ class CreateTextNoteTest {
 
         /*                      Root folder files list shows                                      */
 
-        showTestFolderFiles(R.id.folderFragmentLayoutId, testFolderName)
+        clickOnTheListViewRowMatchingFileName(R.id.folderFragmentLayoutId, testFolderName)
 
-        Log.v("CreateTextNoteTest", """createNewFolderInRootFolder -
-        after click on the test folder
-        """)
+        /* List view of the test folder shows - it is en empty folder */
 
-        /* Row with the folderName just created is now selected */
-
-        delay(3000)
-
-        Log.v("CreateTextNoteTest", """createNewFolderInRootFolder -
-        before  R.id.menuCreateFile.performMenuItemClick()
-        """)
-        delay(5000)
+        delay(1000)
 
         R.id.menuCreateFile.performMenuItemClick(resources.getString(R.string.menu_create_file))
 
@@ -100,25 +95,41 @@ class CreateTextNoteTest {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         val formattedTimeNow = date.format(formatter)
         val testTextNoteName = "Text note $formattedTimeNow"
+        val testTextNoteNameWithExtension = "$testTextNoteName.pntxt"
 
         R.id.createDialog_FileName.performTypeText(testTextNoteName)
         R.id.createDialog_CreateTextNote.performClick()
 
-        // fixLater: Jan 27, 2019 - type note text
+        /* Empty text note shows - it waits for some text to by typed                             */
+
         val testTextNoteContent = "Text note content $formattedTimeNow"
         R.id.fileFragmentTextId.performTypeText(testTextNoteContent)
-        Log.v("CreateTextNoteTest", """createNewFolderInRootFolder -
-        before  R.id.menuSaveOpenedFile.performClick()
-        """)
-        delay(5000)
+        delay(2000)
 
         R.id.menuSaveOpenedFile.performClick()
+        delay(2000)
 
-        Log.v("CreateTextNoteTest", """createNewFolderInRootFolder -
-        after   R.id.menuSaveOpenedFile.performClick()
-        """)
+        /* Text note is saved                                                                     */
+
+        // Show text note content
+        clickOnTheListViewRowMatchingFileName(R.id.folderFragmentLayoutId, testTextNoteNameWithExtension)
         delay(5000)
 
+        // Verify the note content
+        // fixLater: Jan 27, 2019 - I am not sure how to retrieve the TextView content
+        onView(
+                allOf(
+                        withId(R.id.fileFragmentTextId),
+                        withTextStartWithString(testTextNoteContent)
+                        // withText(testTextNoteContent) // for some reason this is not working
+                ))
+                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
+        // Go back to test folder
+        Espresso.pressBack()
+        delay(5000)
+
+        // Go back to the 'current' folder
         Espresso.pressBack()
         delay(5000)
 
@@ -131,13 +142,14 @@ class CreateTextNoteTest {
     /*                                  End of test code                                          */
 
     private val mDoNotSleep: Boolean = true
-    private fun delay(msec: Int) {
+
+    private fun delay(millis: Int) {
         if (mDoNotSleep) {
             return
         }
         try {
             //            Log.v(TAG, "delay - sleep start");
-            Thread.sleep(msec.toLong())
+            Thread.sleep(millis.toLong())
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }

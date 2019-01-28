@@ -203,7 +203,7 @@ fun infoImageOnRowWithFileName(
 
 //-------------------------------------------------------------------------------
 
-fun showTestFolderFiles(id:Int, testFolderName: String) {
+fun clickOnTheListViewRowMatchingFileName(id:Int, testFolderName: String) {
     Espresso.onView(
             listRowWithFileName(
                     ViewMatchers.withId(id),
@@ -225,7 +225,7 @@ fun listRowWithFileName(
         var foundFirstInfoImageView: View? = null
 
         override fun describeTo(description: Description) {
-            description.appendText("FileName with text $fileName in parent ")
+            description.appendText("FileName with text: $fileName in parent ")
             parentMatcher.describeTo(description)
         }
 
@@ -237,6 +237,13 @@ fun listRowWithFileName(
             val fileNameView = parent.findViewById<View>(R.id.fileNameId)
             if (fileNameView == null || fileNameView !is TextView) return false
             val contentText = fileNameView.text ?: return false
+            if (fileName == "Text note 2019-01-27 15:02.pntxt") {
+                Log.v("<top>", """matchesSafely -
+                |fileName:    ${fileName}
+                |contentText: ${contentText}
+                |
+            """.trimMargin())
+            }
 
             if (
                     !rowFound &&
