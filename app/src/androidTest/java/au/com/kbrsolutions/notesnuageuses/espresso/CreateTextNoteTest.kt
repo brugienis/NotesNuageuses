@@ -6,6 +6,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
@@ -116,12 +117,17 @@ class CreateTextNoteTest {
         delay(5000)
 
         // Verify the note content
-        // fixLater: Jan 27, 2019 - I am not sure how to retrieve the TextView content
+
+        /* When verifying note content, I use originally withText(testTextNoteContent) and match
+        failed. When I used debugger, I found that the content was 'testTextNoteContent\n'. Looks
+         like the 'performTypeText()' added the new line. That explains why the
+         withTextStartWithString(testTextNoteContent) worked fine */
+        val testTextNoteContentExpected = "$testTextNoteContent\n"
         onView(
                 allOf(
                         withId(R.id.fileFragmentTextId),
-                        withTextStartWithString(testTextNoteContent)
-                        // withText(testTextNoteContent) // for some reason this is not working
+//                        withTextStartWithString(testTextNoteContent)
+                         withText(testTextNoteContentExpected) // for some reason this is not working
                 ))
                 .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
