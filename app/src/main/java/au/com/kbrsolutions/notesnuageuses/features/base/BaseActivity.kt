@@ -55,14 +55,14 @@ abstract class BaseActivity: AppCompatActivity() {
          */
         protected const val REQUEST_CODE_OPEN_ITEM = 1
 
-        const val MIME_TYPE_PNG_FILE = "image/png"   // MIME_TYPE_PNG_FILE
+        const val MIME_TYPE_PNG_FILE = "image/png"
         const val MIME_TYPE_TEXT_FILE = "text/plain"
         const val MIME_TYPE_JPEG_FILE = "image/jpeg"
         const val MIME_TYPE_FOLDER = "application/vnd.google-apps.folder"
     }
 
     override fun onStart() {
-        Log.v("BaseActivity", "onStart - BaseActivity: calling signIn ")
+//        Log.v("BaseActivity", "onStart - BaseActivity: calling signIn ")
         super.onStart()
         signIn()
     }
@@ -84,9 +84,9 @@ abstract class BaseActivity: AppCompatActivity() {
                 }
 
                 val getAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data)
-                if (getAccountTask.isSuccessful()) {
+                if (getAccountTask.isSuccessful) {
                     Log.e(TAG, "Sign-in OK.")
-                    initializeDriveClient(getAccountTask.getResult())
+                    initializeDriveClient(getAccountTask.result)
                 } else {
                     Log.e(TAG, "Sign-in failed.")
                     finish()
@@ -133,51 +133,6 @@ abstract class BaseActivity: AppCompatActivity() {
         mDriveResourceClient = Drive.getDriveResourceClient(applicationContext, signInAccount)
         onDriveClientReady()
     }
-
-    /**
-     * Prompts the user to select a text file using OpenFileActivity.
-     *
-     * @return Task that resolves with the selected item's ID.
-     */
-    /*protected fun pickTextFile(): Task<DriveId>? {
-        val openOptions = OpenFileActivityOptions.Builder()
-                .setSelectionFilter(Filters.eq(SearchableField.MIME_TYPE, "text/plain"))
-                .setActivityTitle(getString(R.string.select_file))
-                .build()
-        return pickItem(openOptions)
-    }*/
-
-    /**
-     * Prompts the user to select a folder using OpenFileActivity.
-     *
-     * @return Task that resolves with the selected item's ID.
-     */
-    /*protected fun pickFolder(): Task<DriveId>? {
-        val openOptions = OpenFileActivityOptions.Builder()
-                .setSelectionFilter(
-                        Filters.eq(SearchableField.MIME_TYPE, DriveFolder.MIME_TYPE))
-                .setActivityTitle(getString(R.string.select_folder))
-                .build()
-        return pickItem(openOptions)
-    }*/
-
-    /**
-     * Prompts the user to select a folder using OpenFileActivity.
-     *
-     * @param openOptions Filter that should be applied to the selection
-     * @return Task that resolves with the selected item's ID.
-     */
-    /*private fun pickItem(openOptions: OpenFileActivityOptions): Task<DriveId>? {
-        mOpenItemTaskSource = TaskCompletionSource()
-        getDriveClient()!!
-                .newOpenFileActivityIntentSender(openOptions)
-                .continueWith({ task: Task<IntentSender> ->
-                    startIntentSenderForResult(
-                            task.result, REQUEST_CODE_OPEN_ITEM, null, 0, 0, 0)
-                    null
-                } as Continuation<IntentSender, Void>)
-        return mOpenItemTaskSource!!.task
-    }*/
 
     /**
      * Shows a toast message.
@@ -270,10 +225,9 @@ abstract class BaseActivity: AppCompatActivity() {
         }
 
         fun cancelCurrFuture() {
-            if (currExecutingFuture != null) {
-                if (currExecutingFuture!!.cancel(true)) {
-                    cancellableExecutingTaskCnt.addAndGet(-1)
-                }
+            if (currExecutingFuture != null &&
+                    currExecutingFuture!!.cancel(true)) {
+                cancellableExecutingTaskCnt.addAndGet(-1)
             }
         }
 
@@ -297,8 +251,6 @@ abstract class BaseActivity: AppCompatActivity() {
             } catch (e: InterruptedException) {
                 cancelCurrFuture()
                 stopProcessing = true
-                // TODO Auto-generated catch block
-                //				e.printStackTrace();
             }
 
             return null
